@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Yard&#x131;m M&#x259;rk&#x259;zi - e-hisse.az</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/site.css?v=PLxGba7pyHyNethdSrcQNSI20OlP-OddbzFXRuSSp8U" />
+    <script>
+        if (localStorage.getItem('theme') !== 'dark') {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+    </script>
+</head>
+<body>
+    <header class="top-header d-flex justify-content-between align-items-center w-100">
+        <div class="d-flex align-items-center logo-container">
+            <a href="/" class="logo text-decoration-none">
+                <div class="logo-icon">e</div>
+                - hisse<span class="text-accent">.az</span>
+            </a>
+            <nav class="nav-links d-none d-lg-flex">
+                <a href="/" class=" text-decoration-none">Kataloq</a>
+                <a href="/api/Home/Saticilar" class=" text-decoration-none">SatÄ±cÄ±lar</a>
+                <a href="/api/Home/Yardim" class="active text-decoration-none">YardÄ±m mÉ™rkÉ™zi</a>
+                <a href="/api/Home/Elaqe" class=" text-decoration-none">ÆlaqÉ™</a>
+            </nav>
+        </div>
+
+
+
+        <div class="header-actions d-flex align-items-center" style="gap: 1rem;">
+            <div class="d-none d-xl-flex align-items-center me-2" style="gap: 15px; font-size: 0.95rem; font-weight: 500;">
+                <a href="tel:+994102523226" class="text-decoration-none" style="color: var(--text-main);">
+                    <i class="bi bi-telephone-fill" style="color: var(--accent); margin-right: 4px;"></i> +994 10 252 32 26
+                </a>
+                <a href="https://wa.me/994103961501" target="_blank" class="text-decoration-none" style="color: var(--text-main);">
+                    <i class="bi bi-whatsapp" style="color: #25D366; margin-right: 4px;"></i> +994 10 396 15 01
+                </a>
+            </div>
+
+            <button class="btn-outline d-flex align-items-center gap-2" id="theme-toggle" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-main); border-radius: 20px;">
+                <i class="bi bi-moon-stars" id="theme-icon"></i>
+                <span class="d-none d-md-inline" id="theme-text">Rejim</span>
+            </button>
+            <button class="icon-btn" style="background: transparent; border: none; color: var(--text-main);"><i class="bi bi-bell"></i></button>
+            
+                <a href="/api/Auth/Login" class="btn-outline text-decoration-none">Daxil ol</a>
+                <a href="/api/Auth/Register" class="btn-outline text-decoration-none d-none d-md-flex" style="background-color: var(--accent); color: #000; border-color: var(--accent);">Qeydiyyat</a>
+        </div>
+    </header>
+
+    <main role="main">
+        
+<div class="container my-5">
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-8 text-center">
+            <h1 class="display-5 fw-bold"><i class="bi bi-question-circle text-accent"></i> Yardım Mərkəzi</h1>
+            <p class="text-muted mt-2">Sizə necə kömək edə bilərik?</p>
+            
+            <div class="position-relative mt-4 mx-auto" style="max-width: 500px;">
+                <input type="text" class="form-control form-control-lg bg-custom text-main border-custom shadow-sm" placeholder="Sualınızı bura yazın..." style="border-radius: 30px; padding-left: 1.5rem; padding-right: 3rem;" />
+                <button class="btn position-absolute end-0 top-0 h-100 px-3" style="border: none; background: transparent; color: var(--text-muted);"><i class="bi bi-search"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 p-4 hover-shadow transition">
+                <i class="bi bi-box-seam fs-1 text-accent mb-3"></i>
+                <h5 class="fw-bold">Sifariş və Çatdırılma</h5>
+                <p class="text-muted small">Sifarişlərin izlənməsi, çatdırılma müddəti və kuryer xidmətləri haqqında məlumatlar.</p>
+                <a href="#" class="text-accent text-decoration-none fw-medium mt-auto">Ətraflı <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 p-4 hover-shadow transition">
+                <i class="bi bi-shield-check fs-1 text-accent mb-3"></i>
+                <h5 class="fw-bold">Zəmanət və Qaytarma</h5>
+                <p class="text-muted small">Məhsulların zəmanət şərtləri, defektli məhsulların dəyişdirilməsi və geri qaytarma qaydaları.</p>
+                <a href="#" class="text-accent text-decoration-none fw-medium mt-auto">Ətraflı <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 p-4 hover-shadow transition">
+                <i class="bi bi-person-gear fs-1 text-accent mb-3"></i>
+                <h5 class="fw-bold">Hesab və Tənzimləmələr</h5>
+                <p class="text-muted small">Profil məlumatlarının yenilənməsi, Şifrə bərpası və mağaza (satıcı) hesabı açmaq qaydaları.</p>
+                <a href="#" class="text-accent text-decoration-none fw-medium mt-auto">Ətraflı <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <h4 class="fw-bold mb-3">Cavab tapmadiniz?</h4>
+            <p class="text-muted mb-4">Bizimlə birbaşa əlaqə saxlayın, məmnuniyyətlə kömək edərik.</p>
+            <a href="/Home/Elaqe" class="btn btn-outline-secondary px-4 py-2" style="border-radius: 30px;">Bizimlə Əlaqə</a>
+        </div>
+    </div>
+</div>
+
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <div style="display:flex; align-items:center; gap:1rem;">
+                <div style="display:flex; align-items:center; gap:4px;">
+                    <div class="logo-icon" style="width:24px; height:24px; font-size:0.9rem; margin-right:0;">e</div>
+                    <strong style="color:white;">- hisse.az</strong>
+                </div>
+                <span class="d-none d-md-inline">Â© 2024 e-hisse.az - Ustalar Ã¼Ã§Ã¼n daha aÄŸÄ±llÄ± alÄ±ÅŸ-veriÅŸ</span>
+            </div>
+            <div class="footer-status">Sistem iÅŸlÉ™kdir</div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/js/site.js?v=vGdiqqc4fQxDO_2gCHi47dJtRpc799rJ24qDoGNuFv0"></script>
+    
+</body>
+</html>
+

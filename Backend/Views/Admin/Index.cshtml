@@ -1,0 +1,66 @@
+﻿@model IEnumerable<EHisseler.Web.Models.User>
+
+@{
+    ViewData["Title"] = "Admin - İstifadəçilər";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">Təsdiq Gözləyən İstifadəçilər</h2>
+        <p class="text-muted mb-0">Platformaya qeydiyyatdan keçmiş və təsdiq gözləyən yeni satıcılar</p>
+    </div>
+    <a asp-action="PendingAds" class="btn btn-outline-primary">Gözləmədə Olan Elanlar</a>
+</div>
+
+<div class="card border-0">
+    <div class="card-body p-0">
+        @if (!Model.Any())
+        {
+            <div class="p-5 text-center text-muted">
+                <i class="bi bi-check-circle display-4 mb-3 d-block text-success opacity-50"></i>
+                <h5>Təsdiq gözləyən istifadəçi yoxdur</h5>
+                <p>Bütün yeni qeydiyyatlar yoxlanılıb.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="ps-4">Tarix</th>
+                            <th>İstifadəçi Adı</th>
+                            <th>Ad / Soyad</th>
+                            <th>Rol</th>
+                            <th>Mobil Nömrə</th>
+                            <th class="text-end pe-4">Əməliyyat</th>
+                        </tr>
+                    </thead>
+                    <tbody class="border-top-0">
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td class="ps-4 text-muted small">@user.CreatedDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td class="fw-medium text-main">@user.Username</td>
+                                <td>@user.FirstName @user.LastName</td>
+                                <td><span class="badge bg-secondary bg-opacity-25 text-main border border-custom">@user.Role</span></td>
+                                <td>@user.Phone</td>
+                                <td class="text-end pe-4">
+                                    <form method="post" class="d-inline">
+                                        <input type="hidden" name="userId" value="@user.Id" />
+                                        <button type="submit" asp-action="ApproveUser" class="btn btn-sm btn-success px-3">Təsdiqlə</button>
+                                    </form>
+                                    <form method="post" class="d-inline ms-1">
+                                        <input type="hidden" name="userId" value="@user.Id" />
+                                        <button type="submit" asp-action="RejectUser" class="btn btn-sm btn-outline-danger px-3" onclick="return confirm('Bu istifadəçini rədd etmək istədiyinizə əminsiniz?');">Rədd et</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+

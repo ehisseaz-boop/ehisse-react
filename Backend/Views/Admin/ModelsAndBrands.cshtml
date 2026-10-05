@@ -1,0 +1,41 @@
+﻿@model IEnumerable<EHisseler.Web.Models.DeviceModel>
+@{
+    ViewData["Title"] = "Modell?r v? Brendl?r";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-phone me-2 text-primary"></i> Cihaz Modell?ri</h2>
+    <div>
+        <button class="btn btn-outline-primary me-2"><i class="bi bi-plus"></i> Yeni Brend</button>
+        <button class="btn btn-primary"><i class="bi bi-plus"></i> Yeni Model</button>
+    </div>
+</div>
+
+<div class="card p-4">
+    <table class="table table-dark table-hover table-bordered align-middle">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Brend</th>
+                <th>Model</th>
+                <th>Kod</th>
+                <th>Kategoriya</th>
+                <th>Il</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var m in Model)
+            {
+                <tr>
+                    <td>@m.Id</td>
+                    <td class="fw-bold">@m.Brand?.Name</td>
+                    <td>@m.Name</td>
+                    <td><span class="badge bg-secondary">@m.ModelCode</span></td>
+                    <td>@m.Category?.Name</td>
+                    <td>@m.ReleaseYear</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+

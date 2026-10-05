@@ -1,0 +1,70 @@
+@model IEnumerable<EHisseler.Web.Models.SellerProfile>
+@{
+    ViewData["Title"] = "Satıcılar";
+    var adStats = ViewBag.AdStats as Dictionary<int, (int Total, int Active)>;
+}
+
+<div class="container my-5">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="display-5 fw-bold"><i class="bi bi-shop text-accent"></i> Satıcılar</h1>
+            <p class="text-muted">Platformamızdakı etibarlı satıcıların siyahısı</p>
+        </div>
+    </div>
+    
+    <div class="row mb-4 justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <form method="get" asp-action="Saticilar" class="d-flex shadow-sm rounded-pill overflow-hidden bg-white">
+                <input type="text" name="searchString" class="form-control border-0 shadow-none px-4" placeholder="Servis, usta və ya anbardar adı ilə axtar..." value="@ViewData["CurrentSearch"]" />
+                <button type="submit" class="btn btn-primary px-4 rounded-pill m-1"><i class="bi bi-search"></i> Axtar</button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var seller in Model)
+            {
+                var stats = adStats != null && adStats.ContainsKey(seller.Id) ? adStats[seller.Id] : (0, 0);
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 text-center p-4">
+                        <div class="mb-3">
+                            <div class="bg-accent bg-opacity-25 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="bi bi-shop-window fs-1 text-accent"></i>
+                            </div>
+                        </div>
+                        <h4 class="fw-bold mb-1">@seller.CompanyName</h4>
+                        
+                        @{
+                            var roleName = seller.User?.Role == EHisseler.Web.Models.UserRole.Usta ? "Usta" : 
+                                           seller.User?.Role == EHisseler.Web.Models.UserRole.Anbardar ? "Anbardar" : "Rəsmi Mağaza";
+                        }
+                        <p class="text-muted small mb-2">@roleName @(!string.IsNullOrEmpty(seller.ContactPerson) ? $"- {seller.ContactPerson}" : "")</p>
+
+                        <div class="d-flex justify-content-center gap-3 mb-3 small text-muted">
+                            <div title="Aktiv elan sayı"><i class="bi bi-box-seam me-1"></i>Aktiv: <strong>@stats.Item2</strong></div>
+                            <div title="İndiyədək yerləşdiyi elan sayı"><i class="bi bi-list-check me-1"></i>Cəmi: <strong>@stats.Item1</strong></div>
+                        </div>
+
+                        <div class="d-flex justify-content-center gap-2 mb-4">
+                            @if (seller.IsPhoneVerified)
+                            {
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success"><i class="bi bi-check-circle-fill me-1"></i> Təsdiqlənmiş</span>
+                            }
+                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning"><i class="bi bi-star-fill me-1"></i> @seller.Rating.ToString("0.0")</span>
+                        </div>
+                        <a asp-controller="Home" asp-action="Index" asp-route-sellerId="@seller.Id" class="btn btn-outline-secondary w-100" style="border-radius: 20px;">Mağazaya keçid</a>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center">
+                <p class="text-muted">Hələlik heç bir satıcı tapılmadı.</p>
+            </div>
+        }
+    </div>
+</div>

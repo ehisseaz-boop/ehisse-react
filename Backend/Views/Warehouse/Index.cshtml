@@ -1,0 +1,161 @@
+﻿@model IEnumerable<EHisseler.Web.Models.SparePart>
+
+@{
+    ViewData["Title"] = "Mənim Elanlarım";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">Mənim Elanlarım</h2>
+        <p class="text-muted mb-0">Əlavə etdiyiniz məhsulların idarəetmə paneli</p>
+    </div>
+    <div>
+        <a asp-action="SalesHistory" class="btn btn-outline-secondary me-2">
+            <i class="bi bi-clock-history"></i> Satış Tarixçəsi
+        </a>
+        <a asp-action="AddPart" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Yeni Elan
+        </a>
+    </div>
+</div>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<div class="card border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="ps-4">Başlıq</th>
+                        <th>Model</th>
+                        <th>Növ</th>
+                        <th>Keyfiyyət</th>
+                        <th>Qiymət</th>
+                        <th>Stok</th>
+                        <th>Status</th>
+                        <th class="pe-4 text-end">Əməliyyat</th>
+                    </tr>
+                </thead>
+                <tbody class="border-top-0">
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="ps-4"><a href="@Url.Action("Details", "Warehouse", new { id = item.Id })" class="text-decoration-none fw-medium text-main">@item.Title</a></td>
+                                <td class="text-muted">@item.DeviceModel.Name</td>
+                                <td class="text-muted">@item.PartType.Name</td>
+                                <td><span class="badge bg-secondary bg-opacity-25 text-main border border-custom">@item.QualityType.Name</span></td>
+                                <td class="fw-bold text-success">@item.Price <small>@item.Currency</small></td>
+                                <td class="stock-cell" data-id="@item.Id">@item.StockQuantity</td>
+                                <td>
+                                    @if (item.IsDeleted)
+                                    {
+                                        <span class="badge bg-dark bg-opacity-10 text-dark border border-dark border-opacity-25">Silinib</span>
+                                    }
+                                    else if (!item.IsActive || item.ModerationStatus == EHisseler.Web.Models.ApprovalStatus.Approved && item.StockQuantity <= 0)
+                                    {
+                                        @if(item.StockQuantity <= 0)
+                                        {
+                                            <span class="badge bg-secondary bg-opacity-10 text-secondary border border-custom border-opacity-25">Stok bitib</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary bg-opacity-10 text-secondary border border-custom border-opacity-25">Deaktiv edilib</span>
+                                        }
+                                    }
+                                    else if (item.ModerationStatus == EHisseler.Web.Models.ApprovalStatus.Approved)
+                                    {
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">Aktiv</span>
+                                    }
+                                    else if (item.ModerationStatus == EHisseler.Web.Models.ApprovalStatus.Pending)
+                                    {
+                                        <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25">Yoxlamadadır</span>
+                                    }
+                                    else if (item.ModerationStatus == EHisseler.Web.Models.ApprovalStatus.Rejected)
+                                    {
+                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25" title="@(item.RejectionReason ?? "S?b?b qeyd edilm?yib")" data-bs-toggle="tooltip">R?dd Edilib</span>
+                                        <div class="text-danger small mt-1" style="font-size: 0.75rem;">@(item.RejectionReason ?? "S?b?b qeyd edilm?yib")</div>
+                                    }
+                                </td>
+                                <td class="pe-4 text-end">
+                                    <a asp-action="EditPart" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary me-1">
+                                        <i class="bi bi-pencil"></i> Redaktə
+                                    </a>
+                                    @if(item.StockQuantity > 0)
+                                    {
+                                        <button type="button" class="btn btn-sm btn-outline-primary record-sale-btn" data-id="@item.Id" data-stock="@item.StockQuantity">
+                                            @(item.StockQuantity == 1 ? "Satildi" : "Bu elandan bir m?hsul daha satildi")
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-muted">Hələ heç bir elanınız yoxdur.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.record-sale-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                if (this.disabled) return;
+
+                const id = this.getAttribute('data-id');
+                let stock = parseInt(this.getAttribute('data-stock'));
+                
+                const msg = stock === 1 
+                    ? "Bu elan üzrə son məhsul satıldı. Satışı təsdiqləyirsinizmi?" 
+                    : "Bir ?d?d satildigi kimi qeyd? alinacaq v? elanin stok sayi bir vahid azalacaq. T?sdiq edirsinizmi?";
+                
+                if (!confirm(msg)) return;
+
+                this.disabled = true;
+                const originalText = this.innerText;
+                this.innerText = "Gözləyin...";
+
+                try {
+                    const response = await fetch('/api/spareparts/' + id + '/record-sale', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+                    
+                    if (response.ok && data.success) {
+                        alert("Satış uğurla qeydə alındı.");
+                        window.location.reload();
+                    } else {
+                        alert(data.message || "Xəta baş verdi.");
+                        this.disabled = false;
+                        this.innerText = originalText;
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("Şəbəkə xətası baş verdi.");
+                    this.disabled = false;
+                    this.innerText = originalText;
+                }
+            });
+        });
+    </script>
+}

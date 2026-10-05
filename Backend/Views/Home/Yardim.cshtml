@@ -1,0 +1,54 @@
+﻿@{
+    ViewData["Title"] = "Yardım Mərkəzi";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-8 text-center">
+            <h1 class="display-5 fw-bold"><i class="bi bi-question-circle text-accent"></i> Yardım Mərkəzi</h1>
+            <p class="text-muted mt-2">Sizə necə kömək edə bilərik?</p>
+            
+            <div class="position-relative mt-4 mx-auto" style="max-width: 500px;">
+                <input type="text" class="form-control form-control-lg bg-custom text-main border-custom shadow-sm" placeholder="Sualınızı bura yazın..." style="border-radius: 30px; padding-left: 1.5rem; padding-right: 3rem;" />
+                <button class="btn position-absolute end-0 top-0 h-100 px-3" style="border: none; background: transparent; color: var(--text-muted);"><i class="bi bi-search"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 p-4 hover-shadow transition">
+                <i class="bi bi-box-seam fs-1 text-accent mb-3"></i>
+                <h5 class="fw-bold">Sifariş və Çatdırılma</h5>
+                <p class="text-muted small">Sifarişlərin izlənməsi, çatdırılma müddəti və kuryer xidmətləri haqqında məlumatlar.</p>
+                <a href="#" class="text-accent text-decoration-none fw-medium mt-auto">Ətraflı <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 p-4 hover-shadow transition">
+                <i class="bi bi-shield-check fs-1 text-accent mb-3"></i>
+                <h5 class="fw-bold">Zəmanət və Qaytarma</h5>
+                <p class="text-muted small">Məhsulların zəmanət şərtləri, defektli məhsulların dəyişdirilməsi və geri qaytarma qaydaları.</p>
+                <a href="#" class="text-accent text-decoration-none fw-medium mt-auto">Ətraflı <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm rounded-4 p-4 hover-shadow transition">
+                <i class="bi bi-person-gear fs-1 text-accent mb-3"></i>
+                <h5 class="fw-bold">Hesab və Tənzimləmələr</h5>
+                <p class="text-muted small">Profil məlumatlarının yenilənməsi, Şifrə bərpası və mağaza (satıcı) hesabı açmaq qaydaları.</p>
+                <a href="#" class="text-accent text-decoration-none fw-medium mt-auto">Ətraflı <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <h4 class="fw-bold mb-3">Cavab tapmadiniz?</h4>
+            <p class="text-muted mb-4">Bizimlə birbaşa əlaqə saxlayın, məmnuniyyətlə kömək edərik.</p>
+            <a href="/Home/Elaqe" class="btn btn-outline-secondary px-4 py-2" style="border-radius: 30px;">Bizimlə Əlaqə</a>
+        </div>
+    </div>
+</div>

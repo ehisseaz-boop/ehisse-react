@@ -1,0 +1,177 @@
+﻿@{
+    ViewData["Title"] = "Qeydiyyat";
+}
+
+<div class="container" style="max-width: 500px; margin-top: 3rem; margin-bottom: 5rem;">
+    <div style="background-color: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 16px; padding: 2.5rem;">
+        <div style="text-align:center; margin-bottom: 2rem;">
+            <div class="logo-icon" style="width: 48px; height: 48px; font-size: 1.5rem; margin: 0 auto 1rem;">e</div>
+            <h2 style="font-weight: 700; margin: 0;">Hesab Yarat</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">e-hisse.az platformasına qoşulun</p>
+        </div>
+
+        @if (ViewBag.Error != null)
+        {
+            <div style="background-color: rgba(255, 77, 77, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.9rem;">
+                @ViewBag.Error
+            </div>
+        }
+
+        <div id="validation-errors" style="display:none; background-color: rgba(255, 77, 77, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.9rem;">
+        </div>
+
+        <form id="registerForm" asp-action="Register" method="post">
+            <div style="display:flex; gap:1rem; margin-bottom: 1rem;">
+                <div style="flex:1;">
+                    <label style="display:block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Ad *</label>
+                    <input type="text" id="firstName" name="firstName" required style="width: 100%; padding: 0.75rem 1rem; background-color: var(--bg-main); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); outline: none; box-sizing:border-box;">
+                </div>
+                <div style="flex:1;">
+                    <label style="display:block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Soyad *</label>
+                    <input type="text" id="lastName" name="lastName" required style="width: 100%; padding: 0.75rem 1rem; background-color: var(--bg-main); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); outline: none; box-sizing:border-box;">
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+                <label style="display:block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Email *</label>
+                <input type="email" id="email" name="email" required style="width: 100%; padding: 0.75rem 1rem; background-color: var(--bg-main); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); outline: none; box-sizing:border-box;">
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+                <label style="display:block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Telefon</label>
+                <div style="display:flex; gap:0.5rem;">
+                    <div style="padding: 0.75rem; background-color: var(--bg-main); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); display:flex; align-items:center;">
+                        +994
+                    </div>
+                    <select id="operator" style="padding: 0.75rem; background-color: var(--bg-main); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); outline: none; appearance:none;">
+                        <option value="">Seçin</option>
+                        <option value="50">50</option>
+                        <option value="51">51</option>
+                        <option value="55">55</option>
+                        <option value="70">70</option>
+                        <option value="77">77</option>
+                        <option value="99">99</option>
+                        <option value="10">10</option>
+                    </select>
+                    <input type="text" id="phonePart" placeholder="XXX-XX-XX" style="flex:1; padding: 0.75rem 1rem; background-color: var(--bg-main); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); outline: none; box-sizing:border-box;">
+                </div>
+                <input type="hidden" name="phone" id="fullPhone">
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <label style="display:block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Hesab Növü *</label>
+                <select id="role" name="role" required style="width: 100%; padding: 0.75rem 1rem; background-color: var(--bg-main); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); outline: none; box-sizing:border-box; appearance:none;">
+                    <option value="">Seçin</option>
+                    <option value="Usta">Usta (Alıcı/Satıcı)</option>
+                    <option value="Anbardar">Anbardar (Təchizatçı)</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <label style="display:block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Şifrə *</label>
+                <input type="password" id="password" name="password" required style="width: 100%; padding: 0.75rem 1rem; background-color: var(--bg-main); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); outline: none; box-sizing:border-box;">
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.3rem;">Minimum 6 simvol</div>
+            </div>
+            
+            <button type="button" id="btnRegister" class="bg-accent" style="width: 100%; padding: 0.75rem; border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: background-color 0.2s;">
+                Qeydiyyatdan keç
+            </button>
+        </form>
+        
+        <div style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
+            Artiq hesabiniz var? <a href="/Auth/Login" class="text-accent" style="font-weight: 600;">Daxil olun</a>
+        </div>
+    </div>
+</div>
+
+<!-- OTP Modal -->
+<div id="otpModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center;">
+    <div style="background-color: var(--bg-surface); padding: 2rem; border-radius: 12px; max-width: 400px; width:100%; text-align:center;">
+        <h3 style="margin-top:0;">Təsdiq kodu</h3>
+        <p style="color:var(--text-muted); font-size:0.9rem;">Emailinizə göndərilən 4 rəqəmli kodu daxil edin. (Test üçün 1234 yazın)</p>
+        <input type="text" id="otpInput" maxlength="4" style="width: 150px; font-size:2rem; letter-spacing: 0.5rem; text-align:center; padding: 0.5rem; background-color: var(--bg-main); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); outline: none; margin-bottom:1.5rem;">
+        <div>
+            <button type="button" id="btnVerifyOtp" class="bg-accent" style="padding: 0.75rem 2rem; border: none; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer;">Təsdiqlə</button>
+            <button type="button" id="btnCancelOtp" style="padding: 0.75rem 2rem; border: 1px solid var(--border-color); background:transparent; color:var(--text-main); border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; margin-left:0.5rem;">İmtina</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById("phonePart").addEventListener("input", function (e) {
+            let val = e.target.value.replace(/\D/g, "");
+            let formatted = "";
+            if (val.length > 0) {
+                formatted = val.substring(0, 3);
+            }
+            if (val.length > 3) {
+                formatted += "-" + val.substring(3, 5);
+            }
+            if (val.length > 5) {
+                formatted += "-" + val.substring(5, 7);
+            }
+            e.target.value = formatted;
+        });
+
+        document.getElementById("btnRegister").addEventListener("click", function () {
+            let errors = [];
+            
+            let fn = document.getElementById("firstName").value.trim();
+            let ln = document.getElementById("lastName").value.trim();
+            let em = document.getElementById("email").value.trim();
+            let op = document.getElementById("operator").value;
+            let pp = document.getElementById("phonePart").value.trim();
+            let role = document.getElementById("role").value;
+            let pwd = document.getElementById("password").value;
+
+            if (!fn || !ln || !em || !role || !pwd) {
+                errors.push("Bütün məcburi xanaları doldurun.");
+            }
+
+            if (pwd && pwd.length < 6) {
+                errors.push("Şifrə minimum 6 simvol olmalıdır.");
+            }
+
+            let phoneRegex = /^\d{3}-\d{2}-\d{2}$/;
+            if (pp && !phoneRegex.test(pp)) {
+                errors.push("Nömrə XXX-XX-XX formatında olmalıdır.");
+            }
+
+            if ((op && !pp) || (!op && pp)) {
+                errors.push("Operator və nömrə birlikdə daxil edilməlidir.");
+            }
+
+            let errDiv = document.getElementById("validation-errors");
+            if (errors.length > 0) {
+                errDiv.innerHTML = errors.join("<br>");
+                errDiv.style.display = "block";
+            } else {
+                errDiv.style.display = "none";
+                if (op && pp) {
+                    document.getElementById("fullPhone").value = "+994" + op + pp.replace(/-/g, "");
+                } else {
+                    document.getElementById("fullPhone").value = "";
+                }
+                
+                // Show OTP modal
+                document.getElementById("otpModal").style.display = "flex";
+            }
+        });
+
+        document.getElementById("btnCancelOtp").addEventListener("click", function () {
+            document.getElementById("otpModal").style.display = "none";
+            document.getElementById("otpInput").value = "";
+        });
+
+        document.getElementById("btnVerifyOtp").addEventListener("click", function () {
+            let code = document.getElementById("otpInput").value;
+            if (code === "1234") {
+                alert("Uğurla yerinə yetirildi");
+                document.getElementById("registerForm").submit();
+            } else {
+                alert("Kod yanlışdır.");
+            }
+        });
+    </script>
+}

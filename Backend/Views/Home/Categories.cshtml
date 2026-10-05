@@ -1,0 +1,50 @@
+﻿@model IEnumerable<EHisseler.Web.Models.Category>
+@{
+    ViewData["Title"] = "Bütün Kateqoriyalar";
+}
+
+<div class="container mt-5 pt-4 mb-5">
+    <div class="d-flex align-items-center mb-4">
+        <a href="/" class="btn-outline text-decoration-none me-3" style="border:1px solid var(--border-color);"><i class="bi bi-arrow-left"></i> Geri</a>
+        <h2 class="mb-0">Bütün Kateqoriyalar</h2>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem;">
+        @foreach (var cat in Model)
+        {
+            if (!cat.IsActive) continue;
+            var countsDict = ViewBag.CategoryCounts as Dictionary<int, int>;
+            int count = countsDict != null && countsDict.ContainsKey(cat.Id) ? countsDict[cat.Id] : 0;
+            
+            string icon = "bi-box";
+            string iconStyle = "color: var(--accent);";
+            
+            if (cat.Name.Contains("Smart", StringComparison.OrdinalIgnoreCase)) { icon = "bi-smartwatch"; }
+            else if (cat.Name.Contains("Noutbuk", StringComparison.OrdinalIgnoreCase)) icon = "bi-laptop";
+            else if (cat.Name.Contains("Kompüter", StringComparison.OrdinalIgnoreCase) || cat.Name.Contains("Kompüter")) { icon = "bi-pc-display"; }
+            else if (cat.Name.Contains("Qulaql", StringComparison.OrdinalIgnoreCase)) icon = "bi-earbuds";
+            else if (cat.Name.Contains("Televizor", StringComparison.OrdinalIgnoreCase)) icon = "bi-tv";
+            else if (cat.Name.Contains("Oyun", StringComparison.OrdinalIgnoreCase)) icon = "bi-controller";
+            else if (cat.Name.Contains("Kamera", StringComparison.OrdinalIgnoreCase)) icon = "bi-camera";
+            else if (cat.Name.Contains("Samokat", StringComparison.OrdinalIgnoreCase)) icon = "bi-scooter";
+            else if (cat.Name.Contains("Şəbəkə", StringComparison.OrdinalIgnoreCase) || cat.Name.Contains("Şəbəkə")) icon = "bi-router";
+            else if (cat.Name.Contains("Adapter", StringComparison.OrdinalIgnoreCase) || cat.Name.Contains("Kabel", StringComparison.OrdinalIgnoreCase)) icon = "bi-plug";
+            else if (cat.Name.Contains("Alət", StringComparison.OrdinalIgnoreCase) || cat.Name.Contains("Alət")) icon = "bi-tools";
+
+            <a href="/?categoryId=@cat.Id" class="category-card text-decoration-none" style="position:relative;">
+                <div class="category-icon" style="@iconStyle"><i class="bi @icon"></i></div>
+                <div class="category-info">
+                    <h3 class="text-main">@cat.Name.Replace(" ehtiyat hissələri", "")</h3>
+                    <p class="text-muted">@count hissə</p>
+                </div>
+                <i class="bi bi-arrow-up-right" style="position:absolute; top:1.5rem; right:1.5rem; color:var(--text-muted);"></i>
+            </a>
+        }
+    </div>
+</div>
+
+
+
+
+
+

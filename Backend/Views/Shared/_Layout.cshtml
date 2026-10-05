@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - e-hisse.az</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script>
+        if (localStorage.getItem('theme') !== 'dark') {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+    </script>
+</head>
+<body>
+    <header class="top-header d-flex justify-content-between align-items-center w-100">
+        <div class="d-flex align-items-center logo-container">
+            <a href="/" class="logo text-decoration-none">
+                <div class="logo-icon">e</div>
+                - hisse<span class="text-accent">.az</span>
+            </a>
+            <nav class="nav-links d-none d-lg-flex">
+                <a href="/" class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" && ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "") text-decoration-none">Kataloq</a>
+                @if (User.Identity != null && User.Identity.IsAuthenticated && (User.IsInRole("Usta") || User.IsInRole("Anbardar")))
+                {
+                    <a href="/api/Warehouse/Index" class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Warehouse" ? "active" : "") text-decoration-none">ElanlarÄ±m</a>
+                }
+                <a href="/api/Home/Saticilar" class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Saticilar" ? "active" : "") text-decoration-none">SatÄ±cÄ±lar</a>
+                <a href="/api/Home/Yardim" class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Yardim" ? "active" : "") text-decoration-none">YardÄ±m mÉ™rkÉ™zi</a>
+                <a href="/api/Home/Elaqe" class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Elaqe" ? "active" : "") text-decoration-none">ÆlaqÉ™</a>
+            </nav>
+        </div>
+
+
+
+        <div class="header-actions d-flex align-items-center" style="gap: 1rem;">
+            <div class="d-none d-xl-flex align-items-center me-2" style="gap: 15px; font-size: 0.95rem; font-weight: 500;">
+                <a href="tel:+994102523226" class="text-decoration-none" style="color: var(--text-main);">
+                    <i class="bi bi-telephone-fill" style="color: var(--accent); margin-right: 4px;"></i> +994 10 252 32 26
+                </a>
+                <a href="https://wa.me/994103961501" target="_blank" class="text-decoration-none" style="color: var(--text-main);">
+                    <i class="bi bi-whatsapp" style="color: #25D366; margin-right: 4px;"></i> +994 10 396 15 01
+                </a>
+            </div>
+
+            <button class="btn-outline d-flex align-items-center gap-2" id="theme-toggle" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-main); border-radius: 20px;">
+                <i class="bi bi-moon-stars" id="theme-icon"></i>
+                <span class="d-none d-md-inline" id="theme-text">Rejim</span>
+            </button>
+            <button class="icon-btn" style="background: transparent; border: none; color: var(--text-main);"><i class="bi bi-bell"></i></button>
+            
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                <div class="dropdown">
+                    <div class="user-profile" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="user-avatar">
+                            @User.Identity.Name?.Substring(0,1).ToUpper()
+                        </div>
+                        <div class="user-info d-none d-md-flex">
+                            <span class="user-name">@User.Identity.Name</span>
+                            <span class="user-role">
+                                @(User.IsInRole("Usta") ? "Usta hesabÄ±" : (User.IsInRole("Admin") ? "Admin" : "Ä°stifadÉ™Ã§i"))
+                            </span>
+                        </div>
+                        <i class="bi bi-chevron-down d-none d-md-block" style="color:var(--text-muted); font-size:0.8rem;"></i>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end shadow" style="background-color: var(--bg-surface); border-color: var(--border-color);">
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li><a class="dropdown-item" href="/api/Admin/Index"><i class="bi bi-speedometer2 me-2"></i> Admin Panel</a></li>
+                            <li><a class="dropdown-item" href="/api/Admin/Requests"><i class="bi bi-list-check me-2"></i> MÃ¼raciÉ™tlÉ™r</a></li>
+                            <li><hr class="dropdown-divider" style="border-color: var(--border-color);"></li>
+                        }
+                        @if (User.IsInRole("Usta") || User.IsInRole("Anbardar"))
+                        {
+                            <li><a class="dropdown-item" href="/api/Warehouse/Index"><i class="bi bi-box-seam me-2"></i> MÉ™nim ElanlarÄ±m</a></li>
+                            <li><a class="dropdown-item" href="/api/Warehouse/AddPart"><i class="bi bi-plus-circle me-2"></i> Yeni Elan</a></li>
+                            <li><a class="dropdown-item" href="/api/Warehouse/Settings"><i class="bi bi-gear me-2"></i> TÉ™nzimlÉ™mÉ™lÉ™r</a></li>
+                            <li><hr class="dropdown-divider" style="border-color: var(--border-color);"></li>
+                        }
+                        <li><a class="dropdown-item text-danger" href="/api/Auth/Logout"><i class="bi bi-box-arrow-right me-2"></i> Ã‡Ä±xÄ±ÅŸ</a></li>
+                    </ul>
+                </div>
+            }
+            else
+            {
+                <a href="/api/Auth/Login" class="btn-outline text-decoration-none">Daxil ol</a>
+                <a href="/api/Auth/Register" class="btn-outline text-decoration-none d-none d-md-flex" style="background-color: var(--accent); color: #000; border-color: var(--accent);">Qeydiyyat</a>
+            }
+        </div>
+    </header>
+
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <div style="display:flex; align-items:center; gap:1rem;">
+                <div style="display:flex; align-items:center; gap:4px;">
+                    <div class="logo-icon" style="width:24px; height:24px; font-size:0.9rem; margin-right:0;">e</div>
+                    <strong style="color:white;">- hisse.az</strong>
+                </div>
+                <span class="d-none d-md-inline">Â© 2024 e-hisse.az - Ustalar Ã¼Ã§Ã¼n daha aÄŸÄ±llÄ± alÄ±ÅŸ-veriÅŸ</span>
+            </div>
+            <div class="footer-status">Sistem iÅŸlÉ™kdir</div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+

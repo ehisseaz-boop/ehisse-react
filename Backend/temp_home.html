@@ -1,0 +1,993 @@
+﻿<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vitrin - e-hisse.az</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/site.css?v=Ins9vTgLqT0eORkldmmIlCuohLHK_BgoRSNofhy0xOU" />
+    <script>
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+    </script>
+</head>
+<body>
+    <header class="top-header d-flex justify-content-between align-items-center w-100">
+        <div class="d-flex align-items-center logo-container">
+            <a href="/" class="logo text-decoration-none">
+                <div class="logo-icon">e</div>
+                hisse<span class="text-accent">.az</span>
+            </a>
+            <nav class="nav-links d-none d-lg-flex">
+                <a href="/" class="active text-decoration-none">Kataloq</a>
+                <a href="/Home/Saticilar" class=" text-decoration-none">Satıcılar</a>
+                <a href="/Home/Yardim" class=" text-decoration-none">Yardım mərkəzi</a>
+                <a href="/Home/Elaqe" class=" text-decoration-none">Əlaqə</a>
+            </nav>
+        </div>
+
+        <!-- Axtarış çubuğu -->
+        <div class="search-bar-container d-none d-md-block flex-grow-1 mx-4" style="max-width: 500px;">
+            <form action="/" method="get" class="d-flex position-relative">
+                <input type="text" name="searchString" class="form-control" placeholder="Ehtiyat hissəsi, cihaz, brend axtar..." style="border-radius: 20px; padding-left: 1.2rem; padding-right: 2.5rem; background-color: var(--input-bg); color: var(--text-main); border: 1px solid var(--input-border);" />
+                <button type="submit" class="btn position-absolute end-0 top-0 h-100" style="border: none; background: transparent; color: var(--text-muted);">
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
+        </div>
+
+        <div class="header-actions d-flex align-items-center" style="gap: 1rem;">
+            <button class="btn-outline d-flex align-items-center gap-2" id="theme-toggle" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-main); border-radius: 20px;">
+                <i class="bi bi-moon-stars" id="theme-icon"></i>
+                <span class="d-none d-md-inline" id="theme-text">Rejim</span>
+            </button>
+            <button class="icon-btn" style="background: transparent; border: none; color: var(--text-main);"><i class="bi bi-bell"></i></button>
+            
+                <a href="/Auth/Login" class="btn-outline text-decoration-none">Daxil ol</a>
+                <a href="/Auth/Register" class="btn-outline text-decoration-none d-none d-md-flex" style="background-color: var(--accent); color: #000; border-color: var(--accent);">Qeydiyyat</a>
+        </div>
+    </header>
+
+    <main role="main">
+        
+
+<div class="container">
+    <section class="hero-section">
+        <div class="hero-content">
+            <div class="hero-subtitle">Ustalar və anbarlar üçün</div>
+            <h1 class="hero-title">Doğru hissəni<br><span class="text-accent">tez tap.</span></h1>
+            <p class="hero-desc">Telefon, planşet və noutbuk ehtiyat hissələri.<br>Yoxlanılmış satıcılardan, real stokla.</p>
+            
+            <form action="/" method="get" class="w-100" style="max-width: 600px;">
+                <div class="search-box mb-2">
+                    <i class="bi bi-search"></i>
+                    <input type="text" name="searchString" placeholder="Model, hissə və ya kod axtar...">
+                    <button class="btn btn-sm btn-outline-secondary ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#detailedSearch" aria-expanded="false" aria-controls="detailedSearch" style="border:none; white-space:nowrap;">
+                        <i class="bi bi-sliders"></i> Detallı axtarış
+                    </button>
+                    <button type="submit" class="btn btn-sm btn-primary bg-accent text-dark fw-bold px-3 ms-1 rounded-pill">Axtar</button>
+                </div>
+                
+                <div class="collapse mt-2" id="detailedSearch">
+                    <div class="card card-body bg-surface border-color p-3 text-start">
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted mb-1">Kateqoriya</label>
+                                <select name="categoryId" id="hero-categoryId" class="form-select form-select-sm bg-custom text-main border-custom">
+                                    <option value="">Bütün kateqoriyalar</option>
+                                                <option value="1">Telefon</option>
+                                                <option value="2">Planset</option>
+                                                <option value="3">Noutbuk</option>
+                                                <option value="4">Smart Saat ehtiyat hiss&#x259;l&#x259;ri</option>
+                                                <option value="5">Qulaql&#x131;q ehtiyat hiss&#x259;l&#x259;ri</option>
+                                                <option value="6">Komp&#xFC;ter (PC) ehtiyat hiss&#x259;l&#x259;ri</option>
+                                                <option value="7">Televizor ehtiyat hiss&#x259;l&#x259;ri</option>
+                                                <option value="8">Oyun Konsolu ehtiyat hiss&#x259;l&#x259;ri</option>
+                                                <option value="9">Foto/Video Kamera ehtiyat hiss&#x259;l&#x259;ri</option>
+                                                <option value="10">Al&#x259;tl&#x259;r v&#x259; T&#x259;mir Avadanl&#x131;qlar&#x131;</option>
+                                                <option value="11">Dron ehtiyat hiss&#x259;l&#x259;ri</option>
+                                                <option value="12">Elektrikli Samokat ehtiyat hiss&#x259;l&#x259;ri</option>
+                                                <option value="13">&#xFFFD;?&#x259;b&#x259;k&#x259; Avadanl&#x131;qlar&#x131;</option>
+                                                <option value="14">Adapterl&#x259;r v&#x259; Kabell&#x259;r</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted mb-1">Brend</label>
+                                <select name="brandId" id="hero-brandId" class="form-select form-select-sm bg-custom text-main border-custom">
+                                    <option value="">Bütün brendlər</option>
+                                                <option value="1">Apple</option>
+                                                <option value="2">Samsung</option>
+                                                <option value="3">Xiaomi</option>
+                                                <option value="4">Huawei</option>
+                                                <option value="5">Dell</option>
+                                                <option value="6">Lenovo</option>
+                                                <option value="7">Asus</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted mb-1">Vəziyyəti</label>
+                                <select name="qualityTypeId" class="form-select form-select-sm bg-custom text-main border-custom">
+                                    <option value="">İstənilən vəziyyət</option>
+                                                <option value="1">Zavod istehsal&#x131; (yeni)</option>
+                                                <option value="2">Zavod istehsal&#x131; (i&#x15F;l&#x259;nmi&#x15F;)</option>
+                                                <option value="3">A-Class (Premium)</option>
+                                                <option value="4">B-Class (Standart)</option>
+                                                <option value="5">C-Class (Ekonom)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted mb-1">Qiymət aralığı (AZN)</label>
+                                <div class="d-flex gap-2">
+                                    <input type="number" name="minPrice" class="form-control form-control-sm bg-custom text-main border-custom" placeholder="Min" />
+                                    <input type="number" name="maxPrice" class="form-control form-control-sm bg-custom text-main border-custom" placeholder="Max" />
+                                </div>
+                            </div>
+                            <div class="col-12 mt-2">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input bg-accent border-accent" type="checkbox" name="inStockOnly" id="inStockOnlyHero" value="true" checked>
+                                    <label class="form-check-label small" for="inStockOnlyHero">Yalnız stokda olanlar</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            
+            <div class="hero-stats">
+                <span>18</span> aktiv hissə
+                <span class="dot">•</span>
+                <span>3</span> təsdiqli satıcı
+                <span class="dot">•</span>
+                <span>Bu gün</span> yenilənib
+            </div>
+        </div>
+        <div class="hero-graphic d-none d-lg-block" style="position:relative; width:400px; height:400px; display:flex; align-items:center; justify-content:center;">
+            <!-- Simple representation of the graphic in screenshot -->
+            <div style="width:200px; height:200px; border-radius:50%; background:radial-gradient(circle, rgba(163,255,18,0.3) 0%, rgba(10,15,12,0) 70%); position:absolute; z-index:1; top:50%; left:50%; transform:translate(-50%, -50%);"></div>
+            <i class="bi bi-lightning-charge-fill" style="font-size: 5rem; color: var(--accent); position:absolute; z-index:2; text-shadow: 0 0 20px var(--accent); top:50%; left:50%; transform:translate(-50%, -50%);"></i>
+            <div style="position:absolute; width: 300px; height: 300px; border: 1px solid rgba(163, 255, 18, 0.2); border-radius: 50%; top:50%; left:50%; transform:translate(-50%, -50%) rotate(20deg);"></div>
+            <div style="position:absolute; width: 350px; height: 180px; border: 1px solid rgba(163, 255, 18, 0.1); border-radius: 50%; top:50%; left:50%; transform:translate(-50%, -50%) rotate(-30deg);"></div>
+            <div style="position:absolute; top: 10%; right: 10%; font-size: 0.7rem; color:var(--text-muted); letter-spacing:1px;">REAL STOK</div>
+            <div style="position:absolute; bottom: 15%; left: 10%; font-size: 0.7rem; color:var(--text-muted); letter-spacing:1px;">SÜRƏTLİ ÇATDIRILMA</div>
+        </div>
+    </section>
+
+    <section>
+        <div class="section-header">
+            <div>
+                <div class="section-label">Kateqoriya</div>
+                <h2 class="section-title">Avadanlığını seç</h2>
+            </div>
+            <a href="/Home/Categories" class="link-accent">Hamısına bax <i class="bi bi-arrow-right"></i></a>
+        </div>
+        
+        <div class="category-grid">
+                    <a href="/?categoryId=1" class="category-card ">
+                        <div class="category-icon" style="color:var(--accent);"><i class="bi bi-phone"></i></div>
+                        <div class="category-info">
+                            <h3>Telefon</h3>
+                            <p>17 hissə</p>
+                        </div>
+                        <i class="bi bi-arrow-up-right" style="position:absolute; top:1.5rem; right:1.5rem; color:var(--text-muted);"></i>
+                    </a>
+                    <a href="/?categoryId=2" class="category-card ">
+                        <div class="category-icon" style="color:#fff; background:rgba(255,255,255,0.05);"><i class="bi bi-box"></i></div>
+                        <div class="category-info">
+                            <h3>Planset</h3>
+                            <p>1 hissə</p>
+                        </div>
+                        <i class="bi bi-arrow-up-right" style="position:absolute; top:1.5rem; right:1.5rem; color:var(--text-muted);"></i>
+                    </a>
+                    <a href="/?categoryId=3" class="category-card ">
+                        <div class="category-icon" style="color:#fff; background:rgba(255,255,255,0.05);"><i class="bi bi-laptop"></i></div>
+                        <div class="category-info">
+                            <h3>Noutbuk</h3>
+                            <p>0 hissə</p>
+                        </div>
+                        <i class="bi bi-arrow-up-right" style="position:absolute; top:1.5rem; right:1.5rem; color:var(--text-muted);"></i>
+                    </a>
+                    <a href="/?categoryId=4" class="category-card ">
+                        <div class="category-icon" style="color:#fff; background:rgba(255,255,255,0.05);"><i class="bi bi-smartwatch"></i></div>
+                        <div class="category-info">
+                            <h3>Smart Saat</h3>
+                            <p>0 hissə</p>
+                        </div>
+                        <i class="bi bi-arrow-up-right" style="position:absolute; top:1.5rem; right:1.5rem; color:var(--text-muted);"></i>
+                    </a>
+        </div>
+    </section>
+
+    <section>
+        <div class="section-header" style="align-items:center;">
+            <div>
+                <div class="section-label">Anbarda olanlar</div>
+                <h2 class="section-title">Populyar hissələr</h2>
+            </div>
+            <div style="display:flex; gap:0.5rem;">
+                <button class="btn-outline" style="padding:0.5rem; border-color:var(--text-muted);"><i class="bi bi-grid-fill text-accent"></i></button>
+                <button class="btn-outline" style="padding:0.5rem;"><i class="bi bi-list"></i></button>
+            </div>
+        </div>
+
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <div class="d-flex gap-2 overflow-auto hide-scrollbar pb-1 w-100">
+                <button class="btn-outline" style="border-radius:20px; font-size:0.85rem;" data-bs-toggle="offcanvas" data-bs-target="#filterOffcanvas"><i class="bi bi-sliders"></i> Filtrlər</button>
+                
+                <a href="/?categoryId=" class="btn-outline bg-accent text-main text-decoration-none" style="border-radius:20px; font-size:0.85rem; border:none; padding:0.5rem 1.5rem; color:#000!important;">Hamısı</a>
+                
+                <a href="/?categoryId=&partTypeId=1" class="btn-outline  text-main text-decoration-none" style="border-radius:20px; font-size:0.85rem; ">Ekran</a>
+                
+                <a href="/?categoryId=&partTypeId=2" class="btn-outline  text-main text-decoration-none" style="border-radius:20px; font-size:0.85rem; ">Batareya</a>
+                
+                <a href="/?categoryId=&partTypeId=3" class="btn-outline  text-main text-decoration-none" style="border-radius:20px; font-size:0.85rem; ">Kamera</a>
+                
+                <a href="/?categoryId=&partTypeId=5" class="btn-outline  text-main text-decoration-none" style="border-radius:20px; font-size:0.85rem; ">Ana plata</a>
+            </div>
+            <div id="sort-dropdown-container" style="font-size:0.85rem; color:var(--text-muted); display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                Sırala: <strong style="color:var(--text-main);">Ən çox baxılan</strong> <i class="bi bi-chevron-down"></i>
+            </div>
+        </div>
+
+            <div class="products-grid">
+
+                <div class="product-card">
+                    <div class="product-card-top">
+                        <div>
+ <span class="badge-accent" style="margin-bottom:0.5rem;">Yeni</span>                         </div>
+                        <button class="btn-fav add-to-fav" data-id="23"><i class="bi bi-heart"></i></button>
+                    </div>
+                    
+                    <a href="/Home/Details/23" class="product-image text-decoration-none">
+                            <img src="/Image/GetImage?path=%2Fimages%2Fimages%20(5).jpg" alt="N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 15" />
+                    </a>
+                    
+                    <div class="product-meta">
+                        <span class="product-category">Telefon &#xFC;&#xE7;&#xFC;n ekranlar</span>
+                        <span class="product-stock">Stokda 25 ədəd</span>
+                    </div>
+                    
+                    <a href="/Home/Details/23" class="text-decoration-none text-main"><h3 class="product-title">Apple iPhone 15 Pro Max N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 15</h3></a>
+                    <p class="product-desc">iPhone 15 Pro Max - Zavod istehsal&#x131; (yeni)</p>
+                    
+                    <div class="product-condition">
+                        Zavod istehsal&#x131; (yeni)
+                    </div>
+                    
+                    <div class="product-bottom">
+                        <div>
+                            <div class="product-price">335 <span>AZN</span></div>
+                            <div class="product-seller">
+                                <i class="bi bi-shop"></i> TechMaster Servis
+                            </div>
+                        </div>
+                        <a href="/Home/Details/23" class="btn-cart text-decoration-none"><i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-card-top">
+                        <div>
+ <span class="badge-accent" style="margin-bottom:0.5rem;">Yeni</span>                         </div>
+                        <button class="btn-fav add-to-fav" data-id="22"><i class="bi bi-heart"></i></button>
+                    </div>
+                    
+                    <a href="/Home/Details/22" class="product-image text-decoration-none">
+                            <img src="/Image/GetImage?path=%2Fimages%2Fimages%20(2).jpg" alt="N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 14" />
+                    </a>
+                    
+                    <div class="product-meta">
+                        <span class="product-category">Telefon &#xFC;&#xE7;&#xFC;n ekranlar</span>
+                        <span class="product-stock">Stokda 14 ədəd</span>
+                    </div>
+                    
+                    <a href="/Home/Details/22" class="text-decoration-none text-main"><h3 class="product-title">Apple iPhone 15 Pro Max N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 14</h3></a>
+                    <p class="product-desc">iPhone 15 Pro Max - Zavod istehsal&#x131; (yeni)</p>
+                    
+                    <div class="product-condition">
+                        Zavod istehsal&#x131; (yeni)
+                    </div>
+                    
+                    <div class="product-bottom">
+                        <div>
+                            <div class="product-price">473 <span>AZN</span></div>
+                            <div class="product-seller">
+                                <i class="bi bi-shop"></i> TechMaster Servis
+                            </div>
+                        </div>
+                        <a href="/Home/Details/22" class="btn-cart text-decoration-none"><i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-card-top">
+                        <div>
+ <span class="badge-accent" style="margin-bottom:0.5rem;">Yeni</span>                         </div>
+                        <button class="btn-fav add-to-fav" data-id="21"><i class="bi bi-heart"></i></button>
+                    </div>
+                    
+                    <a href="/Home/Details/21" class="product-image text-decoration-none">
+                            <img src="/Image/GetImage?path=%2Fimages%2Fimages%20(2).jpg" alt="N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 13" />
+                    </a>
+                    
+                    <div class="product-meta">
+                        <span class="product-category">Telefon &#xFC;&#xE7;&#xFC;n ekranlar</span>
+                        <span class="product-stock">Stokda 3 ədəd</span>
+                    </div>
+                    
+                    <a href="/Home/Details/21" class="text-decoration-none text-main"><h3 class="product-title">Apple iPhone 15 Pro Max N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 13</h3></a>
+                    <p class="product-desc">iPhone 15 Pro Max - Zavod istehsal&#x131; (yeni)</p>
+                    
+                    <div class="product-condition">
+                        Zavod istehsal&#x131; (yeni)
+                    </div>
+                    
+                    <div class="product-bottom">
+                        <div>
+                            <div class="product-price">353 <span>AZN</span></div>
+                            <div class="product-seller">
+                                <i class="bi bi-shop"></i> TechMaster Servis
+                            </div>
+                        </div>
+                        <a href="/Home/Details/21" class="btn-cart text-decoration-none"><i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-card-top">
+                        <div>
+ <span class="badge-accent" style="margin-bottom:0.5rem;">Yeni</span>                         </div>
+                        <button class="btn-fav add-to-fav" data-id="20"><i class="bi bi-heart"></i></button>
+                    </div>
+                    
+                    <a href="/Home/Details/20" class="product-image text-decoration-none">
+                            <img src="/Image/GetImage?path=%2Fimages%2Fimages%20(3).jpg" alt="N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 12" />
+                    </a>
+                    
+                    <div class="product-meta">
+                        <span class="product-category">Telefon &#xFC;&#xE7;&#xFC;n ekranlar</span>
+                        <span class="product-stock">Stokda 43 ədəd</span>
+                    </div>
+                    
+                    <a href="/Home/Details/20" class="text-decoration-none text-main"><h3 class="product-title">Apple iPhone 15 Pro Max N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 12</h3></a>
+                    <p class="product-desc">iPhone 15 Pro Max - Zavod istehsal&#x131; (yeni)</p>
+                    
+                    <div class="product-condition">
+                        Zavod istehsal&#x131; (yeni)
+                    </div>
+                    
+                    <div class="product-bottom">
+                        <div>
+                            <div class="product-price">28 <span>AZN</span></div>
+                            <div class="product-seller">
+                                <i class="bi bi-shop"></i> TechMaster Servis
+                            </div>
+                        </div>
+                        <a href="/Home/Details/20" class="btn-cart text-decoration-none"><i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-card-top">
+                        <div>
+ <span class="badge-accent" style="margin-bottom:0.5rem;">Yeni</span>                         </div>
+                        <button class="btn-fav add-to-fav" data-id="19"><i class="bi bi-heart"></i></button>
+                    </div>
+                    
+                    <a href="/Home/Details/19" class="product-image text-decoration-none">
+                            <img src="/Image/GetImage?path=%2Fimages%2Fimages%20(7).jpg" alt="N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 11" />
+                    </a>
+                    
+                    <div class="product-meta">
+                        <span class="product-category">Telefon &#xFC;&#xE7;&#xFC;n ekranlar</span>
+                        <span class="product-stock">Stokda 10 ədəd</span>
+                    </div>
+                    
+                    <a href="/Home/Details/19" class="text-decoration-none text-main"><h3 class="product-title">Apple iPhone 15 Pro Max N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 11</h3></a>
+                    <p class="product-desc">iPhone 15 Pro Max - Zavod istehsal&#x131; (yeni)</p>
+                    
+                    <div class="product-condition">
+                        Zavod istehsal&#x131; (yeni)
+                    </div>
+                    
+                    <div class="product-bottom">
+                        <div>
+                            <div class="product-price">153 <span>AZN</span></div>
+                            <div class="product-seller">
+                                <i class="bi bi-shop"></i> TechMaster Servis
+                            </div>
+                        </div>
+                        <a href="/Home/Details/19" class="btn-cart text-decoration-none"><i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-card-top">
+                        <div>
+ <span class="badge-accent" style="margin-bottom:0.5rem;">Yeni</span>                         </div>
+                        <button class="btn-fav add-to-fav" data-id="18"><i class="bi bi-heart"></i></button>
+                    </div>
+                    
+                    <a href="/Home/Details/18" class="product-image text-decoration-none">
+                            <img src="/Image/GetImage?path=%2Fimages%2Fimages%20(1).jpg" alt="N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 10" />
+                    </a>
+                    
+                    <div class="product-meta">
+                        <span class="product-category">Telefon &#xFC;&#xE7;&#xFC;n ekranlar</span>
+                        <span class="product-stock">Stokda 67 ədəd</span>
+                    </div>
+                    
+                    <a href="/Home/Details/18" class="text-decoration-none text-main"><h3 class="product-title">Apple iPhone 15 Pro Max N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 10</h3></a>
+                    <p class="product-desc">iPhone 15 Pro Max - Zavod istehsal&#x131; (yeni)</p>
+                    
+                    <div class="product-condition">
+                        Zavod istehsal&#x131; (yeni)
+                    </div>
+                    
+                    <div class="product-bottom">
+                        <div>
+                            <div class="product-price">356 <span>AZN</span></div>
+                            <div class="product-seller">
+                                <i class="bi bi-shop"></i> TechMaster Servis
+                            </div>
+                        </div>
+                        <a href="/Home/Details/18" class="btn-cart text-decoration-none"><i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-card-top">
+                        <div>
+ <span class="badge-accent" style="margin-bottom:0.5rem;">Yeni</span>                         </div>
+                        <button class="btn-fav add-to-fav" data-id="17"><i class="bi bi-heart"></i></button>
+                    </div>
+                    
+                    <a href="/Home/Details/17" class="product-image text-decoration-none">
+                            <img src="/Image/GetImage?path=%2Fimages%2Fimages%20(6).jpg" alt="N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 9" />
+                    </a>
+                    
+                    <div class="product-meta">
+                        <span class="product-category">Telefon &#xFC;&#xE7;&#xFC;n ekranlar</span>
+                        <span class="product-stock">Stokda 41 ədəd</span>
+                    </div>
+                    
+                    <a href="/Home/Details/17" class="text-decoration-none text-main"><h3 class="product-title">Apple iPhone 15 Pro Max N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 9</h3></a>
+                    <p class="product-desc">iPhone 15 Pro Max - Zavod istehsal&#x131; (yeni)</p>
+                    
+                    <div class="product-condition">
+                        Zavod istehsal&#x131; (yeni)
+                    </div>
+                    
+                    <div class="product-bottom">
+                        <div>
+                            <div class="product-price">453 <span>AZN</span></div>
+                            <div class="product-seller">
+                                <i class="bi bi-shop"></i> TechMaster Servis
+                            </div>
+                        </div>
+                        <a href="/Home/Details/17" class="btn-cart text-decoration-none"><i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-card-top">
+                        <div>
+ <span class="badge-accent" style="margin-bottom:0.5rem;">Yeni</span>                         </div>
+                        <button class="btn-fav add-to-fav" data-id="16"><i class="bi bi-heart"></i></button>
+                    </div>
+                    
+                    <a href="/Home/Details/16" class="product-image text-decoration-none">
+                            <img src="/Image/GetImage?path=%2Fimages%2Fimages.jpg" alt="N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 8" />
+                    </a>
+                    
+                    <div class="product-meta">
+                        <span class="product-category">Telefon &#xFC;&#xE7;&#xFC;n ekranlar</span>
+                        <span class="product-stock">Stokda 81 ədəd</span>
+                    </div>
+                    
+                    <a href="/Home/Details/16" class="text-decoration-none text-main"><h3 class="product-title">Apple iPhone 15 Pro Max N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 8</h3></a>
+                    <p class="product-desc">iPhone 15 Pro Max - Zavod istehsal&#x131; (yeni)</p>
+                    
+                    <div class="product-condition">
+                        Zavod istehsal&#x131; (yeni)
+                    </div>
+                    
+                    <div class="product-bottom">
+                        <div>
+                            <div class="product-price">116 <span>AZN</span></div>
+                            <div class="product-seller">
+                                <i class="bi bi-shop"></i> TechMaster Servis
+                            </div>
+                        </div>
+                        <a href="/Home/Details/16" class="btn-cart text-decoration-none"><i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-card-top">
+                        <div>
+ <span class="badge-accent" style="margin-bottom:0.5rem;">Yeni</span>                         </div>
+                        <button class="btn-fav add-to-fav" data-id="15"><i class="bi bi-heart"></i></button>
+                    </div>
+                    
+                    <a href="/Home/Details/15" class="product-image text-decoration-none">
+                            <img src="/Image/GetImage?path=%2Fimages%2Fimages%20(7).jpg" alt="N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 7" />
+                    </a>
+                    
+                    <div class="product-meta">
+                        <span class="product-category">Telefon &#xFC;&#xE7;&#xFC;n ekranlar</span>
+                        <span class="product-stock">Stokda 53 ədəd</span>
+                    </div>
+                    
+                    <a href="/Home/Details/15" class="text-decoration-none text-main"><h3 class="product-title">Apple iPhone 15 Pro Max N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 7</h3></a>
+                    <p class="product-desc">iPhone 15 Pro Max - Zavod istehsal&#x131; (yeni)</p>
+                    
+                    <div class="product-condition">
+                        Zavod istehsal&#x131; (yeni)
+                    </div>
+                    
+                    <div class="product-bottom">
+                        <div>
+                            <div class="product-price">16 <span>AZN</span></div>
+                            <div class="product-seller">
+                                <i class="bi bi-shop"></i> TechMaster Servis
+                            </div>
+                        </div>
+                        <a href="/Home/Details/15" class="btn-cart text-decoration-none"><i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-card-top">
+                        <div>
+ <span class="badge-accent" style="margin-bottom:0.5rem;">Yeni</span>                         </div>
+                        <button class="btn-fav add-to-fav" data-id="14"><i class="bi bi-heart"></i></button>
+                    </div>
+                    
+                    <a href="/Home/Details/14" class="product-image text-decoration-none">
+                            <img src="/Image/GetImage?path=%2Fimages%2Fimages%20(3).jpg" alt="N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 6" />
+                    </a>
+                    
+                    <div class="product-meta">
+                        <span class="product-category">Telefon &#xFC;&#xE7;&#xFC;n ekranlar</span>
+                        <span class="product-stock">Stokda 15 ədəd</span>
+                    </div>
+                    
+                    <a href="/Home/Details/14" class="text-decoration-none text-main"><h3 class="product-title">Apple iPhone 15 Pro Max N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 6</h3></a>
+                    <p class="product-desc">iPhone 15 Pro Max - Zavod istehsal&#x131; (yeni)</p>
+                    
+                    <div class="product-condition">
+                        Zavod istehsal&#x131; (yeni)
+                    </div>
+                    
+                    <div class="product-bottom">
+                        <div>
+                            <div class="product-price">215 <span>AZN</span></div>
+                            <div class="product-seller">
+                                <i class="bi bi-shop"></i> TechMaster Servis
+                            </div>
+                        </div>
+                        <a href="/Home/Details/14" class="btn-cart text-decoration-none"><i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-card-top">
+                        <div>
+ <span class="badge-accent" style="margin-bottom:0.5rem;">Yeni</span>                         </div>
+                        <button class="btn-fav add-to-fav" data-id="13"><i class="bi bi-heart"></i></button>
+                    </div>
+                    
+                    <a href="/Home/Details/13" class="product-image text-decoration-none">
+                            <img src="/Image/GetImage?path=%2Fimages%2Fimages%20(7).jpg" alt="N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 5" />
+                    </a>
+                    
+                    <div class="product-meta">
+                        <span class="product-category">Telefon &#xFC;&#xE7;&#xFC;n ekranlar</span>
+                        <span class="product-stock">Stokda 18 ədəd</span>
+                    </div>
+                    
+                    <a href="/Home/Details/13" class="text-decoration-none text-main"><h3 class="product-title">Apple iPhone 15 Pro Max N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 5</h3></a>
+                    <p class="product-desc">iPhone 15 Pro Max - Zavod istehsal&#x131; (yeni)</p>
+                    
+                    <div class="product-condition">
+                        Zavod istehsal&#x131; (yeni)
+                    </div>
+                    
+                    <div class="product-bottom">
+                        <div>
+                            <div class="product-price">298 <span>AZN</span></div>
+                            <div class="product-seller">
+                                <i class="bi bi-shop"></i> TechMaster Servis
+                            </div>
+                        </div>
+                        <a href="/Home/Details/13" class="btn-cart text-decoration-none"><i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-card-top">
+                        <div>
+ <span class="badge-accent" style="margin-bottom:0.5rem;">Yeni</span>                         </div>
+                        <button class="btn-fav add-to-fav" data-id="12"><i class="bi bi-heart"></i></button>
+                    </div>
+                    
+                    <a href="/Home/Details/12" class="product-image text-decoration-none">
+                            <img src="/Image/GetImage?path=%2Fimages%2Fimages%20(1).jpg" alt="N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 4" />
+                    </a>
+                    
+                    <div class="product-meta">
+                        <span class="product-category">Telefon &#xFC;&#xE7;&#xFC;n ekranlar</span>
+                        <span class="product-stock">Stokda 34 ədəd</span>
+                    </div>
+                    
+                    <a href="/Home/Details/12" class="text-decoration-none text-main"><h3 class="product-title">Apple iPhone 15 Pro Max N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 4</h3></a>
+                    <p class="product-desc">iPhone 15 Pro Max - Zavod istehsal&#x131; (yeni)</p>
+                    
+                    <div class="product-condition">
+                        Zavod istehsal&#x131; (yeni)
+                    </div>
+                    
+                    <div class="product-bottom">
+                        <div>
+                            <div class="product-price">274 <span>AZN</span></div>
+                            <div class="product-seller">
+                                <i class="bi bi-shop"></i> TechMaster Servis
+                            </div>
+                        </div>
+                        <a href="/Home/Details/12" class="btn-cart text-decoration-none"><i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-card-top">
+                        <div>
+ <span class="badge-accent" style="margin-bottom:0.5rem;">Yeni</span>                         </div>
+                        <button class="btn-fav add-to-fav" data-id="11"><i class="bi bi-heart"></i></button>
+                    </div>
+                    
+                    <a href="/Home/Details/11" class="product-image text-decoration-none">
+                            <img src="/Image/GetImage?path=%2Fimages%2Fimages%20(3).jpg" alt="N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 3" />
+                    </a>
+                    
+                    <div class="product-meta">
+                        <span class="product-category">Telefon &#xFC;&#xE7;&#xFC;n ekranlar</span>
+                        <span class="product-stock">Stokda 1 ədəd</span>
+                    </div>
+                    
+                    <a href="/Home/Details/11" class="text-decoration-none text-main"><h3 class="product-title">Apple iPhone 15 Pro Max N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 3</h3></a>
+                    <p class="product-desc">iPhone 15 Pro Max - Zavod istehsal&#x131; (yeni)</p>
+                    
+                    <div class="product-condition">
+                        Zavod istehsal&#x131; (yeni)
+                    </div>
+                    
+                    <div class="product-bottom">
+                        <div>
+                            <div class="product-price">102 <span>AZN</span></div>
+                            <div class="product-seller">
+                                <i class="bi bi-shop"></i> TechMaster Servis
+                            </div>
+                        </div>
+                        <a href="/Home/Details/11" class="btn-cart text-decoration-none"><i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-card-top">
+                        <div>
+ <span class="badge-accent" style="margin-bottom:0.5rem;">Yeni</span>                         </div>
+                        <button class="btn-fav add-to-fav" data-id="10"><i class="bi bi-heart"></i></button>
+                    </div>
+                    
+                    <a href="/Home/Details/10" class="product-image text-decoration-none">
+                            <img src="/Image/GetImage?path=%2Fimages%2Fimages%20(3).jpg" alt="N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 2" />
+                    </a>
+                    
+                    <div class="product-meta">
+                        <span class="product-category">Telefon &#xFC;&#xE7;&#xFC;n ekranlar</span>
+                        <span class="product-stock">Stokda 24 ədəd</span>
+                    </div>
+                    
+                    <a href="/Home/Details/10" class="text-decoration-none text-main"><h3 class="product-title">Apple iPhone 15 Pro Max N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 2</h3></a>
+                    <p class="product-desc">iPhone 15 Pro Max - Zavod istehsal&#x131; (yeni)</p>
+                    
+                    <div class="product-condition">
+                        Zavod istehsal&#x131; (yeni)
+                    </div>
+                    
+                    <div class="product-bottom">
+                        <div>
+                            <div class="product-price">268 <span>AZN</span></div>
+                            <div class="product-seller">
+                                <i class="bi bi-shop"></i> TechMaster Servis
+                            </div>
+                        </div>
+                        <a href="/Home/Details/10" class="btn-cart text-decoration-none"><i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-card-top">
+                        <div>
+ <span class="badge-accent" style="margin-bottom:0.5rem;">Yeni</span>                         </div>
+                        <button class="btn-fav add-to-fav" data-id="9"><i class="bi bi-heart"></i></button>
+                    </div>
+                    
+                    <a href="/Home/Details/9" class="product-image text-decoration-none">
+                            <img src="/Image/GetImage?path=%2Fimages%2Fimages%20(6).jpg" alt="N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 1" />
+                    </a>
+                    
+                    <div class="product-meta">
+                        <span class="product-category">Telefon &#xFC;&#xE7;&#xFC;n ekranlar</span>
+                        <span class="product-stock">Stokda 25 ədəd</span>
+                    </div>
+                    
+                    <a href="/Home/Details/9" class="text-decoration-none text-main"><h3 class="product-title">Apple iPhone 15 Pro Max N&#xFC;mun&#x259;vi Ehtiyat Hiss&#x259;si 1</h3></a>
+                    <p class="product-desc">iPhone 15 Pro Max - Zavod istehsal&#x131; (yeni)</p>
+                    
+                    <div class="product-condition">
+                        Zavod istehsal&#x131; (yeni)
+                    </div>
+                    
+                    <div class="product-bottom">
+                        <div>
+                            <div class="product-price">31 <span>AZN</span></div>
+                            <div class="product-seller">
+                                <i class="bi bi-shop"></i> TechMaster Servis
+                            </div>
+                        </div>
+                        <a href="/Home/Details/9" class="btn-cart text-decoration-none"><i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-card-top">
+                        <div>
+ <span class="badge-accent" style="margin-bottom:0.5rem;">Tövsiyə</span>                         </div>
+                        <button class="btn-fav add-to-fav" data-id="5"><i class="bi bi-heart"></i></button>
+                    </div>
+                    
+                    <a href="/Home/Details/5" class="product-image text-decoration-none">
+                            <img src="/Image/GetImage?path=https%3A%2F%2Fcdn.ehisse.az%2Fparts%2Fs23-screen-1.jpg" alt="Samsung Galaxy S23 Ekran - B-Class (?lverisli)" />
+                    </a>
+                    
+                    <div class="product-meta">
+                        <span class="product-category">Telefon &#xFC;&#xE7;&#xFC;n ekranlar</span>
+                        <span class="product-stock">Stokda 10 ədəd</span>
+                    </div>
+                    
+                    <a href="/Home/Details/5" class="text-decoration-none text-main"><h3 class="product-title">Samsung Galaxy S23 Samsung Galaxy S23 Ekran - B-Class (?lverisli)</h3></a>
+                    <p class="product-desc">Galaxy S23 - B-Class (Standart)</p>
+                    
+                    <div class="product-condition">
+                        B-Class (Standart)
+                    </div>
+                    
+                    <div class="product-bottom">
+                        <div>
+                            <div class="product-price">320 <span>AZN</span></div>
+                            <div class="product-seller">
+                                <i class="bi bi-shop"></i> Mobile Parts Store
+                            </div>
+                        </div>
+                        <a href="/Home/Details/5" class="btn-cart text-decoration-none"><i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-card-top">
+                        <div>
+ <span class="badge-accent" style="margin-bottom:0.5rem;">Tövsiyə</span>                         </div>
+                        <button class="btn-fav add-to-fav" data-id="1"><i class="bi bi-heart"></i></button>
+                    </div>
+                    
+                    <a href="/Home/Details/1" class="product-image text-decoration-none">
+                            <img src="/Image/GetImage?path=https%3A%2F%2Fcdn.ehisse.az%2Fparts%2Fiphone15pm-screen-1.jpg" alt="iPhone 15 Pro Max Ekran - Orijinal Zavod" />
+                    </a>
+                    
+                    <div class="product-meta">
+                        <span class="product-category">Telefon &#xFC;&#xE7;&#xFC;n ekranlar</span>
+                        <span class="product-stock">Stokda 5 ədəd</span>
+                    </div>
+                    
+                    <a href="/Home/Details/1" class="text-decoration-none text-main"><h3 class="product-title">Apple iPhone 15 Pro Max iPhone 15 Pro Max Ekran - Orijinal Zavod</h3></a>
+                    <p class="product-desc">iPhone 15 Pro Max - Zavod istehsal&#x131; (yeni)</p>
+                    
+                    <div class="product-condition">
+                        Zavod istehsal&#x131; (yeni)
+                    </div>
+                    
+                    <div class="product-bottom">
+                        <div>
+                            <div class="product-price">850 <span>AZN</span></div>
+                            <div class="product-seller">
+                                <i class="bi bi-shop"></i> TechMaster Servis
+                            </div>
+                        </div>
+                        <a href="/Home/Details/1" class="btn-cart text-decoration-none"><i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-card-top">
+                        <div>
+ <span class="badge-accent" style="margin-bottom:0.5rem;">Tövsiyə</span>                         </div>
+                        <button class="btn-fav add-to-fav" data-id="8"><i class="bi bi-heart"></i></button>
+                    </div>
+                    
+                    <a href="/Home/Details/8" class="product-image text-decoration-none">
+                            <img src="/Image/GetImage?path=https%3A%2F%2Fcdn.ehisse.az%2Fparts%2Fipadpro-screen-1.jpg" alt="iPad Pro 12.9 (2024) Ekran - Orijinal" />
+                    </a>
+                    
+                    <div class="product-meta">
+                        <span class="product-category">Telefon &#xFC;&#xE7;&#xFC;n ekranlar</span>
+                        <span class="product-stock">Stokda 2 ədəd</span>
+                    </div>
+                    
+                    <a href="/Home/Details/8" class="text-decoration-none text-main"><h3 class="product-title">Apple iPad Pro 12.9 (2024) iPad Pro 12.9 (2024) Ekran - Orijinal</h3></a>
+                    <p class="product-desc">iPad Pro 12.9 (2024) - Zavod istehsal&#x131; (yeni)</p>
+                    
+                    <div class="product-condition">
+                        Zavod istehsal&#x131; (yeni)
+                    </div>
+                    
+                    <div class="product-bottom">
+                        <div>
+                            <div class="product-price">1200 <span>AZN</span></div>
+                            <div class="product-seller">
+                                <i class="bi bi-shop"></i> Mobile Parts Store
+                            </div>
+                        </div>
+                        <a href="/Home/Details/8" class="btn-cart text-decoration-none"><i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+        </div>
+<!-- Offcanvas Filter -->
+<div class="offcanvas offcanvas-start bg-custom text-main" tabindex="-1" id="filterOffcanvas" aria-labelledby="filterOffcanvasLabel">
+  <div class="offcanvas-header border-bottom border-custom">
+    <h5 class="offcanvas-title" id="filterOffcanvasLabel"><i class="bi bi-funnel text-accent"></i> Filtrlər</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Bağla"></button>
+  </div>
+  <div class="offcanvas-body">
+    <form action="/" method="get">
+        <input type="hidden" name="searchString" />
+        
+        <div class="mb-4">
+            <label class="form-label fw-bold">Kateqoriya</label>
+            <select name="categoryId" id="offcanvas-categoryId" class="form-select bg-custom text-main border-custom">
+                <option value="">Bütün kateqoriyalar</option>
+                            <option value="1">Telefon</option>
+                            <option value="2">Planset</option>
+                            <option value="3">Noutbuk</option>
+                            <option value="4">Smart Saat ehtiyat hiss&#x259;l&#x259;ri</option>
+                            <option value="5">Qulaql&#x131;q ehtiyat hiss&#x259;l&#x259;ri</option>
+                            <option value="6">Komp&#xFC;ter (PC) ehtiyat hiss&#x259;l&#x259;ri</option>
+                            <option value="7">Televizor ehtiyat hiss&#x259;l&#x259;ri</option>
+                            <option value="8">Oyun Konsolu ehtiyat hiss&#x259;l&#x259;ri</option>
+                            <option value="9">Foto/Video Kamera ehtiyat hiss&#x259;l&#x259;ri</option>
+                            <option value="10">Al&#x259;tl&#x259;r v&#x259; T&#x259;mir Avadanl&#x131;qlar&#x131;</option>
+                            <option value="11">Dron ehtiyat hiss&#x259;l&#x259;ri</option>
+                            <option value="12">Elektrikli Samokat ehtiyat hiss&#x259;l&#x259;ri</option>
+                            <option value="13">&#xFFFD;?&#x259;b&#x259;k&#x259; Avadanl&#x131;qlar&#x131;</option>
+                            <option value="14">Adapterl&#x259;r v&#x259; Kabell&#x259;r</option>
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label fw-bold">Brend</label>
+            <select name="brandId" id="offcanvas-brandId" class="form-select bg-custom text-main border-custom">
+                <option value="">Bütün brendlər</option>
+                            <option value="1">Apple</option>
+                            <option value="2">Samsung</option>
+                            <option value="3">Xiaomi</option>
+                            <option value="4">Huawei</option>
+                            <option value="5">Dell</option>
+                            <option value="6">Lenovo</option>
+                            <option value="7">Asus</option>
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label fw-bold">vəziyyəti</label>
+            <select name="qualityTypeId" class="form-select bg-custom text-main border-custom">
+                <option value="">İstənilən vəziyyət</option>
+                            <option value="1">Zavod istehsal&#x131; (yeni)</option>
+                            <option value="2">Zavod istehsal&#x131; (i&#x15F;l&#x259;nmi&#x15F;)</option>
+                            <option value="3">A-Class (Premium)</option>
+                            <option value="4">B-Class (Standart)</option>
+                            <option value="5">C-Class (Ekonom)</option>
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label fw-bold">Qiymət aralığı (AZN)</label>
+            <div class="d-flex gap-2">
+                <input type="number" name="minPrice" class="form-control bg-custom text-main border-custom" placeholder="Min" />
+                <span class="align-self-center">-</span>
+                <input type="number" name="maxPrice" class="form-control bg-custom text-main border-custom" placeholder="Max" />
+            </div>
+        </div>
+
+        <div class="form-check form-switch mb-4">
+            <input class="form-check-input bg-accent border-accent" type="checkbox" name="inStockOnly" id="inStockOnly" value="true" checked>
+            <label class="form-check-label" for="inStockOnly">Yalnız stokda olanlar</label>
+        </div>
+
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary bg-accent border-accent text-dark fw-bold">Filtrləri tətbiq et</button>
+            <a href="/" class="btn btn-outline-secondary text-main">Sıfırla</a>
+        </div>
+    </form>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        function setupDependentDropdowns(catId, brandId, modelId, partTypeId) {
+            const catSelect = document.getElementById(catId);
+            const brandSelect = document.getElementById(brandId);
+            const modelSelect = document.getElementById(modelId);
+            const partSelect = document.getElementById(partTypeId);
+            
+            if (!catSelect || !brandSelect || !modelSelect || !partSelect) return;
+
+            catSelect.addEventListener("change", function() {
+                const categoryId = this.value;
+                brandSelect.innerHTML = '<option value="">B�t�n brendl?r</option>';
+                modelSelect.innerHTML = '<option value="">B�t�n modell?r</option>';
+                partSelect.innerHTML = '<option value="">B�t�n hiss?l?r</option>';
+                
+                if (categoryId) {
+                    fetch('/Ajax/GetBrandsByCategory?categoryId=' + categoryId)
+                        .then(res => res.json())
+                        .then(data => {
+                            data.forEach(item => {
+                                brandSelect.innerHTML += '<option value="' + item.id + '">' + item.name + '</option>';
+                            });
+                        });
+                        
+                    fetch('/Ajax/GetPartTypesByCategory?categoryId=' + categoryId)
+                        .then(res => res.json())
+                        .then(data => {
+                            data.forEach(item => {
+                                partSelect.innerHTML += '<option value="' + item.id + '">' + item.name + '</option>';
+                            });
+                        });
+                }
+            });
+
+            brandSelect.addEventListener("change", function() {
+                const categoryId = catSelect.value;
+                const brandId = this.value;
+                modelSelect.innerHTML = '<option value="">B�t�n modell?r</option>';
+                
+                if (categoryId && brandId) {
+                    fetch('/Ajax/GetModelsByBrand?categoryId=' + categoryId + '&brandId=' + brandId)
+                        .then(res => res.json())
+                        .then(data => {
+                            data.forEach(item => {
+                                modelSelect.innerHTML += '<option value="' + item.id + '">' + item.name + '</option>';
+                            });
+                        });
+                }
+            });
+        }
+
+        setupDependentDropdowns("hero-categoryId", "hero-brandId", "hero-modelId", "hero-partTypeId");
+        setupDependentDropdowns("offcanvas-categoryId", "offcanvas-brandId", "offcanvas-modelId", "offcanvas-partTypeId");
+    });
+</script>
+
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <div style="display:flex; align-items:center; gap:1rem;">
+                <div class="logo-icon" style="width:24px; height:24px; font-size:0.9rem; margin-right:0;">e</div>
+                <strong style="color:white;">hisse.az</strong>
+                <span class="d-none d-md-inline">© 2024 e-hisse.az - Ustalar üçün daha ağıllı alış-veriş</span>
+            </div>
+            <div class="footer-status">Sistem işləkdir</div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/js/site.js?v=y_dXKGxvwtfvXSmDFmraYYxpRcQ-F3A98a-teNby35w"></script>
+    
+</body>
+</html>
+
+
