@@ -23,6 +23,11 @@ Thumbs.db
 *.db
 *.sqlite
 *.sqlite3
+*.db-shm
+*.db-wal
+
+# Large local runtime binaries
+Backend/cloudflared2.exe
 
 # Logs
 *.log
