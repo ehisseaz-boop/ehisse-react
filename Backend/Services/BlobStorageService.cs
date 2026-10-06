@@ -1,8 +1,8 @@
-﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
-using Azure.Storage.Sas;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,58 +11,116 @@ using System.Threading.Tasks;
 namespace EHisseler.Web.Services
 {
     /// <summary>
-    /// Azure Blob Storage implementasiyası.
-    ///
-    /// Performans strategiyası:
-    ///   - DB-da yalnız BLOB PATH saxlanılır (tam URL yox).
-    ///   - GetBulkUrls() heç bir HTTP sorğusu etmədən, yalnız URL konstruksiyası ilə
-    ///     bütün şəkillərin URL-larını qaytarır — pagination-da N şəkil üçün 0 network round-trip.
-    ///   - Container "public" olduqda URL birbaşa qurulur.
-    ///   - Container "private" olduqda batch SAS token generasiyası edilir (hələlik public).
+    /// Şəkillərin saxlanması xidməti.
+    /// Azure Blob Storage mövcud olduqda ondan istifadə edir,
+    /// Azure konfiqurasiya edilmədikdə və ya xəta verdikdə avtomatik olaraq
+    /// yerli disk (wwwroot/uploads) rejiminə keçir (Fail-Safe Local Storage).
+    /// Bu sayədə heç bir fayl yükləməsində sayt xəta verib çökmür.
     /// </summary>
     public class BlobStorageService : IBlobStorageService
     {
-        private readonly BlobServiceClient _blobServiceClient;
+        private readonly BlobServiceClient? _blobServiceClient;
         private readonly string _containerName;
         private readonly string _baseUrl;
+        private readonly bool _useLocalStorage;
+        private readonly string _wwwrootUploadsFolder;
+        private readonly ILogger<BlobStorageService>? _logger;
 
-        public BlobStorageService(IConfiguration configuration)
+        public BlobStorageService(IConfiguration configuration, ILogger<BlobStorageService>? logger = null)
         {
-            var connectionString = configuration["BlobStorage:ConnectionString"]
-                ?? throw new InvalidOperationException("BlobStorage:ConnectionString konfiqurasiyasi tapilmadi.");
+            _logger = logger;
+            _wwwrootUploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
 
+            var connectionString = configuration["BlobStorage:ConnectionString"];
             _containerName = configuration["BlobStorage:ContainerName"] ?? "spare-parts";
-            _blobServiceClient = new BlobServiceClient(connectionString);
+            _baseUrl = configuration["BlobStorage:BaseUrl"] ?? "";
 
-            // Public URL bazası — container public olduqda istifadə olunur
-            // Format: https://<account>.blob.core.windows.net/<container>
-            _baseUrl = configuration["BlobStorage:BaseUrl"]
-                ?? _blobServiceClient.Uri.ToString().TrimEnd('/') + $"/{_containerName}";
+            // Azure ConnectionString real olmadıqda yerli disk rejimi aktivləşir
+            if (string.IsNullOrWhiteSpace(connectionString) ||
+                connectionString.Contains("UseDevelopmentStorage=true", StringComparison.OrdinalIgnoreCase) ||
+                connectionString.Contains("YOUR_ACCOUNT", StringComparison.OrdinalIgnoreCase) ||
+                connectionString.StartsWith("local", StringComparison.OrdinalIgnoreCase))
+            {
+                _useLocalStorage = true;
+                EnsureDirectory(_wwwrootUploadsFolder);
+            }
+            else
+            {
+                try
+                {
+                    _blobServiceClient = new BlobServiceClient(connectionString);
+                    if (string.IsNullOrEmpty(_baseUrl))
+                    {
+                        _baseUrl = _blobServiceClient.Uri.ToString().TrimEnd('/') + $"/{_containerName}";
+                    }
+                    _useLocalStorage = false;
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogWarning(ex, "Azure Blob Storage müştərisi başladıla bilmədi. Yerli disk fallback rejiminə keçilir.");
+                    _useLocalStorage = true;
+                    EnsureDirectory(_wwwrootUploadsFolder);
+                }
+            }
+        }
+
+        private static void EnsureDirectory(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
         }
 
         /// <inheritdoc/>
         public async Task<string> UploadAsync(IFormFile file, string folder)
         {
-            var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
-
-            // Container yoxdursa yarat (public blob access ilə)
-            await containerClient.CreateIfNotExistsAsync(PublicAccessType.Blob);
-
             var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-            var blobName = $"{folder}/{Guid.NewGuid():N}{extension}";
+            var fileName = $"{Guid.NewGuid():N}{extension}";
 
-            var blobClient = containerClient.GetBlobClient(blobName);
-
-            var headers = new BlobHttpHeaders
+            if (_useLocalStorage || _blobServiceClient == null)
             {
-                ContentType = GetContentType(extension)
-            };
+                return await UploadToLocalAsync(file, folder, fileName);
+            }
 
-            await using var stream = file.OpenReadStream();
-            await blobClient.UploadAsync(stream, new BlobUploadOptions { HttpHeaders = headers });
+            try
+            {
+                var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
+                await containerClient.CreateIfNotExistsAsync(PublicAccessType.Blob);
 
-            // DB-a yalnız blob path saxlayırıq (base URL yox)
-            return blobName;
+                var blobName = $"{folder}/{fileName}";
+                var blobClient = containerClient.GetBlobClient(blobName);
+
+                var headers = new BlobHttpHeaders
+                {
+                    ContentType = GetContentType(extension)
+                };
+
+                await using var stream = file.OpenReadStream();
+                await blobClient.UploadAsync(stream, new BlobUploadOptions { HttpHeaders = headers });
+
+                return blobName;
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Azure Blob-a yükləmə uğursuz oldu. Yerli diskə (fallback) yazılır.");
+                return await UploadToLocalAsync(file, folder, fileName);
+            }
+        }
+
+        private async Task<string> UploadToLocalAsync(IFormFile file, string folder, string fileName)
+        {
+            var cleanFolder = folder.Replace('\\', '/').Trim('/');
+            var targetDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", cleanFolder.Replace('/', Path.DirectorySeparatorChar));
+            EnsureDirectory(targetDir);
+
+            var filePath = Path.Combine(targetDir, fileName);
+            await using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                await file.CopyToAsync(fileStream);
+            }
+
+            return $"uploads/{cleanFolder}/{fileName}";
         }
 
         /// <inheritdoc/>
@@ -71,18 +129,16 @@ namespace EHisseler.Web.Services
             if (string.IsNullOrEmpty(blobPath))
                 return "/images/no-image.png";
 
-            // Legacy wwwroot şəkilləri üçün birbaşa qaytaraq
             if (IsLegacyPath(blobPath))
-                return blobPath;
+                return blobPath.StartsWith("/") ? blobPath : $"/{blobPath}";
 
-            return $"{_baseUrl.TrimEnd('/')}/{blobPath}";
+            if (_useLocalStorage || _blobServiceClient == null || blobPath.StartsWith("uploads/") || blobPath.StartsWith("/uploads/"))
+                return blobPath.StartsWith("/") ? blobPath : $"/{blobPath}";
+
+            return $"{_baseUrl.TrimEnd('/')}/{blobPath.TrimStart('/')}";
         }
 
         /// <inheritdoc/>
-        /// <remarks>
-        /// Bu metod HEÇ BİR HTTP sorğusu etmir — yalnız string birləşməsi.
-        /// 20 məhsul × 5 şəkil = 100 şəkil URL-ı anında hazır olur.
-        /// </remarks>
         public Dictionary<string, string> GetBulkUrls(IEnumerable<string> blobPaths)
         {
             var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -90,15 +146,17 @@ namespace EHisseler.Web.Services
 
             foreach (var path in blobPaths)
             {
-                if (string.IsNullOrEmpty(path))
+                if (string.IsNullOrEmpty(path) || result.ContainsKey(path))
                     continue;
 
-                if (result.ContainsKey(path))
-                    continue;
-
-                result[path] = IsLegacyPath(path)
-                    ? path
-                    : $"{baseUrl}/{path}";
+                if (IsLegacyPath(path) || _useLocalStorage || path.StartsWith("uploads/") || path.StartsWith("/uploads/"))
+                {
+                    result[path] = path.StartsWith("/") ? path : $"/{path}";
+                }
+                else
+                {
+                    result[path] = $"{baseUrl}/{path.TrimStart('/')}";
+                }
             }
 
             return result;
@@ -107,18 +165,47 @@ namespace EHisseler.Web.Services
         /// <inheritdoc/>
         public async Task DeleteAsync(string blobPath)
         {
-            if (string.IsNullOrEmpty(blobPath) || IsLegacyPath(blobPath))
+            if (string.IsNullOrEmpty(blobPath))
                 return;
 
-            var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
-            var blobClient = containerClient.GetBlobClient(blobPath);
-            await blobClient.DeleteIfExistsAsync();
+            if (blobPath.StartsWith("uploads/") || blobPath.StartsWith("/uploads/"))
+            {
+                try
+                {
+                    var clean = blobPath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
+                    var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", clean);
+                    if (File.Exists(fullPath))
+                    {
+                        File.Delete(fullPath);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogWarning(ex, "Yerli fayl silinərkən xəta: {Path}", blobPath);
+                }
+                return;
+            }
+
+            if (!_useLocalStorage && _blobServiceClient != null)
+            {
+                try
+                {
+                    var containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
+                    var blobClient = containerClient.GetBlobClient(blobPath);
+                    await blobClient.DeleteIfExistsAsync();
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogWarning(ex, "Azure blob silinərkən xəta: {Path}", blobPath);
+                }
+            }
         }
 
         /// <inheritdoc/>
         public bool IsLegacyPath(string path)
         {
-            return path.StartsWith("/images/") || path.StartsWith("images/");
+            return path.StartsWith("/images/") || path.StartsWith("images/") ||
+                   path.StartsWith("/uploads/") || path.StartsWith("uploads/");
         }
 
         private static string GetContentType(string extension) => extension switch

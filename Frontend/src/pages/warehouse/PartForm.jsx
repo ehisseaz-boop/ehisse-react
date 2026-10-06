@@ -203,7 +203,10 @@ function PartForm() {
 
       {isEdit && (
         <div className="mt-4">
-          <h4>Şəkillər</h4>
+          <div className="d-flex justify-content-between align-items-center mb-2">
+            <h4 className="mb-0">Şəkillər</h4>
+            <span className="badge bg-secondary">{images.length} / 10 şəkil</span>
+          </div>
           <div className="d-flex gap-2 flex-wrap mb-2">
             {images.map(img => (
               <div key={img.id} style={{ position: 'relative' }}>
@@ -212,8 +215,14 @@ function PartForm() {
               </div>
             ))}
           </div>
-          <input type="file" accept=".jpg,.jpeg,.png,.webp" onChange={upload} className="form-control" />
-          <small className="text-muted">JPG, PNG, WEBP Â· maks. 5 MB</small>
+          {images.length < 10 ? (
+            <>
+              <input type="file" accept=".jpg,.jpeg,.png,.webp" onChange={upload} className="form-control" />
+              <small className="text-muted">JPG, PNG, WEBP · maks. 5 MB (Maksimum 10 şəkil)</small>
+            </>
+          ) : (
+            <div className="alert alert-info py-2 mb-0">Maksimum 10 şəkil yüklənib. Yeni şəkil əlavə etmək üçün mövcud olanlardan birini silin.</div>
+          )}
         </div>
       )}
     </form>

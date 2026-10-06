@@ -32,7 +32,8 @@ namespace EHisseler.Web.Controllers
         }
 
         // ─────────────────────────────────────────────────────────────
-        //  Legacy şəkilləri wwwroot-dan qaytarır (köhnə seed məlumatları)
+        // ─────────────────────────────────────────────────────────────
+        //  Faylları wwwroot-dan və ya Blob-dan qaytarır
         // ─────────────────────────────────────────────────────────────
         [HttpGet("/Image/GetImage")]
         public IActionResult GetImage(string? path)
@@ -40,16 +41,18 @@ namespace EHisseler.Web.Controllers
             if (string.IsNullOrEmpty(path))
                 return NotFound();
 
-            if (_blobService.IsLegacyPath(path))
+            // Əgər fayl wwwroot daxilində fiziki olaraq varsa (legacy şəkillər və ya uploads/...)
+            var cleanPath = path.TrimStart('/').Replace('\\', '/');
+            if (!cleanPath.Contains(".."))
             {
-                var wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", path.TrimStart('/'));
+                var wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", cleanPath.Replace('/', Path.DirectorySeparatorChar));
                 if (System.IO.File.Exists(wwwrootPath))
                     return PhysicalFile(wwwrootPath, GetMimeType(wwwrootPath));
             }
 
             // Blob path-i üçün redirect
             var url = _blobService.GetUrl(path);
-            if (string.IsNullOrEmpty(url))
+            if (string.IsNullOrEmpty(url) || url.StartsWith("/"))
             {
                 var defaultPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "default.png");
                 if (System.IO.File.Exists(defaultPath))
@@ -61,7 +64,7 @@ namespace EHisseler.Web.Controllers
         }
 
         // ─────────────────────────────────────────────────────────────
-        //  Şəkil yükləmə — Blob Storage-a yükləyir, DB-a path yazır
+        //  Şəkil yükləmə — Blob Storage-a (və ya yerli diskə) yükləyir, DB-a path yazır
         //  POST api/Image/Upload  (multipart/form-data: sparePartId, file, isMain)
         // ─────────────────────────────────────────────────────────────
         [HttpPost]
@@ -80,6 +83,11 @@ namespace EHisseler.Web.Controllers
 
             if (part == null) return NotFound(new { message = "Elan tapılmadı." });
 
+            // Bir elana maksimum 10 şəkil limiti (Server və baza qoruması)
+            const int MaxImagesPerPart = 10;
+            if (part.Images.Count >= MaxImagesPerPart)
+                return BadRequest(new { message = $"Bir elana maksimum {MaxImagesPerPart} şəkil əlavə edilə bilər." });
+
             // Fayl validasiyası
             if (file == null || file.Length == 0)
                 return BadRequest(new { message = "Fayl seçilməyib." });
@@ -91,35 +99,42 @@ namespace EHisseler.Web.Controllers
             if (file.Length > MaxFileSizeMb * 1024 * 1024)
                 return BadRequest(new { message = $"Fayl ölçüsü {MaxFileSizeMb} MB-dan böyük ola bilməz." });
 
-            // Blob Storage-a yüklə
-            var folder = $"parts/{sparePartId}";
-            var blobPath = await _blobService.UploadAsync(file, folder);
-
-            // Əgər ilk şəkil və ya isMain=true, köhnəsini main-dən çıxar
-            var makeMain = isMain || !part.Images.Any();
-            if (makeMain)
+            try
             {
-                foreach (var img in part.Images)
-                    img.IsMain = false;
+                // Blob Storage-a (və ya yerli diskə) yüklə
+                var folder = $"parts/{sparePartId}";
+                var blobPath = await _blobService.UploadAsync(file, folder);
+
+                // Əgər ilk şəkil və ya isMain=true, köhnəsini main-dən çıxar
+                var makeMain = isMain || !part.Images.Any();
+                if (makeMain)
+                {
+                    foreach (var img in part.Images)
+                        img.IsMain = false;
+                }
+
+                var image = new SparePartImage
+                {
+                    SparePartId = sparePartId,
+                    ImageUrl = blobPath,           // ← DB-da yalnız path saxlanır
+                    IsMain = makeMain,
+                    DisplayOrder = part.Images.Count + 1
+                };
+
+                _context.SparePartImages.Add(image);
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "Şəkil uğurla yükləndi.",
+                    image = new { id = image.Id, isMain = image.IsMain, url = _blobService.GetUrl(blobPath) ?? blobPath }
+                });
             }
-
-            var image = new SparePartImage
+            catch (Exception ex)
             {
-                SparePartId = sparePartId,
-                ImageUrl = blobPath,           // ← DB-da yalnız blob path saxlanır
-                IsMain = makeMain,
-                DisplayOrder = part.Images.Count + 1
-            };
-
-            _context.SparePartImages.Add(image);
-            await _context.SaveChangesAsync();
-
-            return Ok(new
-            {
-                success = true,
-                message = "Şəkil uğurla yükləndi.",
-                image = new { id = image.Id, isMain = image.IsMain, url = _blobService.GetUrl(blobPath) ?? blobPath }
-            });
+                return StatusCode(500, new { message = "Şəkil saxlanılarkən xəta baş verdi: " + ex.Message });
+            }
         }
 
         // ─────────────────────────────────────────────────────────────
