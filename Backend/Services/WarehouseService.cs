@@ -92,14 +92,17 @@ namespace EHisseler.Web.Services
             var part = await _context.SpareParts.FirstOrDefaultAsync(p => p.Id == id && p.SellerId == sellerId && !p.IsDeleted);
             if (part == null) return (false, "Not Found", false);
 
+            bool wasOutOfStock = part.StockQuantity <= 0;
+            bool isRestocking = wasOutOfStock && updatedPart.StockQuantity > 0;
             bool requiresApproval = false;
-            
+
             if (part.Title != updatedPart.Title ||
                 part.DeviceModelId != updatedPart.DeviceModelId ||
                 part.PartTypeId != updatedPart.PartTypeId ||
                 part.QualityTypeId != updatedPart.QualityTypeId ||
                 part.Description != updatedPart.Description ||
-                part.Price != updatedPart.Price)
+                part.Price != updatedPart.Price ||
+                isRestocking)
             {
                 requiresApproval = true;
             }
@@ -110,7 +113,7 @@ namespace EHisseler.Web.Services
             part.Title = updatedPart.Title;
             part.Description = updatedPart.Description;
             part.Price = updatedPart.Price;
-            part.Currency = updatedPart.Currency ?? "AZN";
+            part.Currency = "AZN"; // Biznes qaydası: Valyuta yalnız AZN
             part.StockQuantity = updatedPart.StockQuantity;
             part.MinOrderQuantity = updatedPart.MinOrderQuantity;
             part.WarrantyMonths = updatedPart.WarrantyMonths;
@@ -119,18 +122,22 @@ namespace EHisseler.Web.Services
                 part.SKU = updatedPart.SKU;
             }
             part.DiscountPrice = updatedPart.DiscountPrice;
+            part.Latitude = updatedPart.Latitude;
+            part.Longitude = updatedPart.Longitude;
+            part.LocationAddress = updatedPart.LocationAddress;
             part.LastModifiedDate = DateTime.Now;
 
             if (requiresApproval)
             {
                 part.ModerationStatus = ApprovalStatus.Pending;
                 part.IsActive = false;
+                part.IsUpdateSubmission = true;
             }
 
-            if (part.StockQuantity <= 0 && part.IsActive)
+            // Stok 0 olduqda elan mütləq deaktiv olmalıdır
+            if (part.StockQuantity <= 0)
             {
                 part.IsActive = false;
-                part.ModerationStatus = ApprovalStatus.Approved;
             }
 
             try

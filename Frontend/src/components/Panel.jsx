@@ -71,13 +71,16 @@ export function Table({ columns, rows, empty = 'Məlumat yoxdur', onRowClick }) 
   );
 }
 
-// Sadə modal pəncərə (Bootstrap JS olmadan)
 export function Modal({ open, title, children, footer, onClose }) {
   useEffect(() => {
     if (!open) return;
+    document.body.style.overflow = 'hidden';
     const onKey = (e) => { if (e.key === 'Escape') onClose?.(); };
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = 'unset';
+      window.removeEventListener('keydown', onKey);
+    };
   }, [open, onClose]);
 
   if (!open) return null;

@@ -1,11 +1,11 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Api } from '../api';
 import { formStyle } from './Login';
 import { Modal } from '../components/Panel';
 
 function Register() {
-  const [form, setForm] = useState({ firstName: '', lastName: '', operator: '+994', phone: '', email: '', password: '', role: 2 });
+  const [form, setForm] = useState({ firstName: '', lastName: '', operator: '50', phone: '', email: '', password: '', role: 2 });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [busy, setBusy] = useState(false);
@@ -15,7 +15,10 @@ function Register() {
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
   const validate = () => {
-    if (!form.firstName || !form.lastName || !form.password) return 'Bütün məcburi sahələri doldurun';
+    if (!form.firstName || !form.lastName || !form.password || !form.email) return 'Bütün məcburi sahələri doldurun';
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) return 'Email düzgün formatda deyil';
+    
     const phoneRegex = /^\d{3}-\d{2}-\d{2}$/;
     if (!phoneRegex.test(form.phone)) return 'Telefon nömrəsi düzgün formatda deyil (xxx-xx-xx)';
     if (form.password.length < 6) return 'Şifrə minimum 6 simvol olmalıdır';
@@ -31,7 +34,7 @@ function Register() {
     }
     setError(''); setBusy(true);
     try {
-      const fullPhone = `${form.operator}${form.phone.replace(/-/g, '')}`;
+      const fullPhone = `+994${form.operator}${form.phone.replace(/-/g, '')}`;
       await Api.register({ ...form, phone: fullPhone, role: Number(form.role) });
       // Simulate sending OTP
       setShowOtp(true);
@@ -72,14 +75,22 @@ function Register() {
         <input className="form-control mb-2" placeholder="Ad" value={form.firstName} onChange={set('firstName')} required />
         <input className="form-control mb-2" placeholder="Soyad" value={form.lastName} onChange={set('lastName')} required />
         
-        <div className="d-flex mb-2 gap-2">
-          <select className="form-select" style={{ width: '120px' }} value={form.operator} onChange={set('operator')}>
-            <option value="+994">+994</option>
+        <div className="d-flex mb-2 gap-2" style={{ alignItems: 'center' }}>
+          <span style={{ fontWeight: 'bold' }}>+994</span>
+          <select className="form-select" style={{ width: '90px' }} value={form.operator} onChange={set('operator')}>
+            <option value="50">050</option>
+            <option value="51">051</option>
+            <option value="55">055</option>
+            <option value="70">070</option>
+            <option value="77">077</option>
+            <option value="99">099</option>
+            <option value="10">010</option>
+            <option value="60">060</option>
           </select>
           <input className="form-control" placeholder="xxx-xx-xx" value={form.phone} onChange={set('phone')} required />
         </div>
 
-        <input className="form-control mb-2" type="email" placeholder="Email (Könüllü)" value={form.email} onChange={set('email')} />
+        <input className="form-control mb-2" type="email" placeholder="Email" value={form.email} onChange={set('email')} required />
         <input className="form-control mb-2" type="password" placeholder="Şifrə (min 6 simvol)" minLength={6} value={form.password} onChange={set('password')} required />
         <select className="form-select mb-3" value={form.role} onChange={set('role')}>
           <option value={2}>Usta</option>

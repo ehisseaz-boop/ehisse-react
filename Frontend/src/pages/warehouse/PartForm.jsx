@@ -1,7 +1,8 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Api, imageSrc } from '../../api';
 import { Loading, ErrorBox } from '../Categories';
+import { statusBadge } from '../../components/Panel';
 
 const empty = {
   categoryId: '', brandId: '', deviceModelId: '', partTypeId: '', qualityTypeId: '',
@@ -38,6 +39,9 @@ function PartForm() {
             ...empty, ...p,
             categoryId: p.categoryId ?? '', brandId: p.brandId ?? '',
             discountPrice: p.discountPrice ?? '', description: p.description ?? '',
+            locationAddress: p.locationAddress ?? '',
+            latitude: p.latitude ?? '',
+            longitude: p.longitude ?? '',
           });
           setImages(p.images || []);
         }
@@ -71,11 +75,17 @@ function PartForm() {
   const submit = async (e) => {
     e.preventDefault();
     setError(''); setMsg(''); setBusy(true);
+
+    const selectedBrand = brands.find(b => String(b.id) === String(form.brandId))?.name || '';
+    const selectedModel = models.find(m => String(m.id) === String(form.deviceModelId))?.name || '';
+    const selectedPartType = partTypes.find(p => String(p.id) === String(form.partTypeId))?.name || '';
+    const autoTitle = [selectedBrand, selectedModel, selectedPartType].filter(Boolean).join(' ') || form.title || '';
+
     const body = {
       deviceModelId: Number(form.deviceModelId) || 0,
       partTypeId: Number(form.partTypeId) || 0,
       qualityTypeId: Number(form.qualityTypeId) || 0,
-      title: form.title,
+      title: autoTitle,
       description: form.description,
       sku: form.sku || null,
       price: Number(form.price) || 0,
@@ -92,13 +102,44 @@ function PartForm() {
       if (isEdit) {
         const r = await Api.warehouse.update(id, body);
         setMsg(r.message);
+        if (window.Swal) {
+          await window.Swal.fire({
+            icon: 'success',
+            title: 'Uğurlu!',
+            text: r.message || 'Dəyişikliklər yadda saxlanıldı.',
+            confirmButtonText: 'Kabinetə keç',
+            confirmButtonColor: '#00d26a',
+            timer: 2000,
+            timerProgressBar: true
+          });
+        }
+        navigate('/warehouse');
       } else {
         const r = await Api.warehouse.add(body);
-        // Yaradıldıqdan sonra şəkil əlavə etmək üçün redaktəyə keç
-        navigate(`/warehouse/edit/${r.id}`, { replace: true });
+        if (window.Swal) {
+          await window.Swal.fire({
+            icon: 'success',
+            title: 'Elan yerləşdirildi!',
+            text: r.message || 'Elan uğurla əlavə edildi.',
+            confirmButtonText: 'Kabinetə keç',
+            confirmButtonColor: '#00d26a',
+            timer: 2000,
+            timerProgressBar: true
+          });
+        }
+        navigate('/warehouse');
       }
     } catch (err) {
       setError(err.message);
+      if (window.Swal) {
+        window.Swal.fire({
+          icon: 'error',
+          title: 'Uğursuz əməliyyat!',
+          text: err.message || 'Məlumatları yadda saxlayarkən xəta baş verdi.',
+          confirmButtonText: 'Bağla',
+          confirmButtonColor: '#d33'
+        });
+      }
     } finally {
       setBusy(false);
     }
@@ -132,7 +173,15 @@ function PartForm() {
 
   return (
     <form onSubmit={submit} className="product-card" style={{ maxWidth: 760 }}>
-      <h3 className="product-title">{isEdit ? 'Elanı redaktə et' : 'Yeni elan'}</h3>
+      <div className="d-flex justify-content-between align-items-center mb-2">
+        <h3 className="product-title m-0">{isEdit ? 'Elanı redaktə et' : 'Yeni elan'}</h3>
+        {isEdit && form.moderationStatus && (
+          <div className="d-flex align-items-center gap-2">
+            <span className="text-muted small">Status:</span>
+            {statusBadge(form.moderationStatus)}
+          </div>
+        )}
+      </div>
       {isEdit && form.moderationStatus && <p className="text-muted">Əsas sahələrin dəyişdirilməsi elanı yenidən moderasiyaya göndərir.</p>}
       {error && <div className="alert alert-danger">{error}</div>}
       {msg && <div className="alert alert-success">{msg}</div>}
@@ -175,29 +224,113 @@ function PartForm() {
         </div>
       </div>
 
-      <label>Ad</label>
-      <input {...field} value={form.title} onChange={set('title')} minLength={3} maxLength={200} required />
       <label>Təsvir</label>
       <textarea {...field} rows={3} value={form.description} onChange={set('description')} />
 
       <div className="row">
-        <div className="col-md-4"><label>SKU</label><input {...field} value={form.sku} onChange={set('sku')} placeholder="Boş qalsa avtomatik" /></div>
-        <div className="col-md-4"><label>Qiymət</label><input {...field} type="number" step="0.01" min="0.01" value={form.price} onChange={set('price')} required /></div>
-        <div className="col-md-4"><label>Endirimli qiymət</label><input {...field} type="number" step="0.01" min="0" value={form.discountPrice} onChange={set('discountPrice')} /></div>
-        <div className="col-md-4"><label>Stok</label><input {...field} type="number" min="0" value={form.stockQuantity} onChange={set('stockQuantity')} required /></div>
-        <div className="col-md-4"><label>Min. sifariş</label><input {...field} type="number" min="1" value={form.minOrderQuantity} onChange={set('minOrderQuantity')} /></div>
-        <div className="col-md-4"><label>Zəmanət (ay)</label><input {...field} type="number" min="0" max="120" value={form.warrantyMonths} onChange={set('warrantyMonths')} /></div>
+        <div className="col-md-3"><label>Qiymət (AZN)</label><input {...field} type="number" step="0.01" min="0.01" value={form.price} onChange={set('price')} required /></div>
+        <div className="col-md-3"><label>Endirimli qiymət</label><input {...field} type="number" step="0.01" min="0" value={form.discountPrice} onChange={set('discountPrice')} /></div>
+        <div className="col-md-3"><label>Stok sayı</label><input {...field} type="number" min="0" value={form.stockQuantity} onChange={set('stockQuantity')} required /></div>
+        <div className="col-md-3"><label>Zəmanət (ay)</label><input {...field} type="number" min="0" max="120" value={form.warrantyMonths} onChange={set('warrantyMonths')} /></div>
       </div>
 
-        <div className="row mt-3">
-          <div className="col-md-12 mb-2"><strong className="text-main">Məhsulun yerləşdiyi anbar (Xəritə üçün)</strong></div>
-          <div className="col-md-4"><label>Ünvan</label><input {...field} value={form.locationAddress} onChange={set('locationAddress')} placeholder="Məs: Bakı, 28 May" /></div>
-          <div className="col-md-4"><label>Enlem (Latitude)</label><input {...field} type="number" step="any" value={form.latitude} onChange={set('latitude')} placeholder="40.3953" /></div>
-          <div className="col-md-4"><label>Boylam (Longitude)</label><input {...field} type="number" step="any" value={form.longitude} onChange={set('longitude')} placeholder="49.8822" /></div>
+      <div className="row mt-3">
+        <div className="col-md-12 mb-2 d-flex justify-content-between align-items-center">
+          <strong className="text-main"><i className="bi bi-geo-alt text-accent me-1"></i> Məhsulun yerləşdiyi anbar / ünvan</strong>
+          <button
+            type="button"
+            className="btn btn-sm btn-outline"
+            style={{ borderRadius: '20px', fontSize: '0.8rem' }}
+            onClick={() => {
+              if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                  (pos) => {
+                    setForm(f => ({
+                      ...f,
+                      latitude: pos.coords.latitude.toFixed(6),
+                      longitude: pos.coords.longitude.toFixed(6),
+                      locationAddress: f.locationAddress || 'Mənim cari yerim'
+                    }));
+                  },
+                  () => alert('Cari yerinizi təyin etmək mümkün olmadı.')
+                );
+              } else {
+                alert('Brauzeriniz geolokasiyanı dəstəkləmir.');
+              }
+            }}
+          >
+            <i className="bi bi-crosshair me-1"></i> Cari yerimi seç
+          </button>
+        </div>
+        <div className="col-md-12">
+          <label>Ünvan (və ya xəritədə axtarılacaq yer)</label>
+          <div className="input-group mb-2">
+            <input 
+              {...field} 
+              className="form-control" 
+              value={form.locationAddress} 
+              onChange={set('locationAddress')} 
+              placeholder="Məs: Bakı, Nizami küç. 10 və ya 28 May m/s" 
+            />
+            {form.locationAddress && (
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(form.locationAddress)}`}
+                target="_blank"
+                rel="noreferrer"
+                className="btn btn-outline"
+                title="Google Maps-də aç"
+              >
+                <i className="bi bi-box-arrow-up-right"></i>
+              </a>
+            )}
+          </div>
         </div>
 
+        {/* Xəritə nümayişi və koordinatlar */}
+        {(form.locationAddress || (form.latitude && form.longitude)) && (
+          <div className="col-md-12 mb-3">
+            <div style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
+              <iframe
+                title="Google Map Seçimi"
+                width="100%"
+                height="220"
+                frameBorder="0"
+                style={{ border: 0, display: 'block' }}
+                src={
+                  form.latitude && form.longitude
+                    ? `https://maps.google.com/maps?q=${form.latitude},${form.longitude}&t=&z=15&ie=UTF8&iwloc=&output=embed`
+                    : `https://maps.google.com/maps?q=${encodeURIComponent(form.locationAddress)}&t=&z=14&ie=UTF8&iwloc=&output=embed`
+                }
+                allowFullScreen
+              />
+            </div>
+            <div className="d-flex justify-content-between align-items-center mt-1">
+              <span className="text-muted small">
+                {form.latitude && form.longitude ? (
+                  <>Koordinatlar: {form.latitude}, {form.longitude}</>
+                ) : (
+                  <>Ünvana uyğun Google Map nümayişi</>
+                )}
+              </span>
+              <a
+                href={
+                  form.latitude && form.longitude
+                    ? `https://www.google.com/maps?q=${form.latitude},${form.longitude}`
+                    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(form.locationAddress)}`
+                }
+                target="_blank"
+                rel="noreferrer"
+                className="small text-accent text-decoration-none"
+              >
+                Google Maps-də böyüt <i className="bi bi-box-arrow-up-right"></i>
+              </a>
+            </div>
+          </div>
+        )}
+      </div>
+
       <div className="d-flex gap-2 mt-2">
-        <button type="submit" className="btn btn-primary bg-accent text-dark fw-bold" disabled={busy}>{busy ? '...' : isEdit ? 'Yadda saxla' : 'Yarat'}</button>
+        <button type="submit" className="btn btn-primary bg-accent text-dark fw-bold" disabled={busy}>{busy ? 'Yadda saxlanılır...' : 'Yadda saxla'}</button>
         <button type="button" className="btn-outline" onClick={() => navigate('/warehouse')}>Geri</button>
       </div>
 

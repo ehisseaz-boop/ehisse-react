@@ -112,44 +112,133 @@ namespace EHisseler.Web.Controllers
 
         // GET api/Home/Saticilar
         [HttpGet]
-        public async Task<IActionResult> Saticilar(string? searchString)
+        public async Task<IActionResult> Saticilar(
+            string? searchString,
+            string? role,
+            string? searchType)
         {
             var query = _context.SellerProfiles
                 .Include(s => s.User)
-                .Where(s => !s.User.IsBlocked);
+                .Where(s => !s.User.IsBlocked && s.User.ApprovalStatus == ApprovalStatus.Approved);
 
-            if (!string.IsNullOrEmpty(searchString))
+            // Növ / Rol üzrə filtr (usta, anbardar, servis)
+            if (!string.IsNullOrWhiteSpace(role) && !role.Equals("all", StringComparison.OrdinalIgnoreCase))
             {
-                query = query.Where(s =>
-                    s.CompanyName.Contains(searchString) ||
-                    s.ContactPerson.Contains(searchString));
+                if (role.Equals("usta", StringComparison.OrdinalIgnoreCase) || role == "2")
+                {
+                    query = query.Where(s => s.User.Role == UserRole.Usta);
+                }
+                else if (role.Equals("anbardar", StringComparison.OrdinalIgnoreCase) || role == "3")
+                {
+                    query = query.Where(s => s.User.Role == UserRole.Anbardar);
+                }
+                else if (role.Equals("servis", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = query.Where(s => s.CompanyName.ToLower().Contains("servis") ||
+                                             s.CompanyName.ToLower().Contains("service") ||
+                                             (s.User.Role != UserRole.Usta && s.User.Role != UserRole.Anbardar));
+                }
+            }
+
+            // Axtarış: Servisin adına, ustanın adına və anbardarın adına görə
+            if (!string.IsNullOrWhiteSpace(searchString))
+            {
+                var term = searchString.Trim();
+                var lowerTerm = $"%{term.ToLower()}%";
+
+                if (string.Equals(searchType, "servis", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Yalnız servisin adına görə
+                    query = query.Where(s => EF.Functions.Like(s.CompanyName.ToLower(), lowerTerm));
+                }
+                else if (string.Equals(searchType, "usta", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Yalnız ustanın adına görə
+                    query = query.Where(s =>
+                        (s.User.Role == UserRole.Usta || s.CompanyName.ToLower().Contains("usta")) &&
+                        (EF.Functions.Like(s.ContactPerson.ToLower(), lowerTerm) ||
+                         EF.Functions.Like(s.User.FirstName.ToLower(), lowerTerm) ||
+                         EF.Functions.Like(s.User.LastName.ToLower(), lowerTerm) ||
+                         EF.Functions.Like((s.User.FirstName + " " + s.User.LastName).ToLower(), lowerTerm) ||
+                         EF.Functions.Like(s.User.Username.ToLower(), lowerTerm)));
+                }
+                else if (string.Equals(searchType, "anbardar", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Yalnız anbardarın adına görə
+                    query = query.Where(s =>
+                        (s.User.Role == UserRole.Anbardar || s.CompanyName.ToLower().Contains("anbar")) &&
+                        (EF.Functions.Like(s.ContactPerson.ToLower(), lowerTerm) ||
+                         EF.Functions.Like(s.User.FirstName.ToLower(), lowerTerm) ||
+                         EF.Functions.Like(s.User.LastName.ToLower(), lowerTerm) ||
+                         EF.Functions.Like((s.User.FirstName + " " + s.User.LastName).ToLower(), lowerTerm) ||
+                         EF.Functions.Like(s.User.Username.ToLower(), lowerTerm)));
+                }
+                else
+                {
+                    // Hamısı üzrə axtarış: servisin adına, ustanın adına, anbardarın adına və ünvanına görə
+                    bool searchIsUsta = term.Equals("usta", StringComparison.OrdinalIgnoreCase);
+                    bool searchIsAnbardar = term.Equals("anbardar", StringComparison.OrdinalIgnoreCase) || term.Equals("anbar", StringComparison.OrdinalIgnoreCase);
+                    bool searchIsServis = term.Equals("servis", StringComparison.OrdinalIgnoreCase) || term.Equals("service", StringComparison.OrdinalIgnoreCase);
+
+                    query = query.Where(s =>
+                        EF.Functions.Like(s.CompanyName.ToLower(), lowerTerm) ||
+                        EF.Functions.Like(s.ContactPerson.ToLower(), lowerTerm) ||
+                        EF.Functions.Like(s.User.FirstName.ToLower(), lowerTerm) ||
+                        EF.Functions.Like(s.User.LastName.ToLower(), lowerTerm) ||
+                        EF.Functions.Like((s.User.FirstName + " " + s.User.LastName).ToLower(), lowerTerm) ||
+                        EF.Functions.Like(s.User.Username.ToLower(), lowerTerm) ||
+                        (searchIsUsta && s.User.Role == UserRole.Usta) ||
+                        (searchIsAnbardar && s.User.Role == UserRole.Anbardar) ||
+                        (searchIsServis && s.CompanyName.ToLower().Contains("servis")) ||
+                        (s.Address != null && EF.Functions.Like(s.Address.ToLower(), lowerTerm)));
+                }
             }
 
             var sellers = await query.ToListAsync();
             var sellerIds = sellers.Select(s => s.Id).ToList();
 
+            // Hər satıcı üçün elan statistikası:
+            // - Total: İndiyədək yerləşdirdiyi bütün elanların sayı
+            // - Active: Hazırda aktiv, təsdiqlənmiş və stokda olan elan sayı
             var adStats = await _context.SpareParts
-                .Where(p => sellerIds.Contains(p.SellerId) && !p.IsDeleted)
+                .Where(p => sellerIds.Contains(p.SellerId))
                 .GroupBy(p => p.SellerId)
                 .Select(g => new
                 {
                     SellerId = g.Key,
                     Total = g.Count(),
-                    Active = g.Count(p => p.ModerationStatus == ApprovalStatus.Approved && p.IsActive)
+                    Active = g.Count(p => !p.IsDeleted && p.IsActive && p.ModerationStatus == ApprovalStatus.Approved && p.StockQuantity > 0)
                 })
                 .ToDictionaryAsync(k => k.SellerId);
 
-            return Ok(sellers.Select(s => new
+            return Ok(sellers.Select(s =>
             {
-                id = s.Id,
-                companyName = s.CompanyName,
-                contactPerson = s.ContactPerson,
-                phone = s.ShowContactInfoInAds ? s.Phone : null,
-                whatsAppNumber = s.ShowContactInfoInAds ? s.WhatsAppNumber : null,
-                address = s.Address,
-                rating = s.Rating,
-                totalAds = adStats.TryGetValue(s.Id, out var st) ? st.Total : 0,
-                activeAds = adStats.TryGetValue(s.Id, out var st2) ? st2.Active : 0
+                var role = s.User?.Role;
+                string roleName = role switch
+                {
+                    UserRole.Usta => "Usta",
+                    UserRole.Anbardar => "Anbardar",
+                    _ => s.CompanyName.ToLower().Contains("servis") ? "Servis" : "Satıcı / Mağaza"
+                };
+
+                return new
+                {
+                    id = s.Id,
+                    companyName = s.CompanyName,
+                    contactPerson = s.ContactPerson,
+                    firstName = s.User?.FirstName,
+                    lastName = s.User?.LastName,
+                    userRole = role?.ToString(),
+                    userRoleId = (int?)role,
+                    roleName = roleName,
+                    phone = s.ShowContactInfoInAds ? s.Phone : null,
+                    whatsAppNumber = s.ShowContactInfoInAds ? s.WhatsAppNumber : null,
+                    address = s.Address,
+                    rating = s.Rating,
+                    isPhoneVerified = s.IsPhoneVerified,
+                    totalAds = adStats.TryGetValue(s.Id, out var st) ? st.Total : 0,
+                    activeAds = adStats.TryGetValue(s.Id, out var st2) ? st2.Active : 0
+                };
             }));
         }
 

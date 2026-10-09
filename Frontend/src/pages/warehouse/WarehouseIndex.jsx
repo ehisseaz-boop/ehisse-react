@@ -44,7 +44,7 @@ function WarehouseIndex() {
       key: 'actions', label: '', render: p => (
         <div className="d-flex gap-1 flex-wrap">
           <button className="btn-outline" title="Satış qeyd et" disabled={p.stockQuantity <= 0} onClick={() => run(() => Api.warehouse.recordSale(p.id), 'Satış qeydə alındı.')}><i className="bi bi-cart-check"></i></button>
-          <Link to={`/warehouse/edit/${p.id}`} className="btn-outline" title="Redaktə"><i className="bi bi-pencil"></i></Link>
+          <Link to={`/warehouse/edit-part/${p.id}`} className="btn-outline" title="Redaktə"><i className="bi bi-pencil"></i></Link>
           <button className="btn-outline" title={p.isActive ? 'Deaktiv et' : 'Aktiv et'} onClick={() => run(() => Api.warehouse.toggleActive(p.id))}><i className={`bi bi-${p.isActive ? 'eye-slash' : 'eye'}`}></i></button>
           <button className="btn-outline" title="Sil" onClick={() => window.confirm('Elanı silmək istədiyinizə əminsiniz?') && run(() => Api.warehouse.remove(p.id), 'Elan silindi.')}><i className="bi bi-trash"></i></button>
         </div>
@@ -58,7 +58,7 @@ function WarehouseIndex() {
         <div>
           <strong>{data.seller.companyName}</strong> · {parts.length} elan · Aktiv: {parts.filter(p => p.isActive).length}
         </div>
-        <Link to="/warehouse/add" className="btn-outline bg-accent text-decoration-none" style={{ color: '#000' }}><i className="bi bi-plus-lg"></i> Yeni elan</Link>
+        <Link to="/warehouse/add-part" className="btn-outline bg-accent text-decoration-none" style={{ color: '#000' }}><i className="bi bi-plus-lg"></i> Yeni elan</Link>
       </div>
       {msg && <div className="alert alert-info">{msg}</div>}
       <Table columns={columns} rows={parts} empty="Hələ elanınız yoxdur." />

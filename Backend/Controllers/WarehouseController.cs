@@ -13,9 +13,10 @@ namespace EHisseler.Web.Controllers
 {
     public record PartInput(
         int DeviceModelId, int PartTypeId, int QualityTypeId,
-        string Title, string? Description, string? SKU,
+        string? Title, string? Description, string? SKU,
         decimal Price, decimal? DiscountPrice, string? Currency,
-        int StockQuantity, int MinOrderQuantity, int WarrantyMonths);
+        int StockQuantity, int MinOrderQuantity, int WarrantyMonths,
+        double? Latitude = null, double? Longitude = null, string? LocationAddress = null);
 
     public record PriceInput(decimal NewPrice);
 
@@ -121,12 +122,25 @@ namespace EHisseler.Web.Controllers
             return errors;
         }
 
+        private async Task<PartInput> EnsureTitleAsync(PartInput input)
+        {
+            if (string.IsNullOrWhiteSpace(input.Title))
+            {
+                var model = await _context.DeviceModels.Include(m => m.Brand).FirstOrDefaultAsync(m => m.Id == input.DeviceModelId);
+                var partType = await _context.SparePartTypes.FirstOrDefaultAsync(pt => pt.Id == input.PartTypeId);
+                var gen = $"{model?.Brand?.Name} {model?.Name} {partType?.Name}".Trim();
+                if (string.IsNullOrWhiteSpace(gen)) gen = "Ehtiyat Hissəsi";
+                return input with { Title = gen };
+            }
+            return input;
+        }
+
         private static SparePart ToEntity(PartInput i) => new SparePart
         {
             DeviceModelId = i.DeviceModelId,
             PartTypeId = i.PartTypeId,
             QualityTypeId = i.QualityTypeId,
-            Title = i.Title.Trim(),
+            Title = (i.Title ?? string.Empty).Trim(),
             Description = i.Description ?? string.Empty,
             SKU = i.SKU ?? string.Empty,
             Price = i.Price,
@@ -134,7 +148,10 @@ namespace EHisseler.Web.Controllers
             Currency = string.IsNullOrEmpty(i.Currency) ? "AZN" : i.Currency,
             StockQuantity = i.StockQuantity,
             MinOrderQuantity = i.MinOrderQuantity <= 0 ? 1 : i.MinOrderQuantity,
-            WarrantyMonths = i.WarrantyMonths
+            WarrantyMonths = i.WarrantyMonths,
+            Latitude = i.Latitude,
+            Longitude = i.Longitude,
+            LocationAddress = i.LocationAddress
         };
 
         // POST api/Warehouse/AddPart
@@ -144,11 +161,13 @@ namespace EHisseler.Web.Controllers
             var seller = await GetSellerAsync();
             if (seller == null) return NoSeller();
 
+            input = await EnsureTitleAsync(input);
+
             var errors = await ValidateAsync(input, seller.Id, null);
             if (errors.Any()) return BadRequest(new { message = string.Join(" ", errors), errors });
 
             var part = await _warehouseService.AddPartAsync(ToEntity(input), CurrentUserId, seller.Id);
-            return Ok(new { success = true, id = part.Id, message = "Elan yaradıldı və moderasiyaya göndərildi." });
+            return Ok(new { success = true, id = part.Id, message = "Elan yaradıldı və təsdiq üçün admin moderasiyasına göndərildi." });
         }
 
         // GET api/Warehouse/EditPart/5
@@ -183,6 +202,10 @@ namespace EHisseler.Web.Controllers
                 stockQuantity = part.StockQuantity,
                 minOrderQuantity = part.MinOrderQuantity,
                 warrantyMonths = part.WarrantyMonths,
+                latitude = part.Latitude,
+                longitude = part.Longitude,
+                locationAddress = part.LocationAddress,
+                isActive = part.IsActive,
                 moderationStatus = part.ModerationStatus.ToString(),
                 images = part.Images.OrderBy(i => i.DisplayOrder).Select(i => new
                 {
@@ -203,6 +226,8 @@ namespace EHisseler.Web.Controllers
             var part = await _warehouseService.GetPartAsync(id, seller.Id);
             if (part == null) return NotFound(new { message = "Elan tapılmadı." });
 
+            input = await EnsureTitleAsync(input);
+
             var errors = await ValidateAsync(input, seller.Id, part.SKU);
             if (errors.Any()) return BadRequest(new { message = string.Join(" ", errors), errors });
 
@@ -212,7 +237,13 @@ namespace EHisseler.Web.Controllers
             if (!result.Success)
                 return BadRequest(new { message = result.ErrorMessage });
 
-            return Ok(new { success = true, message = "Dəyişikliklər yadda saxlanıldı." });
+            var updatedPart = await _warehouseService.GetPartAsync(id, seller.Id);
+            var isPending = updatedPart?.ModerationStatus == ApprovalStatus.Pending;
+            var msg = isPending
+                ? "Dəyişikliklər yadda saxlanıldı və admin təsdiqinə göndərildi (təsdiqləndikdən sonra saytda aktivləşəcək)."
+                : "Dəyişikliklər uğurla yadda saxlanıldı.";
+
+            return Ok(new { success = true, message = msg, moderationStatus = updatedPart?.ModerationStatus.ToString(), isActive = updatedPart?.IsActive });
         }
 
         // POST api/Warehouse/UpdatePrice/5

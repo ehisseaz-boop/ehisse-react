@@ -4,6 +4,7 @@ using EHisseler.Web.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -15,32 +16,38 @@ namespace EHisseler.Web.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "10.0.4")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("EHisseler.Web.Models.ActivityLog", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Action")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Details")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<int?>("EntityId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("EntityName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -51,22 +58,24 @@ namespace EHisseler.Web.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("ActionDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("AdminId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Reason")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<int>("Status")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int>("TargetUserId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -77,17 +86,19 @@ namespace EHisseler.Web.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("DisplayOrder")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -120,10 +131,10 @@ namespace EHisseler.Web.Migrations
             modelBuilder.Entity("EHisseler.Web.Models.CategoryBrand", b =>
                 {
                     b.Property<int>("CategoryId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int>("BrandId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("CategoryId", "BrandId");
 
@@ -190,10 +201,10 @@ namespace EHisseler.Web.Migrations
             modelBuilder.Entity("EHisseler.Web.Models.CategoryPartType", b =>
                 {
                     b.Property<int>("CategoryId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int>("PartTypeId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("CategoryId", "PartTypeId");
 
@@ -371,14 +382,16 @@ namespace EHisseler.Web.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -433,27 +446,29 @@ namespace EHisseler.Web.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("BrandId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int>("CategoryId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("ModelCode")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<int>("ReleaseYear")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -640,25 +655,27 @@ namespace EHisseler.Web.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<int>("DisplayOrder")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -716,36 +733,38 @@ namespace EHisseler.Web.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("CompanyName")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("ContactPerson")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsPhoneVerified")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Phone")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<decimal>("Rating")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("numeric");
 
                     b.Property<bool>("ShowContactInfoInAds")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("WhatsAppNumber")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -797,90 +816,92 @@ namespace EHisseler.Web.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Currency")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<int>("DeviceModelId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<decimal?>("DiscountPrice")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("numeric");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsUpdateSubmission")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("LastModifiedDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<double?>("Latitude")
-                        .HasColumnType("REAL");
+                        .HasColumnType("double precision");
 
                     b.Property<string>("LocationAddress")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<double?>("Longitude")
-                        .HasColumnType("REAL");
+                        .HasColumnType("double precision");
 
                     b.Property<int>("MinOrderQuantity")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int>("ModerationStatus")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int>("PartTypeId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("numeric");
 
                     b.Property<int>("QualityTypeId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("RejectionReason")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
-                        .HasColumnType("BLOB");
+                        .HasColumnType("bytea");
 
                     b.Property<string>("SKU")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<int>("SellerId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int>("StockQuantity")
                         .IsConcurrencyToken()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<int>("ViewCount")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int>("WarrantyMonths")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -900,7 +921,7 @@ namespace EHisseler.Web.Migrations
                             Id = 1,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
                             DeviceModelId = 2,
                             IsActive = true,
                             IsDeleted = false,
@@ -908,383 +929,47 @@ namespace EHisseler.Web.Migrations
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 2,
-                            Price = 13.00m,
-                            QualityTypeId = 2,
+                            PartTypeId = 1,
+                            Price = 41.25m,
+                            QualityTypeId = 3,
                             RowVersion = new byte[0],
                             SKU = "SKU-1",
-                            SellerId = 2,
-                            StockQuantity = 2,
-                            Title = "Apple iPhone 15 Pro Batareya - A-Class",
-                            ViewCount = 13,
-                            WarrantyMonths = 1
+                            SellerId = 1,
+                            StockQuantity = 4,
+                            Title = "iPhone 15 Pro Ekran - A-Class",
+                            ViewCount = 356,
+                            WarrantyMonths = 12
                         },
                         new
                         {
                             Id = 2,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 3,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 2,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 3,
-                            Price = 16.00m,
-                            QualityTypeId = 3,
+                            PartTypeId = 19,
+                            Price = 23.12m,
+                            QualityTypeId = 1,
                             RowVersion = new byte[0],
                             SKU = "SKU-2",
-                            SellerId = 3,
-                            StockQuantity = 3,
-                            Title = "Apple iPhone 14 Pro Max Arxa Kamera - B-Class",
-                            ViewCount = 26,
-                            WarrantyMonths = 2
+                            SellerId = 1,
+                            StockQuantity = 8,
+                            Title = "iPhone 15 Pro Korpus Hissəsi - Orijinal Zavod",
+                            ViewCount = 268,
+                            WarrantyMonths = 12
                         },
                         new
                         {
                             Id = 3,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 4,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 5,
-                            Price = 19.00m,
-                            QualityTypeId = 4,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-3",
-                            SellerId = 1,
-                            StockQuantity = 4,
-                            Title = "Apple iPhone 13 Ana Plata - İşlənmiş Orijinal",
-                            ViewCount = 39,
-                            WarrantyMonths = 3
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 5,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 11,
-                            Price = 22.00m,
-                            QualityTypeId = 1,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-4",
-                            SellerId = 2,
-                            StockQuantity = 5,
-                            Title = "Samsung Galaxy S24 Ultra Klaviatura - Orijinal Zavod",
-                            ViewCount = 52,
-                            WarrantyMonths = 4
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 6,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 1,
-                            Price = 25.00m,
-                            QualityTypeId = 2,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-5",
-                            SellerId = 3,
-                            StockQuantity = 6,
-                            Title = "Samsung Galaxy S23 Ekran - A-Class",
-                            ViewCount = 65,
-                            WarrantyMonths = 5
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 7,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 2,
-                            Price = 28.00m,
-                            QualityTypeId = 3,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-6",
-                            SellerId = 1,
-                            StockQuantity = 7,
-                            Title = "Samsung Galaxy A54 Batareya - B-Class",
-                            ViewCount = 78,
-                            WarrantyMonths = 6
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 8,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 3,
-                            Price = 31.00m,
-                            QualityTypeId = 4,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-7",
-                            SellerId = 2,
-                            StockQuantity = 8,
-                            Title = "Xiaomi Xiaomi 13 Pro Arxa Kamera - İşlənmiş Orijinal",
-                            ViewCount = 91,
-                            WarrantyMonths = 7
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 9,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 5,
-                            Price = 34.00m,
-                            QualityTypeId = 1,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-8",
-                            SellerId = 3,
-                            StockQuantity = 9,
-                            Title = "Xiaomi Redmi Note 12 Pro Ana Plata - Orijinal Zavod",
-                            ViewCount = 104,
-                            WarrantyMonths = 8
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 10,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 11,
-                            Price = 37.00m,
-                            QualityTypeId = 2,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-9",
-                            SellerId = 1,
-                            StockQuantity = 10,
-                            Title = "Huawei P60 Pro Klaviatura - A-Class",
-                            ViewCount = 117,
-                            WarrantyMonths = 9
-                        },
-                        new
-                        {
-                            Id = 10,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 11,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 1,
-                            Price = 40.00m,
-                            QualityTypeId = 3,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-10",
-                            SellerId = 2,
-                            StockQuantity = 11,
-                            Title = "Apple iPad Pro 12.9 (2024) Ekran - B-Class",
-                            ViewCount = 130,
-                            WarrantyMonths = 10
-                        },
-                        new
-                        {
-                            Id = 11,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 12,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 2,
-                            Price = 43.00m,
-                            QualityTypeId = 4,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-11",
-                            SellerId = 3,
-                            StockQuantity = 12,
-                            Title = "Apple iPad Air (2024) Batareya - İşlənmiş Orijinal",
-                            ViewCount = 143,
-                            WarrantyMonths = 11
-                        },
-                        new
-                        {
-                            Id = 12,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 13,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 3,
-                            Price = 46.00m,
-                            QualityTypeId = 1,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-12",
-                            SellerId = 1,
-                            StockQuantity = 13,
-                            Title = "Samsung Galaxy Tab S9 Ultra Arxa Kamera - Orijinal Zavod",
-                            ViewCount = 156,
-                            WarrantyMonths = 0
-                        },
-                        new
-                        {
-                            Id = 13,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 14,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 5,
-                            Price = 49.00m,
-                            QualityTypeId = 2,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-13",
-                            SellerId = 2,
-                            StockQuantity = 14,
-                            Title = "Apple MacBook Pro 14 (M3) Ana Plata - A-Class",
-                            ViewCount = 169,
-                            WarrantyMonths = 1
-                        },
-                        new
-                        {
-                            Id = 14,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 15,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 11,
-                            Price = 52.00m,
-                            QualityTypeId = 3,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-14",
-                            SellerId = 3,
-                            StockQuantity = 15,
-                            Title = "Apple MacBook Air 13 (M2) Klaviatura - B-Class",
-                            ViewCount = 182,
-                            WarrantyMonths = 2
-                        },
-                        new
-                        {
-                            Id = 15,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 16,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 1,
-                            Price = 55.00m,
-                            QualityTypeId = 4,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-15",
-                            SellerId = 1,
-                            StockQuantity = 16,
-                            Title = "Dell XPS 13 Plus Ekran - İşlənmiş Orijinal",
-                            ViewCount = 195,
-                            WarrantyMonths = 3
-                        },
-                        new
-                        {
-                            Id = 16,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 17,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 2,
-                            Price = 58.00m,
-                            QualityTypeId = 1,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-16",
-                            SellerId = 2,
-                            StockQuantity = 17,
-                            Title = "Dell XPS 15 Batareya - Orijinal Zavod",
-                            ViewCount = 208,
-                            WarrantyMonths = 4
-                        },
-                        new
-                        {
-                            Id = 17,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
                             DeviceModelId = 1,
                             IsActive = true,
                             IsDeleted = false,
@@ -1292,23 +977,287 @@ namespace EHisseler.Web.Migrations
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 3,
-                            Price = 61.00m,
-                            QualityTypeId = 2,
+                            PartTypeId = 7,
+                            Price = 40.86m,
+                            QualityTypeId = 5,
                             RowVersion = new byte[0],
-                            SKU = "SKU-17",
-                            SellerId = 3,
-                            StockQuantity = 18,
-                            Title = "Apple iPhone 15 Pro Max Arxa Kamera - A-Class",
-                            ViewCount = 221,
-                            WarrantyMonths = 5
+                            SKU = "SKU-3",
+                            SellerId = 2,
+                            StockQuantity = 19,
+                            Title = "iPhone 15 Pro Max Dinamik - C-Class",
+                            ViewCount = 152,
+                            WarrantyMonths = 0
                         },
                         new
                         {
-                            Id = 18,
+                            Id = 4,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 3,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 19,
+                            Price = 31.77m,
+                            QualityTypeId = 3,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-4",
+                            SellerId = 2,
+                            StockQuantity = 11,
+                            Title = "iPhone 14 Pro Max Korpus Hissəsi - A-Class",
+                            ViewCount = 62,
+                            WarrantyMonths = 0
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 7,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 4,
+                            Price = 94.52m,
+                            QualityTypeId = 3,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-5",
+                            SellerId = 2,
+                            StockQuantity = 2,
+                            Title = "Galaxy A54 Ön Kamera - A-Class",
+                            ViewCount = 383,
+                            WarrantyMonths = 6
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 9,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 4,
+                            Price = 87.29m,
+                            QualityTypeId = 4,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-6",
+                            SellerId = 1,
+                            StockQuantity = 20,
+                            Title = "Redmi Note 12 Pro Ön Kamera - B-Class",
+                            ViewCount = 463,
+                            WarrantyMonths = 3
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 10,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 7,
+                            Price = 102.58m,
+                            QualityTypeId = 1,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-7",
+                            SellerId = 1,
+                            StockQuantity = 10,
+                            Title = "P60 Pro Dinamik - Orijinal Zavod",
+                            ViewCount = 50,
+                            WarrantyMonths = 1
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 2,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 18,
+                            Price = 99.0m,
+                            QualityTypeId = 3,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-8",
+                            SellerId = 2,
+                            StockQuantity = 12,
+                            Title = "iPhone 15 Pro Dinamik Setkası - A-Class",
+                            ViewCount = 93,
+                            WarrantyMonths = 3
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 6,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 7,
+                            Price = 141.13m,
+                            QualityTypeId = 3,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-9",
+                            SellerId = 3,
+                            StockQuantity = 3,
+                            Title = "Galaxy S23 Dinamik - A-Class",
+                            ViewCount = 321,
+                            WarrantyMonths = 1
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 9,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 8,
+                            Price = 63.12m,
+                            QualityTypeId = 2,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-10",
+                            SellerId = 2,
+                            StockQuantity = 18,
+                            Title = "Redmi Note 12 Pro Şarj Portu - İşlənmiş Orijinal",
+                            ViewCount = 122,
+                            WarrantyMonths = 3
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 1,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 8,
+                            Price = 66.16m,
+                            QualityTypeId = 1,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-11",
+                            SellerId = 2,
+                            StockQuantity = 3,
+                            Title = "iPhone 15 Pro Max Şarj Portu - Orijinal Zavod",
+                            ViewCount = 118,
+                            WarrantyMonths = 12
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 6,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 7,
+                            Price = 133.86m,
+                            QualityTypeId = 4,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-12",
+                            SellerId = 2,
+                            StockQuantity = 15,
+                            Title = "Galaxy S23 Dinamik - B-Class",
+                            ViewCount = 83,
+                            WarrantyMonths = 3
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 3,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 8,
+                            Price = 46.78m,
+                            QualityTypeId = 5,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-13",
+                            SellerId = 3,
+                            StockQuantity = 19,
+                            Title = "iPhone 14 Pro Max Şarj Portu - C-Class",
+                            ViewCount = 229,
+                            WarrantyMonths = 12
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 7,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 17,
+                            Price = 81.33m,
+                            QualityTypeId = 2,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-14",
+                            SellerId = 1,
+                            StockQuantity = 3,
+                            Title = "Galaxy A54 Antenna - İşlənmiş Orijinal",
+                            ViewCount = 396,
+                            WarrantyMonths = 0
+                        },
+                        new
+                        {
+                            Id = 15,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
                             DeviceModelId = 2,
                             IsActive = true,
                             IsDeleted = false,
@@ -1317,70 +1266,70 @@ namespace EHisseler.Web.Migrations
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
                             PartTypeId = 5,
-                            Price = 64.00m,
-                            QualityTypeId = 3,
+                            Price = 69.1m,
+                            QualityTypeId = 2,
                             RowVersion = new byte[0],
-                            SKU = "SKU-18",
-                            SellerId = 1,
-                            StockQuantity = 19,
-                            Title = "Apple iPhone 15 Pro Ana Plata - B-Class",
-                            ViewCount = 234,
+                            SKU = "SKU-15",
+                            SellerId = 3,
+                            StockQuantity = 3,
+                            Title = "iPhone 15 Pro Ana Plata - İşlənmiş Orijinal",
+                            ViewCount = 207,
                             WarrantyMonths = 6
                         },
                         new
                         {
-                            Id = 19,
+                            Id = 16,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 3,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 10,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 11,
-                            Price = 67.00m,
-                            QualityTypeId = 4,
+                            PartTypeId = 20,
+                            Price = 145.95m,
+                            QualityTypeId = 5,
                             RowVersion = new byte[0],
-                            SKU = "SKU-19",
+                            SKU = "SKU-16",
                             SellerId = 2,
-                            StockQuantity = 20,
-                            Title = "Apple iPhone 14 Pro Max Klaviatura - İşlənmiş Orijinal",
-                            ViewCount = 247,
-                            WarrantyMonths = 7
+                            StockQuantity = 1,
+                            Title = "P60 Pro Korpus - C-Class",
+                            ViewCount = 358,
+                            WarrantyMonths = 0
                         },
                         new
                         {
-                            Id = 20,
+                            Id = 17,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 4,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 9,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 1,
-                            Price = 70.00m,
-                            QualityTypeId = 1,
+                            PartTypeId = 9,
+                            Price = 51.09m,
+                            QualityTypeId = 3,
                             RowVersion = new byte[0],
-                            SKU = "SKU-20",
-                            SellerId = 3,
-                            StockQuantity = 1,
-                            Title = "Apple iPhone 13 Ekran - Orijinal Zavod",
-                            ViewCount = 260,
-                            WarrantyMonths = 8
+                            SKU = "SKU-17",
+                            SellerId = 1,
+                            StockQuantity = 6,
+                            Title = "Redmi Note 12 Pro Sim Tutucu - A-Class",
+                            ViewCount = 242,
+                            WarrantyMonths = 0
                         },
                         new
                         {
-                            Id = 21,
+                            Id = 18,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
                             DeviceModelId = 5,
                             IsActive = true,
                             IsDeleted = false,
@@ -1388,48 +1337,96 @@ namespace EHisseler.Web.Migrations
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 2,
-                            Price = 73.00m,
+                            PartTypeId = 22,
+                            Price = 137.77m,
                             QualityTypeId = 2,
                             RowVersion = new byte[0],
-                            SKU = "SKU-21",
-                            SellerId = 1,
-                            StockQuantity = 2,
-                            Title = "Samsung Galaxy S24 Ultra Batareya - A-Class",
-                            ViewCount = 273,
-                            WarrantyMonths = 9
+                            SKU = "SKU-18",
+                            SellerId = 3,
+                            StockQuantity = 10,
+                            Title = "Galaxy S24 Ultra OCA Film - İşlənmiş Orijinal",
+                            ViewCount = 440,
+                            WarrantyMonths = 12
                         },
                         new
                         {
-                            Id = 22,
+                            Id = 19,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 6,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 10,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 3,
-                            Price = 76.00m,
-                            QualityTypeId = 3,
+                            PartTypeId = 7,
+                            Price = 116.75m,
+                            QualityTypeId = 2,
                             RowVersion = new byte[0],
-                            SKU = "SKU-22",
+                            SKU = "SKU-19",
                             SellerId = 2,
-                            StockQuantity = 3,
-                            Title = "Samsung Galaxy S23 Arxa Kamera - B-Class",
-                            ViewCount = 286,
-                            WarrantyMonths = 10
+                            StockQuantity = 18,
+                            Title = "P60 Pro Dinamik - İşlənmiş Orijinal",
+                            ViewCount = 498,
+                            WarrantyMonths = 12
                         },
                         new
                         {
-                            Id = 23,
+                            Id = 20,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 7,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 1,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 16,
+                            Price = 25.66m,
+                            QualityTypeId = 4,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-20",
+                            SellerId = 1,
+                            StockQuantity = 12,
+                            Title = "iPhone 15 Pro Max Sensor Şüşə - B-Class",
+                            ViewCount = 459,
+                            WarrantyMonths = 3
+                        },
+                        new
+                        {
+                            Id = 21,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 4,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 2,
+                            Price = 142.57m,
+                            QualityTypeId = 2,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-21",
+                            SellerId = 3,
+                            StockQuantity = 3,
+                            Title = "iPhone 13 Batareya - İşlənmiş Orijinal",
+                            ViewCount = 384,
+                            WarrantyMonths = 6
+                        },
+                        new
+                        {
+                            Id = 22,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 2,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
@@ -1437,38 +1434,62 @@ namespace EHisseler.Web.Migrations
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
                             PartTypeId = 5,
-                            Price = 79.00m,
-                            QualityTypeId = 4,
+                            Price = 76.54m,
+                            QualityTypeId = 2,
                             RowVersion = new byte[0],
-                            SKU = "SKU-23",
+                            SKU = "SKU-22",
                             SellerId = 3,
-                            StockQuantity = 4,
-                            Title = "Samsung Galaxy A54 Ana Plata - İşlənmiş Orijinal",
-                            ViewCount = 299,
-                            WarrantyMonths = 11
+                            StockQuantity = 18,
+                            Title = "iPhone 15 Pro Ana Plata - İşlənmiş Orijinal",
+                            ViewCount = 94,
+                            WarrantyMonths = 3
                         },
                         new
                         {
-                            Id = 24,
+                            Id = 23,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 8,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 9,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 11,
-                            Price = 82.00m,
-                            QualityTypeId = 1,
+                            PartTypeId = 19,
+                            Price = 115.74m,
+                            QualityTypeId = 2,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-23",
+                            SellerId = 3,
+                            StockQuantity = 7,
+                            Title = "Redmi Note 12 Pro Korpus Hissəsi - İşlənmiş Orijinal",
+                            ViewCount = 375,
+                            WarrantyMonths = 3
+                        },
+                        new
+                        {
+                            Id = 24,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 7,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 17,
+                            Price = 73.21m,
+                            QualityTypeId = 4,
                             RowVersion = new byte[0],
                             SKU = "SKU-24",
-                            SellerId = 1,
-                            StockQuantity = 5,
-                            Title = "Xiaomi Xiaomi 13 Pro Klaviatura - Orijinal Zavod",
-                            ViewCount = 12,
+                            SellerId = 3,
+                            StockQuantity = 8,
+                            Title = "Galaxy A54 Antenna - B-Class",
+                            ViewCount = 125,
                             WarrantyMonths = 0
                         },
                         new
@@ -1476,8 +1497,8 @@ namespace EHisseler.Web.Migrations
                             Id = 25,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 9,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 6,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
@@ -1485,134 +1506,134 @@ namespace EHisseler.Web.Migrations
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
                             PartTypeId = 1,
-                            Price = 85.00m,
-                            QualityTypeId = 2,
+                            Price = 42.22m,
+                            QualityTypeId = 5,
                             RowVersion = new byte[0],
                             SKU = "SKU-25",
-                            SellerId = 2,
-                            StockQuantity = 6,
-                            Title = "Xiaomi Redmi Note 12 Pro Ekran - A-Class",
-                            ViewCount = 25,
-                            WarrantyMonths = 1
+                            SellerId = 3,
+                            StockQuantity = 8,
+                            Title = "Galaxy S23 Ekran - C-Class",
+                            ViewCount = 13,
+                            WarrantyMonths = 0
                         },
                         new
                         {
                             Id = 26,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 10,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 1,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 2,
-                            Price = 88.00m,
-                            QualityTypeId = 3,
+                            PartTypeId = 8,
+                            Price = 130.35m,
+                            QualityTypeId = 1,
                             RowVersion = new byte[0],
                             SKU = "SKU-26",
-                            SellerId = 3,
-                            StockQuantity = 7,
-                            Title = "Huawei P60 Pro Batareya - B-Class",
-                            ViewCount = 38,
-                            WarrantyMonths = 2
+                            SellerId = 1,
+                            StockQuantity = 3,
+                            Title = "iPhone 15 Pro Max Şarj Portu - Orijinal Zavod",
+                            ViewCount = 273,
+                            WarrantyMonths = 1
                         },
                         new
                         {
                             Id = 27,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 11,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 5,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 3,
-                            Price = 91.00m,
-                            QualityTypeId = 4,
+                            PartTypeId = 21,
+                            Price = 28.52m,
+                            QualityTypeId = 2,
                             RowVersion = new byte[0],
                             SKU = "SKU-27",
-                            SellerId = 1,
-                            StockQuantity = 8,
-                            Title = "Apple iPad Pro 12.9 (2024) Arxa Kamera - İşlənmiş Orijinal",
-                            ViewCount = 51,
-                            WarrantyMonths = 3
+                            SellerId = 3,
+                            StockQuantity = 19,
+                            Title = "Galaxy S24 Ultra Mikrofon - İşlənmiş Orijinal",
+                            ViewCount = 305,
+                            WarrantyMonths = 6
                         },
                         new
                         {
                             Id = 28,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 12,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 4,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 5,
-                            Price = 94.00m,
-                            QualityTypeId = 1,
+                            PartTypeId = 21,
+                            Price = 23.21m,
+                            QualityTypeId = 4,
                             RowVersion = new byte[0],
                             SKU = "SKU-28",
-                            SellerId = 2,
-                            StockQuantity = 9,
-                            Title = "Apple iPad Air (2024) Ana Plata - Orijinal Zavod",
-                            ViewCount = 64,
-                            WarrantyMonths = 4
+                            SellerId = 1,
+                            StockQuantity = 14,
+                            Title = "iPhone 13 Mikrofon - B-Class",
+                            ViewCount = 191,
+                            WarrantyMonths = 6
                         },
                         new
                         {
                             Id = 29,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 13,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 7,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 11,
-                            Price = 97.00m,
-                            QualityTypeId = 2,
+                            PartTypeId = 20,
+                            Price = 101.48m,
+                            QualityTypeId = 1,
                             RowVersion = new byte[0],
                             SKU = "SKU-29",
                             SellerId = 3,
-                            StockQuantity = 10,
-                            Title = "Samsung Galaxy Tab S9 Ultra Klaviatura - A-Class",
-                            ViewCount = 77,
-                            WarrantyMonths = 5
+                            StockQuantity = 4,
+                            Title = "Galaxy A54 Korpus - Orijinal Zavod",
+                            ViewCount = 41,
+                            WarrantyMonths = 6
                         },
                         new
                         {
                             Id = 30,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 14,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 6,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 1,
-                            Price = 100.00m,
-                            QualityTypeId = 3,
+                            PartTypeId = 4,
+                            Price = 36.63m,
+                            QualityTypeId = 2,
                             RowVersion = new byte[0],
                             SKU = "SKU-30",
                             SellerId = 1,
-                            StockQuantity = 11,
-                            Title = "Apple MacBook Pro 14 (M3) Ekran - B-Class",
-                            ViewCount = 90,
+                            StockQuantity = 15,
+                            Title = "Galaxy S23 Ön Kamera - İşlənmiş Orijinal",
+                            ViewCount = 81,
                             WarrantyMonths = 6
                         },
                         new
@@ -1620,127 +1641,7 @@ namespace EHisseler.Web.Migrations
                             Id = 31,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 15,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 2,
-                            Price = 103.00m,
-                            QualityTypeId = 4,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-31",
-                            SellerId = 2,
-                            StockQuantity = 12,
-                            Title = "Apple MacBook Air 13 (M2) Batareya - İşlənmiş Orijinal",
-                            ViewCount = 103,
-                            WarrantyMonths = 7
-                        },
-                        new
-                        {
-                            Id = 32,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 16,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 3,
-                            Price = 106.00m,
-                            QualityTypeId = 1,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-32",
-                            SellerId = 3,
-                            StockQuantity = 13,
-                            Title = "Dell XPS 13 Plus Arxa Kamera - Orijinal Zavod",
-                            ViewCount = 116,
-                            WarrantyMonths = 8
-                        },
-                        new
-                        {
-                            Id = 33,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 17,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 5,
-                            Price = 109.00m,
-                            QualityTypeId = 2,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-33",
-                            SellerId = 1,
-                            StockQuantity = 14,
-                            Title = "Dell XPS 15 Ana Plata - A-Class",
-                            ViewCount = 129,
-                            WarrantyMonths = 9
-                        },
-                        new
-                        {
-                            Id = 34,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 1,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 11,
-                            Price = 112.00m,
-                            QualityTypeId = 3,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-34",
-                            SellerId = 2,
-                            StockQuantity = 15,
-                            Title = "Apple iPhone 15 Pro Max Klaviatura - B-Class",
-                            ViewCount = 142,
-                            WarrantyMonths = 10
-                        },
-                        new
-                        {
-                            Id = 35,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 2,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 1,
-                            Price = 115.00m,
-                            QualityTypeId = 4,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-35",
-                            SellerId = 3,
-                            StockQuantity = 16,
-                            Title = "Apple iPhone 15 Pro Ekran - İşlənmiş Orijinal",
-                            ViewCount = 155,
-                            WarrantyMonths = 11
-                        },
-                        new
-                        {
-                            Id = 36,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
                             DeviceModelId = 3,
                             IsActive = true,
                             IsDeleted = false,
@@ -1748,119 +1649,47 @@ namespace EHisseler.Web.Migrations
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 2,
-                            Price = 118.00m,
-                            QualityTypeId = 1,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-36",
-                            SellerId = 1,
-                            StockQuantity = 17,
-                            Title = "Apple iPhone 14 Pro Max Batareya - Orijinal Zavod",
-                            ViewCount = 168,
-                            WarrantyMonths = 0
-                        },
-                        new
-                        {
-                            Id = 37,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 4,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 3,
-                            Price = 121.00m,
-                            QualityTypeId = 2,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-37",
-                            SellerId = 2,
-                            StockQuantity = 18,
-                            Title = "Apple iPhone 13 Arxa Kamera - A-Class",
-                            ViewCount = 181,
-                            WarrantyMonths = 1
-                        },
-                        new
-                        {
-                            Id = 38,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 5,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 5,
-                            Price = 124.00m,
-                            QualityTypeId = 3,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-38",
-                            SellerId = 3,
-                            StockQuantity = 19,
-                            Title = "Samsung Galaxy S24 Ultra Ana Plata - B-Class",
-                            ViewCount = 194,
-                            WarrantyMonths = 2
-                        },
-                        new
-                        {
-                            Id = 39,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 6,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 11,
-                            Price = 127.00m,
+                            PartTypeId = 9,
+                            Price = 132.43m,
                             QualityTypeId = 4,
                             RowVersion = new byte[0],
-                            SKU = "SKU-39",
+                            SKU = "SKU-31",
                             SellerId = 1,
-                            StockQuantity = 20,
-                            Title = "Samsung Galaxy S23 Klaviatura - İşlənmiş Orijinal",
-                            ViewCount = 207,
-                            WarrantyMonths = 3
+                            StockQuantity = 3,
+                            Title = "iPhone 14 Pro Max Sim Tutucu - B-Class",
+                            ViewCount = 236,
+                            WarrantyMonths = 12
                         },
                         new
                         {
-                            Id = 40,
+                            Id = 32,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 7,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 2,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 1,
-                            Price = 130.00m,
-                            QualityTypeId = 1,
+                            PartTypeId = 2,
+                            Price = 145.66m,
+                            QualityTypeId = 5,
                             RowVersion = new byte[0],
-                            SKU = "SKU-40",
-                            SellerId = 2,
-                            StockQuantity = 1,
-                            Title = "Samsung Galaxy A54 Ekran - Orijinal Zavod",
-                            ViewCount = 220,
-                            WarrantyMonths = 4
+                            SKU = "SKU-32",
+                            SellerId = 1,
+                            StockQuantity = 8,
+                            Title = "iPhone 15 Pro Batareya - C-Class",
+                            ViewCount = 95,
+                            WarrantyMonths = 6
                         },
                         new
                         {
-                            Id = 41,
+                            Id = 33,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
                             DeviceModelId = 8,
                             IsActive = true,
                             IsDeleted = false,
@@ -1868,71 +1697,71 @@ namespace EHisseler.Web.Migrations
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 2,
-                            Price = 133.00m,
+                            PartTypeId = 21,
+                            Price = 136.34m,
                             QualityTypeId = 2,
                             RowVersion = new byte[0],
-                            SKU = "SKU-41",
-                            SellerId = 3,
-                            StockQuantity = 2,
-                            Title = "Xiaomi Xiaomi 13 Pro Batareya - A-Class",
-                            ViewCount = 233,
-                            WarrantyMonths = 5
+                            SKU = "SKU-33",
+                            SellerId = 2,
+                            StockQuantity = 6,
+                            Title = "Xiaomi 13 Pro Mikrofon - İşlənmiş Orijinal",
+                            ViewCount = 204,
+                            WarrantyMonths = 0
                         },
                         new
                         {
-                            Id = 42,
+                            Id = 34,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 9,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 7,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 3,
-                            Price = 136.00m,
-                            QualityTypeId = 3,
+                            PartTypeId = 9,
+                            Price = 69.22m,
+                            QualityTypeId = 4,
                             RowVersion = new byte[0],
-                            SKU = "SKU-42",
-                            SellerId = 1,
-                            StockQuantity = 3,
-                            Title = "Xiaomi Redmi Note 12 Pro Arxa Kamera - B-Class",
-                            ViewCount = 246,
+                            SKU = "SKU-34",
+                            SellerId = 2,
+                            StockQuantity = 18,
+                            Title = "Galaxy A54 Sim Tutucu - B-Class",
+                            ViewCount = 348,
                             WarrantyMonths = 6
                         },
                         new
                         {
-                            Id = 43,
+                            Id = 35,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 10,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 3,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 5,
-                            Price = 139.00m,
-                            QualityTypeId = 4,
+                            PartTypeId = 7,
+                            Price = 145.62m,
+                            QualityTypeId = 3,
                             RowVersion = new byte[0],
-                            SKU = "SKU-43",
-                            SellerId = 2,
-                            StockQuantity = 4,
-                            Title = "Huawei P60 Pro Ana Plata - İşlənmiş Orijinal",
-                            ViewCount = 259,
-                            WarrantyMonths = 7
+                            SKU = "SKU-35",
+                            SellerId = 1,
+                            StockQuantity = 19,
+                            Title = "iPhone 14 Pro Max Dinamik - A-Class",
+                            ViewCount = 386,
+                            WarrantyMonths = 12
                         },
                         new
                         {
-                            Id = 44,
+                            Id = 36,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
                             DeviceModelId = 11,
                             IsActive = true,
                             IsDeleted = false,
@@ -1940,24 +1769,24 @@ namespace EHisseler.Web.Migrations
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 11,
-                            Price = 142.00m,
+                            PartTypeId = 6,
+                            Price = 91.78m,
                             QualityTypeId = 1,
                             RowVersion = new byte[0],
-                            SKU = "SKU-44",
-                            SellerId = 3,
-                            StockQuantity = 5,
-                            Title = "Apple iPad Pro 12.9 (2024) Klaviatura - Orijinal Zavod",
-                            ViewCount = 272,
-                            WarrantyMonths = 8
+                            SKU = "SKU-36",
+                            SellerId = 1,
+                            StockQuantity = 17,
+                            Title = "iPad Pro 12.9 Arxa Qapaq - Orijinal Zavod",
+                            ViewCount = 480,
+                            WarrantyMonths = 12
                         },
                         new
                         {
-                            Id = 45,
+                            Id = 37,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 12,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 11,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
@@ -1965,22 +1794,118 @@ namespace EHisseler.Web.Migrations
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
                             PartTypeId = 1,
-                            Price = 145.00m,
-                            QualityTypeId = 2,
+                            Price = 129.19m,
+                            QualityTypeId = 5,
                             RowVersion = new byte[0],
-                            SKU = "SKU-45",
+                            SKU = "SKU-37",
                             SellerId = 1,
-                            StockQuantity = 6,
-                            Title = "Apple iPad Air (2024) Ekran - A-Class",
-                            ViewCount = 285,
-                            WarrantyMonths = 9
+                            StockQuantity = 3,
+                            Title = "iPad Pro 12.9 Ekran - C-Class",
+                            ViewCount = 314,
+                            WarrantyMonths = 0
                         },
                         new
                         {
-                            Id = 46,
+                            Id = 38,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 13,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 4,
+                            Price = 141.82m,
+                            QualityTypeId = 4,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-38",
+                            SellerId = 1,
+                            StockQuantity = 19,
+                            Title = "Galaxy Tab S9 Ultra Ön Kamera - B-Class",
+                            ViewCount = 136,
+                            WarrantyMonths = 12
+                        },
+                        new
+                        {
+                            Id = 39,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 13,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 1,
+                            Price = 68.69m,
+                            QualityTypeId = 5,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-39",
+                            SellerId = 1,
+                            StockQuantity = 19,
+                            Title = "Galaxy Tab S9 Ultra Ekran - C-Class",
+                            ViewCount = 299,
+                            WarrantyMonths = 12
+                        },
+                        new
+                        {
+                            Id = 40,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 12,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 5,
+                            Price = 110.27m,
+                            QualityTypeId = 2,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-40",
+                            SellerId = 3,
+                            StockQuantity = 8,
+                            Title = "iPad Air Ana Plata - İşlənmiş Orijinal",
+                            ViewCount = 145,
+                            WarrantyMonths = 6
+                        },
+                        new
+                        {
+                            Id = 41,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 11,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 5,
+                            Price = 140.06m,
+                            QualityTypeId = 4,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-41",
+                            SellerId = 2,
+                            StockQuantity = 3,
+                            Title = "iPad Pro 12.9 Ana Plata - B-Class",
+                            ViewCount = 14,
+                            WarrantyMonths = 6
+                        },
+                        new
+                        {
+                            Id = 42,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
                             DeviceModelId = 13,
                             IsActive = true,
                             IsDeleted = false,
@@ -1989,95 +1914,47 @@ namespace EHisseler.Web.Migrations
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
                             PartTypeId = 2,
-                            Price = 148.00m,
-                            QualityTypeId = 3,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-46",
-                            SellerId = 2,
-                            StockQuantity = 7,
-                            Title = "Samsung Galaxy Tab S9 Ultra Batareya - B-Class",
-                            ViewCount = 298,
-                            WarrantyMonths = 10
-                        },
-                        new
-                        {
-                            Id = 47,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 14,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 3,
-                            Price = 151.00m,
-                            QualityTypeId = 4,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-47",
-                            SellerId = 3,
-                            StockQuantity = 8,
-                            Title = "Apple MacBook Pro 14 (M3) Arxa Kamera - İşlənmiş Orijinal",
-                            ViewCount = 11,
-                            WarrantyMonths = 11
-                        },
-                        new
-                        {
-                            Id = 48,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 15,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 5,
-                            Price = 154.00m,
+                            Price = 39.84m,
                             QualityTypeId = 1,
                             RowVersion = new byte[0],
-                            SKU = "SKU-48",
-                            SellerId = 1,
+                            SKU = "SKU-42",
+                            SellerId = 3,
                             StockQuantity = 9,
-                            Title = "Apple MacBook Air 13 (M2) Ana Plata - Orijinal Zavod",
-                            ViewCount = 24,
-                            WarrantyMonths = 0
+                            Title = "Galaxy Tab S9 Ultra Batareya - Orijinal Zavod",
+                            ViewCount = 77,
+                            WarrantyMonths = 3
                         },
                         new
                         {
-                            Id = 49,
+                            Id = 43,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 16,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 11,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 11,
-                            Price = 157.00m,
-                            QualityTypeId = 2,
+                            PartTypeId = 4,
+                            Price = 32.08m,
+                            QualityTypeId = 3,
                             RowVersion = new byte[0],
-                            SKU = "SKU-49",
+                            SKU = "SKU-43",
                             SellerId = 2,
-                            StockQuantity = 10,
-                            Title = "Dell XPS 13 Plus Klaviatura - A-Class",
-                            ViewCount = 37,
-                            WarrantyMonths = 1
+                            StockQuantity = 18,
+                            Title = "iPad Pro 12.9 Ön Kamera - A-Class",
+                            ViewCount = 370,
+                            WarrantyMonths = 3
                         },
                         new
                         {
-                            Id = 50,
+                            Id = 44,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 17,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 13,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
@@ -2085,23 +1962,23 @@ namespace EHisseler.Web.Migrations
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
                             PartTypeId = 1,
-                            Price = 10.00m,
-                            QualityTypeId = 3,
+                            Price = 140.45m,
+                            QualityTypeId = 5,
                             RowVersion = new byte[0],
-                            SKU = "SKU-50",
-                            SellerId = 3,
-                            StockQuantity = 11,
-                            Title = "Dell XPS 15 Ekran - B-Class",
-                            ViewCount = 50,
-                            WarrantyMonths = 2
+                            SKU = "SKU-44",
+                            SellerId = 2,
+                            StockQuantity = 4,
+                            Title = "Galaxy Tab S9 Ultra Ekran - C-Class",
+                            ViewCount = 490,
+                            WarrantyMonths = 1
                         },
                         new
                         {
-                            Id = 51,
+                            Id = 45,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 1,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 12,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
@@ -2109,23 +1986,71 @@ namespace EHisseler.Web.Migrations
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
                             PartTypeId = 2,
-                            Price = 13.00m,
-                            QualityTypeId = 4,
+                            Price = 87.45m,
+                            QualityTypeId = 1,
                             RowVersion = new byte[0],
-                            SKU = "SKU-51",
-                            SellerId = 1,
-                            StockQuantity = 12,
-                            Title = "Apple iPhone 15 Pro Max Batareya - İşlənmiş Orijinal",
-                            ViewCount = 63,
-                            WarrantyMonths = 3
+                            SKU = "SKU-45",
+                            SellerId = 3,
+                            StockQuantity = 9,
+                            Title = "iPad Air Batareya - Orijinal Zavod",
+                            ViewCount = 154,
+                            WarrantyMonths = 12
                         },
                         new
                         {
-                            Id = 52,
+                            Id = 46,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 2,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 11,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 6,
+                            Price = 98.79m,
+                            QualityTypeId = 2,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-46",
+                            SellerId = 3,
+                            StockQuantity = 9,
+                            Title = "iPad Pro 12.9 Arxa Qapaq - İşlənmiş Orijinal",
+                            ViewCount = 268,
+                            WarrantyMonths = 6
+                        },
+                        new
+                        {
+                            Id = 47,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 12,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 1,
+                            Price = 69.3m,
+                            QualityTypeId = 1,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-47",
+                            SellerId = 3,
+                            StockQuantity = 9,
+                            Title = "iPad Air Ekran - Orijinal Zavod",
+                            ViewCount = 32,
+                            WarrantyMonths = 0
+                        },
+                        new
+                        {
+                            Id = 48,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 12,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
@@ -2133,62 +2058,158 @@ namespace EHisseler.Web.Migrations
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
                             PartTypeId = 3,
-                            Price = 16.00m,
+                            Price = 113.77m,
+                            QualityTypeId = 3,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-48",
+                            SellerId = 1,
+                            StockQuantity = 18,
+                            Title = "iPad Air Arxa Kamera - A-Class",
+                            ViewCount = 371,
+                            WarrantyMonths = 6
+                        },
+                        new
+                        {
+                            Id = 49,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 13,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 1,
+                            Price = 142.31m,
                             QualityTypeId = 1,
                             RowVersion = new byte[0],
+                            SKU = "SKU-49",
+                            SellerId = 1,
+                            StockQuantity = 5,
+                            Title = "Galaxy Tab S9 Ultra Ekran - Orijinal Zavod",
+                            ViewCount = 289,
+                            WarrantyMonths = 0
+                        },
+                        new
+                        {
+                            Id = 50,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 12,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 3,
+                            Price = 15.86m,
+                            QualityTypeId = 4,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-50",
+                            SellerId = 1,
+                            StockQuantity = 12,
+                            Title = "iPad Air Arxa Kamera - B-Class",
+                            ViewCount = 470,
+                            WarrantyMonths = 0
+                        },
+                        new
+                        {
+                            Id = 51,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 12,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 4,
+                            Price = 24.39m,
+                            QualityTypeId = 2,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-51",
+                            SellerId = 3,
+                            StockQuantity = 18,
+                            Title = "iPad Air Ön Kamera - İşlənmiş Orijinal",
+                            ViewCount = 462,
+                            WarrantyMonths = 6
+                        },
+                        new
+                        {
+                            Id = 52,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 13,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 3,
+                            Price = 146.67m,
+                            QualityTypeId = 2,
+                            RowVersion = new byte[0],
                             SKU = "SKU-52",
-                            SellerId = 2,
-                            StockQuantity = 13,
-                            Title = "Apple iPhone 15 Pro Arxa Kamera - Orijinal Zavod",
-                            ViewCount = 76,
-                            WarrantyMonths = 4
+                            SellerId = 1,
+                            StockQuantity = 6,
+                            Title = "Galaxy Tab S9 Ultra Arxa Kamera - İşlənmiş Orijinal",
+                            ViewCount = 461,
+                            WarrantyMonths = 6
                         },
                         new
                         {
                             Id = 53,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 3,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 11,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 5,
-                            Price = 19.00m,
-                            QualityTypeId = 2,
+                            PartTypeId = 3,
+                            Price = 122.31m,
+                            QualityTypeId = 3,
                             RowVersion = new byte[0],
                             SKU = "SKU-53",
-                            SellerId = 3,
-                            StockQuantity = 14,
-                            Title = "Apple iPhone 14 Pro Max Ana Plata - A-Class",
-                            ViewCount = 89,
-                            WarrantyMonths = 5
+                            SellerId = 2,
+                            StockQuantity = 8,
+                            Title = "iPad Pro 12.9 Arxa Kamera - A-Class",
+                            ViewCount = 146,
+                            WarrantyMonths = 1
                         },
                         new
                         {
                             Id = 54,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 4,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 13,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 11,
-                            Price = 22.00m,
-                            QualityTypeId = 3,
+                            PartTypeId = 2,
+                            Price = 130.2m,
+                            QualityTypeId = 4,
                             RowVersion = new byte[0],
                             SKU = "SKU-54",
                             SellerId = 1,
-                            StockQuantity = 15,
-                            Title = "Apple iPhone 13 Klaviatura - B-Class",
-                            ViewCount = 102,
+                            StockQuantity = 8,
+                            Title = "Galaxy Tab S9 Ultra Batareya - B-Class",
+                            ViewCount = 112,
                             WarrantyMonths = 6
                         },
                         new
@@ -2196,175 +2217,7 @@ namespace EHisseler.Web.Migrations
                             Id = 55,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 5,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 1,
-                            Price = 25.00m,
-                            QualityTypeId = 4,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-55",
-                            SellerId = 2,
-                            StockQuantity = 16,
-                            Title = "Samsung Galaxy S24 Ultra Ekran - İşlənmiş Orijinal",
-                            ViewCount = 115,
-                            WarrantyMonths = 7
-                        },
-                        new
-                        {
-                            Id = 56,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 6,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 2,
-                            Price = 28.00m,
-                            QualityTypeId = 1,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-56",
-                            SellerId = 3,
-                            StockQuantity = 17,
-                            Title = "Samsung Galaxy S23 Batareya - Orijinal Zavod",
-                            ViewCount = 128,
-                            WarrantyMonths = 8
-                        },
-                        new
-                        {
-                            Id = 57,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 7,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 3,
-                            Price = 31.00m,
-                            QualityTypeId = 2,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-57",
-                            SellerId = 1,
-                            StockQuantity = 18,
-                            Title = "Samsung Galaxy A54 Arxa Kamera - A-Class",
-                            ViewCount = 141,
-                            WarrantyMonths = 9
-                        },
-                        new
-                        {
-                            Id = 58,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 8,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 5,
-                            Price = 34.00m,
-                            QualityTypeId = 3,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-58",
-                            SellerId = 2,
-                            StockQuantity = 19,
-                            Title = "Xiaomi Xiaomi 13 Pro Ana Plata - B-Class",
-                            ViewCount = 154,
-                            WarrantyMonths = 10
-                        },
-                        new
-                        {
-                            Id = 59,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 9,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 11,
-                            Price = 37.00m,
-                            QualityTypeId = 4,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-59",
-                            SellerId = 3,
-                            StockQuantity = 20,
-                            Title = "Xiaomi Redmi Note 12 Pro Klaviatura - İşlənmiş Orijinal",
-                            ViewCount = 167,
-                            WarrantyMonths = 11
-                        },
-                        new
-                        {
-                            Id = 60,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 10,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 1,
-                            Price = 40.00m,
-                            QualityTypeId = 1,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-60",
-                            SellerId = 1,
-                            StockQuantity = 1,
-                            Title = "Huawei P60 Pro Ekran - Orijinal Zavod",
-                            ViewCount = 180,
-                            WarrantyMonths = 0
-                        },
-                        new
-                        {
-                            Id = 61,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 11,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 2,
-                            Price = 43.00m,
-                            QualityTypeId = 2,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-61",
-                            SellerId = 2,
-                            StockQuantity = 2,
-                            Title = "Apple iPad Pro 12.9 (2024) Batareya - A-Class",
-                            ViewCount = 193,
-                            WarrantyMonths = 1
-                        },
-                        new
-                        {
-                            Id = 62,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
                             DeviceModelId = 12,
                             IsActive = true,
                             IsDeleted = false,
@@ -2372,23 +2225,167 @@ namespace EHisseler.Web.Migrations
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 3,
-                            Price = 46.00m,
-                            QualityTypeId = 3,
+                            PartTypeId = 5,
+                            Price = 13.31m,
+                            QualityTypeId = 2,
                             RowVersion = new byte[0],
-                            SKU = "SKU-62",
-                            SellerId = 3,
-                            StockQuantity = 3,
-                            Title = "Apple iPad Air (2024) Arxa Kamera - B-Class",
-                            ViewCount = 206,
-                            WarrantyMonths = 2
+                            SKU = "SKU-55",
+                            SellerId = 1,
+                            StockQuantity = 7,
+                            Title = "iPad Air Ana Plata - İşlənmiş Orijinal",
+                            ViewCount = 214,
+                            WarrantyMonths = 3
                         },
                         new
                         {
-                            Id = 63,
+                            Id = 56,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 12,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 2,
+                            Price = 99.81m,
+                            QualityTypeId = 3,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-56",
+                            SellerId = 2,
+                            StockQuantity = 13,
+                            Title = "iPad Air Batareya - A-Class",
+                            ViewCount = 357,
+                            WarrantyMonths = 12
+                        },
+                        new
+                        {
+                            Id = 57,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 12,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 1,
+                            Price = 35.0m,
+                            QualityTypeId = 1,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-57",
+                            SellerId = 2,
+                            StockQuantity = 9,
+                            Title = "iPad Air Ekran - Orijinal Zavod",
+                            ViewCount = 29,
+                            WarrantyMonths = 0
+                        },
+                        new
+                        {
+                            Id = 58,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 13,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 8,
+                            Price = 120.1m,
+                            QualityTypeId = 3,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-58",
+                            SellerId = 3,
+                            StockQuantity = 14,
+                            Title = "Galaxy Tab S9 Ultra Şarj Portu - A-Class",
+                            ViewCount = 320,
+                            WarrantyMonths = 12
+                        },
+                        new
+                        {
+                            Id = 59,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 11,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 8,
+                            Price = 45.66m,
+                            QualityTypeId = 5,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-59",
+                            SellerId = 1,
+                            StockQuantity = 14,
+                            Title = "iPad Pro 12.9 Şarj Portu - C-Class",
+                            ViewCount = 10,
+                            WarrantyMonths = 12
+                        },
+                        new
+                        {
+                            Id = 60,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 13,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 4,
+                            Price = 19.8m,
+                            QualityTypeId = 3,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-60",
+                            SellerId = 2,
+                            StockQuantity = 11,
+                            Title = "Galaxy Tab S9 Ultra Ön Kamera - A-Class",
+                            ViewCount = 329,
+                            WarrantyMonths = 3
+                        },
+                        new
+                        {
+                            Id = 61,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 13,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 2,
+                            Price = 53.3m,
+                            QualityTypeId = 3,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-61",
+                            SellerId = 3,
+                            StockQuantity = 14,
+                            Title = "Galaxy Tab S9 Ultra Batareya - A-Class",
+                            ViewCount = 177,
+                            WarrantyMonths = 6
+                        },
+                        new
+                        {
+                            Id = 62,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
                             DeviceModelId = 13,
                             IsActive = true,
                             IsDeleted = false,
@@ -2397,86 +2394,110 @@ namespace EHisseler.Web.Migrations
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
                             PartTypeId = 5,
-                            Price = 49.00m,
+                            Price = 36.86m,
+                            QualityTypeId = 5,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-62",
+                            SellerId = 1,
+                            StockQuantity = 13,
+                            Title = "Galaxy Tab S9 Ultra Ana Plata - C-Class",
+                            ViewCount = 356,
+                            WarrantyMonths = 1
+                        },
+                        new
+                        {
+                            Id = 63,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 13,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 5,
+                            Price = 126.72m,
                             QualityTypeId = 4,
                             RowVersion = new byte[0],
                             SKU = "SKU-63",
-                            SellerId = 1,
-                            StockQuantity = 4,
-                            Title = "Samsung Galaxy Tab S9 Ultra Ana Plata - İşlənmiş Orijinal",
-                            ViewCount = 219,
-                            WarrantyMonths = 3
+                            SellerId = 3,
+                            StockQuantity = 10,
+                            Title = "Galaxy Tab S9 Ultra Ana Plata - B-Class",
+                            ViewCount = 156,
+                            WarrantyMonths = 1
                         },
                         new
                         {
                             Id = 64,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 14,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 12,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 11,
-                            Price = 52.00m,
-                            QualityTypeId = 1,
+                            PartTypeId = 6,
+                            Price = 71.9m,
+                            QualityTypeId = 4,
                             RowVersion = new byte[0],
                             SKU = "SKU-64",
                             SellerId = 2,
-                            StockQuantity = 5,
-                            Title = "Apple MacBook Pro 14 (M3) Klaviatura - Orijinal Zavod",
-                            ViewCount = 232,
-                            WarrantyMonths = 4
+                            StockQuantity = 7,
+                            Title = "iPad Air Arxa Qapaq - B-Class",
+                            ViewCount = 271,
+                            WarrantyMonths = 6
                         },
                         new
                         {
                             Id = 65,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 15,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 13,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 1,
-                            Price = 55.00m,
-                            QualityTypeId = 2,
+                            PartTypeId = 3,
+                            Price = 82.16m,
+                            QualityTypeId = 1,
                             RowVersion = new byte[0],
                             SKU = "SKU-65",
-                            SellerId = 3,
-                            StockQuantity = 6,
-                            Title = "Apple MacBook Air 13 (M2) Ekran - A-Class",
-                            ViewCount = 245,
-                            WarrantyMonths = 5
+                            SellerId = 2,
+                            StockQuantity = 20,
+                            Title = "Galaxy Tab S9 Ultra Arxa Kamera - Orijinal Zavod",
+                            ViewCount = 181,
+                            WarrantyMonths = 0
                         },
                         new
                         {
                             Id = 66,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 16,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 11,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 2,
-                            Price = 58.00m,
-                            QualityTypeId = 3,
+                            PartTypeId = 5,
+                            Price = 30.63m,
+                            QualityTypeId = 2,
                             RowVersion = new byte[0],
                             SKU = "SKU-66",
                             SellerId = 1,
-                            StockQuantity = 7,
-                            Title = "Dell XPS 13 Plus Batareya - B-Class",
-                            ViewCount = 258,
+                            StockQuantity = 2,
+                            Title = "iPad Pro 12.9 Ana Plata - İşlənmiş Orijinal",
+                            ViewCount = 135,
                             WarrantyMonths = 6
                         },
                         new
@@ -2484,104 +2505,8 @@ namespace EHisseler.Web.Migrations
                             Id = 67,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 17,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 3,
-                            Price = 61.00m,
-                            QualityTypeId = 4,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-67",
-                            SellerId = 2,
-                            StockQuantity = 8,
-                            Title = "Dell XPS 15 Arxa Kamera - İşlənmiş Orijinal",
-                            ViewCount = 271,
-                            WarrantyMonths = 7
-                        },
-                        new
-                        {
-                            Id = 68,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 1,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 5,
-                            Price = 64.00m,
-                            QualityTypeId = 1,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-68",
-                            SellerId = 3,
-                            StockQuantity = 9,
-                            Title = "Apple iPhone 15 Pro Max Ana Plata - Orijinal Zavod",
-                            ViewCount = 284,
-                            WarrantyMonths = 8
-                        },
-                        new
-                        {
-                            Id = 69,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 2,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 11,
-                            Price = 67.00m,
-                            QualityTypeId = 2,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-69",
-                            SellerId = 1,
-                            StockQuantity = 10,
-                            Title = "Apple iPhone 15 Pro Klaviatura - A-Class",
-                            ViewCount = 297,
-                            WarrantyMonths = 9
-                        },
-                        new
-                        {
-                            Id = 70,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 3,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 1,
-                            Price = 70.00m,
-                            QualityTypeId = 3,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-70",
-                            SellerId = 2,
-                            StockQuantity = 11,
-                            Title = "Apple iPhone 14 Pro Max Ekran - B-Class",
-                            ViewCount = 10,
-                            WarrantyMonths = 10
-                        },
-                        new
-                        {
-                            Id = 71,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 4,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 13,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
@@ -2589,38 +2514,134 @@ namespace EHisseler.Web.Migrations
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
                             PartTypeId = 2,
-                            Price = 73.00m,
+                            Price = 134.06m,
                             QualityTypeId = 4,
                             RowVersion = new byte[0],
-                            SKU = "SKU-71",
-                            SellerId = 3,
-                            StockQuantity = 12,
-                            Title = "Apple iPhone 13 Batareya - İşlənmiş Orijinal",
-                            ViewCount = 23,
-                            WarrantyMonths = 11
+                            SKU = "SKU-67",
+                            SellerId = 2,
+                            StockQuantity = 19,
+                            Title = "Galaxy Tab S9 Ultra Batareya - B-Class",
+                            ViewCount = 109,
+                            WarrantyMonths = 6
                         },
                         new
                         {
-                            Id = 72,
+                            Id = 68,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 5,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 12,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 3,
-                            Price = 76.00m,
-                            QualityTypeId = 1,
+                            PartTypeId = 8,
+                            Price = 101.85m,
+                            QualityTypeId = 2,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-68",
+                            SellerId = 1,
+                            StockQuantity = 1,
+                            Title = "iPad Air Şarj Portu - İşlənmiş Orijinal",
+                            ViewCount = 467,
+                            WarrantyMonths = 0
+                        },
+                        new
+                        {
+                            Id = 69,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 12,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 4,
+                            Price = 82.51m,
+                            QualityTypeId = 2,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-69",
+                            SellerId = 3,
+                            StockQuantity = 2,
+                            Title = "iPad Air Ön Kamera - İşlənmiş Orijinal",
+                            ViewCount = 295,
+                            WarrantyMonths = 1
+                        },
+                        new
+                        {
+                            Id = 70,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 11,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 10,
+                            Price = 103.46m,
+                            QualityTypeId = 2,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-70",
+                            SellerId = 2,
+                            StockQuantity = 18,
+                            Title = "iPad Pro 12.9 Home Düyməsi - İşlənmiş Orijinal",
+                            ViewCount = 314,
+                            WarrantyMonths = 3
+                        },
+                        new
+                        {
+                            Id = 71,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 17,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 14,
+                            Price = 135.61m,
+                            QualityTypeId = 5,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-71",
+                            SellerId = 2,
+                            StockQuantity = 16,
+                            Title = "XPS 15 Yaddaş - C-Class",
+                            ViewCount = 240,
+                            WarrantyMonths = 3
+                        },
+                        new
+                        {
+                            Id = 72,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 15,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 12,
+                            Price = 97.74m,
+                            QualityTypeId = 5,
                             RowVersion = new byte[0],
                             SKU = "SKU-72",
-                            SellerId = 1,
-                            StockQuantity = 13,
-                            Title = "Samsung Galaxy S24 Ultra Arxa Kamera - Orijinal Zavod",
-                            ViewCount = 36,
+                            SellerId = 2,
+                            StockQuantity = 9,
+                            Title = "MacBook Air 13 Touchpad - C-Class",
+                            ViewCount = 235,
                             WarrantyMonths = 0
                         },
                         new
@@ -2628,247 +2649,7 @@ namespace EHisseler.Web.Migrations
                             Id = 73,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 6,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 5,
-                            Price = 79.00m,
-                            QualityTypeId = 2,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-73",
-                            SellerId = 2,
-                            StockQuantity = 14,
-                            Title = "Samsung Galaxy S23 Ana Plata - A-Class",
-                            ViewCount = 49,
-                            WarrantyMonths = 1
-                        },
-                        new
-                        {
-                            Id = 74,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 7,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 11,
-                            Price = 82.00m,
-                            QualityTypeId = 3,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-74",
-                            SellerId = 3,
-                            StockQuantity = 15,
-                            Title = "Samsung Galaxy A54 Klaviatura - B-Class",
-                            ViewCount = 62,
-                            WarrantyMonths = 2
-                        },
-                        new
-                        {
-                            Id = 75,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 8,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 1,
-                            Price = 85.00m,
-                            QualityTypeId = 4,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-75",
-                            SellerId = 1,
-                            StockQuantity = 16,
-                            Title = "Xiaomi Xiaomi 13 Pro Ekran - İşlənmiş Orijinal",
-                            ViewCount = 75,
-                            WarrantyMonths = 3
-                        },
-                        new
-                        {
-                            Id = 76,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 9,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 2,
-                            Price = 88.00m,
-                            QualityTypeId = 1,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-76",
-                            SellerId = 2,
-                            StockQuantity = 17,
-                            Title = "Xiaomi Redmi Note 12 Pro Batareya - Orijinal Zavod",
-                            ViewCount = 88,
-                            WarrantyMonths = 4
-                        },
-                        new
-                        {
-                            Id = 77,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 10,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 3,
-                            Price = 91.00m,
-                            QualityTypeId = 2,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-77",
-                            SellerId = 3,
-                            StockQuantity = 18,
-                            Title = "Huawei P60 Pro Arxa Kamera - A-Class",
-                            ViewCount = 101,
-                            WarrantyMonths = 5
-                        },
-                        new
-                        {
-                            Id = 78,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 11,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 5,
-                            Price = 94.00m,
-                            QualityTypeId = 3,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-78",
-                            SellerId = 1,
-                            StockQuantity = 19,
-                            Title = "Apple iPad Pro 12.9 (2024) Ana Plata - B-Class",
-                            ViewCount = 114,
-                            WarrantyMonths = 6
-                        },
-                        new
-                        {
-                            Id = 79,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 12,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 11,
-                            Price = 97.00m,
-                            QualityTypeId = 4,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-79",
-                            SellerId = 2,
-                            StockQuantity = 20,
-                            Title = "Apple iPad Air (2024) Klaviatura - İşlənmiş Orijinal",
-                            ViewCount = 127,
-                            WarrantyMonths = 7
-                        },
-                        new
-                        {
-                            Id = 80,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 13,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 1,
-                            Price = 100.00m,
-                            QualityTypeId = 1,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-80",
-                            SellerId = 3,
-                            StockQuantity = 1,
-                            Title = "Samsung Galaxy Tab S9 Ultra Ekran - Orijinal Zavod",
-                            ViewCount = 140,
-                            WarrantyMonths = 8
-                        },
-                        new
-                        {
-                            Id = 81,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 14,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 2,
-                            Price = 103.00m,
-                            QualityTypeId = 2,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-81",
-                            SellerId = 1,
-                            StockQuantity = 2,
-                            Title = "Apple MacBook Pro 14 (M3) Batareya - A-Class",
-                            ViewCount = 153,
-                            WarrantyMonths = 9
-                        },
-                        new
-                        {
-                            Id = 82,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 15,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 3,
-                            Price = 106.00m,
-                            QualityTypeId = 3,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-82",
-                            SellerId = 2,
-                            StockQuantity = 3,
-                            Title = "Apple MacBook Air 13 (M2) Arxa Kamera - B-Class",
-                            ViewCount = 166,
-                            WarrantyMonths = 10
-                        },
-                        new
-                        {
-                            Id = 83,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
                             DeviceModelId = 16,
                             IsActive = true,
                             IsDeleted = false,
@@ -2876,23 +2657,95 @@ namespace EHisseler.Web.Migrations
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 5,
-                            Price = 109.00m,
-                            QualityTypeId = 4,
+                            PartTypeId = 11,
+                            Price = 54.76m,
+                            QualityTypeId = 3,
                             RowVersion = new byte[0],
-                            SKU = "SKU-83",
-                            SellerId = 3,
-                            StockQuantity = 4,
-                            Title = "Dell XPS 13 Plus Ana Plata - İşlənmiş Orijinal",
-                            ViewCount = 179,
-                            WarrantyMonths = 11
+                            SKU = "SKU-73",
+                            SellerId = 2,
+                            StockQuantity = 18,
+                            Title = "XPS 13 Plus Klaviatura - A-Class",
+                            ViewCount = 51,
+                            WarrantyMonths = 1
                         },
                         new
                         {
-                            Id = 84,
+                            Id = 74,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 15,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 11,
+                            Price = 31.39m,
+                            QualityTypeId = 4,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-74",
+                            SellerId = 3,
+                            StockQuantity = 7,
+                            Title = "MacBook Air 13 Klaviatura - B-Class",
+                            ViewCount = 42,
+                            WarrantyMonths = 6
+                        },
+                        new
+                        {
+                            Id = 75,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 17,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 13,
+                            Price = 68.21m,
+                            QualityTypeId = 5,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-75",
+                            SellerId = 2,
+                            StockQuantity = 7,
+                            Title = "XPS 15 RAM - C-Class",
+                            ViewCount = 436,
+                            WarrantyMonths = 6
+                        },
+                        new
+                        {
+                            Id = 76,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 17,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 1,
+                            Price = 76.78m,
+                            QualityTypeId = 5,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-76",
+                            SellerId = 2,
+                            StockQuantity = 12,
+                            Title = "XPS 15 Ekran - C-Class",
+                            ViewCount = 162,
+                            WarrantyMonths = 6
+                        },
+                        new
+                        {
+                            Id = 77,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
                             DeviceModelId = 17,
                             IsActive = true,
                             IsDeleted = false,
@@ -2901,263 +2754,47 @@ namespace EHisseler.Web.Migrations
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
                             PartTypeId = 11,
-                            Price = 112.00m,
-                            QualityTypeId = 1,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-84",
-                            SellerId = 1,
-                            StockQuantity = 5,
-                            Title = "Dell XPS 15 Klaviatura - Orijinal Zavod",
-                            ViewCount = 192,
-                            WarrantyMonths = 0
-                        },
-                        new
-                        {
-                            Id = 85,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 1,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 1,
-                            Price = 115.00m,
-                            QualityTypeId = 2,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-85",
-                            SellerId = 2,
-                            StockQuantity = 6,
-                            Title = "Apple iPhone 15 Pro Max Ekran - A-Class",
-                            ViewCount = 205,
-                            WarrantyMonths = 1
-                        },
-                        new
-                        {
-                            Id = 86,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 2,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 2,
-                            Price = 118.00m,
-                            QualityTypeId = 3,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-86",
-                            SellerId = 3,
-                            StockQuantity = 7,
-                            Title = "Apple iPhone 15 Pro Batareya - B-Class",
-                            ViewCount = 218,
-                            WarrantyMonths = 2
-                        },
-                        new
-                        {
-                            Id = 87,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 3,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 3,
-                            Price = 121.00m,
+                            Price = 48.21m,
                             QualityTypeId = 4,
                             RowVersion = new byte[0],
-                            SKU = "SKU-87",
+                            SKU = "SKU-77",
                             SellerId = 1,
-                            StockQuantity = 8,
-                            Title = "Apple iPhone 14 Pro Max Arxa Kamera - İşlənmiş Orijinal",
-                            ViewCount = 231,
-                            WarrantyMonths = 3
-                        },
-                        new
-                        {
-                            Id = 88,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 4,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 5,
-                            Price = 124.00m,
-                            QualityTypeId = 1,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-88",
-                            SellerId = 2,
-                            StockQuantity = 9,
-                            Title = "Apple iPhone 13 Ana Plata - Orijinal Zavod",
-                            ViewCount = 244,
-                            WarrantyMonths = 4
-                        },
-                        new
-                        {
-                            Id = 89,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 5,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 11,
-                            Price = 127.00m,
-                            QualityTypeId = 2,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-89",
-                            SellerId = 3,
-                            StockQuantity = 10,
-                            Title = "Samsung Galaxy S24 Ultra Klaviatura - A-Class",
-                            ViewCount = 257,
-                            WarrantyMonths = 5
-                        },
-                        new
-                        {
-                            Id = 90,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 6,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 1,
-                            Price = 130.00m,
-                            QualityTypeId = 3,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-90",
-                            SellerId = 1,
-                            StockQuantity = 11,
-                            Title = "Samsung Galaxy S23 Ekran - B-Class",
-                            ViewCount = 270,
+                            StockQuantity = 16,
+                            Title = "XPS 15 Klaviatura - B-Class",
+                            ViewCount = 24,
                             WarrantyMonths = 6
                         },
                         new
                         {
-                            Id = 91,
+                            Id = 78,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 7,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 16,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
                             LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
-                            PartTypeId = 2,
-                            Price = 133.00m,
-                            QualityTypeId = 4,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-91",
-                            SellerId = 2,
-                            StockQuantity = 12,
-                            Title = "Samsung Galaxy A54 Batareya - İşlənmiş Orijinal",
-                            ViewCount = 283,
-                            WarrantyMonths = 7
-                        },
-                        new
-                        {
-                            Id = 92,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 8,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 3,
-                            Price = 136.00m,
-                            QualityTypeId = 1,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-92",
-                            SellerId = 3,
-                            StockQuantity = 13,
-                            Title = "Xiaomi Xiaomi 13 Pro Arxa Kamera - Orijinal Zavod",
-                            ViewCount = 296,
-                            WarrantyMonths = 8
-                        },
-                        new
-                        {
-                            Id = 93,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 9,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 5,
-                            Price = 139.00m,
+                            PartTypeId = 14,
+                            Price = 138.74m,
                             QualityTypeId = 2,
                             RowVersion = new byte[0],
-                            SKU = "SKU-93",
-                            SellerId = 1,
-                            StockQuantity = 14,
-                            Title = "Xiaomi Redmi Note 12 Pro Ana Plata - A-Class",
-                            ViewCount = 9,
-                            WarrantyMonths = 9
-                        },
-                        new
-                        {
-                            Id = 94,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 10,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 11,
-                            Price = 142.00m,
-                            QualityTypeId = 3,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-94",
+                            SKU = "SKU-78",
                             SellerId = 2,
-                            StockQuantity = 15,
-                            Title = "Huawei P60 Pro Klaviatura - B-Class",
-                            ViewCount = 22,
-                            WarrantyMonths = 10
+                            StockQuantity = 20,
+                            Title = "XPS 13 Plus Yaddaş - İşlənmiş Orijinal",
+                            ViewCount = 283,
+                            WarrantyMonths = 0
                         },
                         new
                         {
-                            Id = 95,
+                            Id = 79,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 11,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 17,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
@@ -3165,23 +2802,71 @@ namespace EHisseler.Web.Migrations
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
                             PartTypeId = 1,
-                            Price = 145.00m,
-                            QualityTypeId = 4,
+                            Price = 70.01m,
+                            QualityTypeId = 1,
                             RowVersion = new byte[0],
-                            SKU = "SKU-95",
+                            SKU = "SKU-79",
                             SellerId = 3,
-                            StockQuantity = 16,
-                            Title = "Apple iPad Pro 12.9 (2024) Ekran - İşlənmiş Orijinal",
-                            ViewCount = 35,
-                            WarrantyMonths = 11
+                            StockQuantity = 15,
+                            Title = "XPS 15 Ekran - Orijinal Zavod",
+                            ViewCount = 103,
+                            WarrantyMonths = 0
                         },
                         new
                         {
-                            Id = 96,
+                            Id = 80,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 12,
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 16,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 14,
+                            Price = 73.66m,
+                            QualityTypeId = 3,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-80",
+                            SellerId = 1,
+                            StockQuantity = 11,
+                            Title = "XPS 13 Plus Yaddaş - A-Class",
+                            ViewCount = 399,
+                            WarrantyMonths = 6
+                        },
+                        new
+                        {
+                            Id = 81,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 16,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 14,
+                            Price = 75.84m,
+                            QualityTypeId = 3,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-81",
+                            SellerId = 1,
+                            StockQuantity = 18,
+                            Title = "XPS 13 Plus Yaddaş - A-Class",
+                            ViewCount = 36,
+                            WarrantyMonths = 3
+                        },
+                        new
+                        {
+                            Id = 82,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 15,
                             IsActive = true,
                             IsDeleted = false,
                             IsUpdateSubmission = false,
@@ -3189,70 +2874,22 @@ namespace EHisseler.Web.Migrations
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
                             PartTypeId = 2,
-                            Price = 148.00m,
+                            Price = 142.95m,
                             QualityTypeId = 1,
                             RowVersion = new byte[0],
-                            SKU = "SKU-96",
+                            SKU = "SKU-82",
                             SellerId = 1,
-                            StockQuantity = 17,
-                            Title = "Apple iPad Air (2024) Batareya - Orijinal Zavod",
-                            ViewCount = 48,
+                            StockQuantity = 7,
+                            Title = "MacBook Air 13 Batareya - Orijinal Zavod",
+                            ViewCount = 439,
                             WarrantyMonths = 0
                         },
                         new
                         {
-                            Id = 97,
+                            Id = 83,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 13,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 3,
-                            Price = 151.00m,
-                            QualityTypeId = 2,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-97",
-                            SellerId = 2,
-                            StockQuantity = 18,
-                            Title = "Samsung Galaxy Tab S9 Ultra Arxa Kamera - A-Class",
-                            ViewCount = 61,
-                            WarrantyMonths = 1
-                        },
-                        new
-                        {
-                            Id = 98,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
-                            DeviceModelId = 14,
-                            IsActive = true,
-                            IsDeleted = false,
-                            IsUpdateSubmission = false,
-                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MinOrderQuantity = 1,
-                            ModerationStatus = 2,
-                            PartTypeId = 5,
-                            Price = 154.00m,
-                            QualityTypeId = 3,
-                            RowVersion = new byte[0],
-                            SKU = "SKU-98",
-                            SellerId = 3,
-                            StockQuantity = 19,
-                            Title = "Apple MacBook Pro 14 (M3) Ana Plata - B-Class",
-                            ViewCount = 74,
-                            WarrantyMonths = 2
-                        },
-                        new
-                        {
-                            Id = 99,
-                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
                             DeviceModelId = 15,
                             IsActive = true,
                             IsDeleted = false,
@@ -3261,22 +2898,118 @@ namespace EHisseler.Web.Migrations
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
                             PartTypeId = 11,
-                            Price = 157.00m,
-                            QualityTypeId = 4,
+                            Price = 103.72m,
+                            QualityTypeId = 2,
                             RowVersion = new byte[0],
-                            SKU = "SKU-99",
+                            SKU = "SKU-83",
+                            SellerId = 2,
+                            StockQuantity = 19,
+                            Title = "MacBook Air 13 Klaviatura - İşlənmiş Orijinal",
+                            ViewCount = 495,
+                            WarrantyMonths = 1
+                        },
+                        new
+                        {
+                            Id = 84,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 17,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 12,
+                            Price = 94.82m,
+                            QualityTypeId = 3,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-84",
                             SellerId = 1,
-                            StockQuantity = 20,
-                            Title = "Apple MacBook Air 13 (M2) Klaviatura - İşlənmiş Orijinal",
-                            ViewCount = 87,
+                            StockQuantity = 4,
+                            Title = "XPS 15 Touchpad - A-Class",
+                            ViewCount = 408,
+                            WarrantyMonths = 1
+                        },
+                        new
+                        {
+                            Id = 85,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 16,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 2,
+                            Price = 140.04m,
+                            QualityTypeId = 5,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-85",
+                            SellerId = 1,
+                            StockQuantity = 19,
+                            Title = "XPS 13 Plus Batareya - C-Class",
+                            ViewCount = 356,
+                            WarrantyMonths = 6
+                        },
+                        new
+                        {
+                            Id = 86,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 17,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 11,
+                            Price = 106.69m,
+                            QualityTypeId = 1,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-86",
+                            SellerId = 3,
+                            StockQuantity = 8,
+                            Title = "XPS 15 Klaviatura - Orijinal Zavod",
+                            ViewCount = 62,
                             WarrantyMonths = 3
                         },
                         new
                         {
-                            Id = 100,
+                            Id = 87,
                             CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Currency = "AZN",
-                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi.",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 14,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 1,
+                            Price = 69.97m,
+                            QualityTypeId = 3,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-87",
+                            SellerId = 3,
+                            StockQuantity = 12,
+                            Title = "MacBook Pro 14 Ekran - A-Class",
+                            ViewCount = 45,
+                            WarrantyMonths = 12
+                        },
+                        new
+                        {
+                            Id = 88,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
                             DeviceModelId = 16,
                             IsActive = true,
                             IsDeleted = false,
@@ -3285,15 +3018,423 @@ namespace EHisseler.Web.Migrations
                             MinOrderQuantity = 1,
                             ModerationStatus = 2,
                             PartTypeId = 1,
-                            Price = 10.00m,
+                            Price = 24.78m,
+                            QualityTypeId = 4,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-88",
+                            SellerId = 2,
+                            StockQuantity = 12,
+                            Title = "XPS 13 Plus Ekran - B-Class",
+                            ViewCount = 335,
+                            WarrantyMonths = 6
+                        },
+                        new
+                        {
+                            Id = 89,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 15,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 14,
+                            Price = 83.04m,
+                            QualityTypeId = 2,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-89",
+                            SellerId = 3,
+                            StockQuantity = 9,
+                            Title = "MacBook Air 13 Yaddaş - İşlənmiş Orijinal",
+                            ViewCount = 325,
+                            WarrantyMonths = 12
+                        },
+                        new
+                        {
+                            Id = 90,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 17,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 15,
+                            Price = 92.95m,
+                            QualityTypeId = 4,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-90",
+                            SellerId = 3,
+                            StockQuantity = 11,
+                            Title = "XPS 15 Adapter - B-Class",
+                            ViewCount = 446,
+                            WarrantyMonths = 1
+                        },
+                        new
+                        {
+                            Id = 91,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 14,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 12,
+                            Price = 115.07m,
+                            QualityTypeId = 4,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-91",
+                            SellerId = 1,
+                            StockQuantity = 19,
+                            Title = "MacBook Pro 14 Touchpad - B-Class",
+                            ViewCount = 322,
+                            WarrantyMonths = 6
+                        },
+                        new
+                        {
+                            Id = 92,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 16,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 1,
+                            Price = 35.46m,
+                            QualityTypeId = 4,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-92",
+                            SellerId = 2,
+                            StockQuantity = 7,
+                            Title = "XPS 13 Plus Ekran - B-Class",
+                            ViewCount = 191,
+                            WarrantyMonths = 3
+                        },
+                        new
+                        {
+                            Id = 93,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 16,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 12,
+                            Price = 133.22m,
+                            QualityTypeId = 5,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-93",
+                            SellerId = 3,
+                            StockQuantity = 18,
+                            Title = "XPS 13 Plus Touchpad - C-Class",
+                            ViewCount = 15,
+                            WarrantyMonths = 12
+                        },
+                        new
+                        {
+                            Id = 94,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 15,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 2,
+                            Price = 66.9m,
+                            QualityTypeId = 2,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-94",
+                            SellerId = 3,
+                            StockQuantity = 18,
+                            Title = "MacBook Air 13 Batareya - İşlənmiş Orijinal",
+                            ViewCount = 398,
+                            WarrantyMonths = 1
+                        },
+                        new
+                        {
+                            Id = 95,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 17,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 15,
+                            Price = 23.03m,
+                            QualityTypeId = 4,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-95",
+                            SellerId = 1,
+                            StockQuantity = 8,
+                            Title = "XPS 15 Adapter - B-Class",
+                            ViewCount = 217,
+                            WarrantyMonths = 1
+                        },
+                        new
+                        {
+                            Id = 96,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 16,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 13,
+                            Price = 84.33m,
+                            QualityTypeId = 4,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-96",
+                            SellerId = 3,
+                            StockQuantity = 14,
+                            Title = "XPS 13 Plus RAM - B-Class",
+                            ViewCount = 391,
+                            WarrantyMonths = 12
+                        },
+                        new
+                        {
+                            Id = 97,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 16,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 13,
+                            Price = 52.93m,
+                            QualityTypeId = 4,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-97",
+                            SellerId = 2,
+                            StockQuantity = 8,
+                            Title = "XPS 13 Plus RAM - B-Class",
+                            ViewCount = 71,
+                            WarrantyMonths = 1
+                        },
+                        new
+                        {
+                            Id = 98,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 16,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 2,
+                            Price = 35.92m,
+                            QualityTypeId = 5,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-98",
+                            SellerId = 3,
+                            StockQuantity = 7,
+                            Title = "XPS 13 Plus Batareya - C-Class",
+                            ViewCount = 388,
+                            WarrantyMonths = 6
+                        },
+                        new
+                        {
+                            Id = 99,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 16,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 12,
+                            Price = 51.47m,
                             QualityTypeId = 1,
                             RowVersion = new byte[0],
+                            SKU = "SKU-99",
+                            SellerId = 1,
+                            StockQuantity = 12,
+                            Title = "XPS 13 Plus Touchpad - Orijinal Zavod",
+                            ViewCount = 101,
+                            WarrantyMonths = 3
+                        },
+                        new
+                        {
+                            Id = 100,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 14,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 5,
+                            Price = 146.4m,
+                            QualityTypeId = 3,
+                            RowVersion = new byte[0],
                             SKU = "SKU-100",
+                            SellerId = 1,
+                            StockQuantity = 18,
+                            Title = "MacBook Pro 14 Ana Plata - A-Class",
+                            ViewCount = 159,
+                            WarrantyMonths = 1
+                        },
+                        new
+                        {
+                            Id = 101,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 17,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 2,
+                            Price = 49.81m,
+                            QualityTypeId = 1,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-101",
+                            SellerId = 3,
+                            StockQuantity = 16,
+                            Title = "XPS 15 Batareya - Orijinal Zavod",
+                            ViewCount = 235,
+                            WarrantyMonths = 3
+                        },
+                        new
+                        {
+                            Id = 102,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 15,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 1,
+                            Price = 25.97m,
+                            QualityTypeId = 3,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-102",
                             SellerId = 2,
-                            StockQuantity = 1,
-                            Title = "Dell XPS 13 Plus Ekran - Orijinal Zavod",
-                            ViewCount = 100,
-                            WarrantyMonths = 4
+                            StockQuantity = 3,
+                            Title = "MacBook Air 13 Ekran - A-Class",
+                            ViewCount = 215,
+                            WarrantyMonths = 6
+                        },
+                        new
+                        {
+                            Id = 103,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 14,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 1,
+                            Price = 123.56m,
+                            QualityTypeId = 2,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-103",
+                            SellerId = 1,
+                            StockQuantity = 10,
+                            Title = "MacBook Pro 14 Ekran - İşlənmiş Orijinal",
+                            ViewCount = 53,
+                            WarrantyMonths = 1
+                        },
+                        new
+                        {
+                            Id = 104,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 14,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 14,
+                            Price = 120.7m,
+                            QualityTypeId = 5,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-104",
+                            SellerId = 3,
+                            StockQuantity = 8,
+                            Title = "MacBook Pro 14 Yaddaş - C-Class",
+                            ViewCount = 407,
+                            WarrantyMonths = 12
+                        },
+                        new
+                        {
+                            Id = 105,
+                            CreatedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Currency = "AZN",
+                            Description = "Yüksək keyfiyyətli ehtiyat hissəsi. Zəmanətli və etibarlı.",
+                            DeviceModelId = 17,
+                            IsActive = true,
+                            IsDeleted = false,
+                            IsUpdateSubmission = false,
+                            LastModifiedDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MinOrderQuantity = 1,
+                            ModerationStatus = 2,
+                            PartTypeId = 15,
+                            Price = 130.42m,
+                            QualityTypeId = 4,
+                            RowVersion = new byte[0],
+                            SKU = "SKU-105",
+                            SellerId = 2,
+                            StockQuantity = 14,
+                            Title = "XPS 15 Adapter - B-Class",
+                            ViewCount = 166,
+                            WarrantyMonths = 12
                         });
                 });
 
@@ -3301,20 +3442,22 @@ namespace EHisseler.Web.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("DisplayOrder")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsMain")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<int>("SparePartId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -4129,22 +4272,24 @@ namespace EHisseler.Web.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AdminId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Reason")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("ReviewDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("SparePartId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int>("Status")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -4157,28 +4302,30 @@ namespace EHisseler.Web.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("NewStock")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int?>("PerformedByUserId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int>("PreviousStock")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int>("Quantity")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int>("SellerId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int>("SparePartId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -4191,21 +4338,23 @@ namespace EHisseler.Web.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("IsAccessory")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsPortable")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Key")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -4394,45 +4543,47 @@ namespace EHisseler.Web.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ApprovalStatus")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsBlocked")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Phone")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("RejectionReason")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<int>("Role")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -4443,7 +4594,7 @@ namespace EHisseler.Web.Migrations
                         {
                             Id = 1,
                             ApprovalStatus = 2,
-                            CreatedDate = new DateTime(2026, 10, 5, 17, 42, 3, 365, DateTimeKind.Local).AddTicks(397),
+                            CreatedDate = new DateTime(2026, 10, 9, 0, 29, 38, 898, DateTimeKind.Local).AddTicks(1294),
                             Email = "elcin@example.com",
                             FirstName = "Elçin",
                             IsBlocked = false,
@@ -4457,7 +4608,7 @@ namespace EHisseler.Web.Migrations
                         {
                             Id = 2,
                             ApprovalStatus = 2,
-                            CreatedDate = new DateTime(2026, 10, 5, 17, 42, 3, 365, DateTimeKind.Local).AddTicks(411),
+                            CreatedDate = new DateTime(2026, 10, 9, 0, 29, 38, 899, DateTimeKind.Local).AddTicks(7625),
                             Email = "rashad@example.com",
                             FirstName = "Rəşad",
                             IsBlocked = false,
@@ -4471,7 +4622,7 @@ namespace EHisseler.Web.Migrations
                         {
                             Id = 3,
                             ApprovalStatus = 2,
-                            CreatedDate = new DateTime(2026, 10, 5, 17, 42, 3, 365, DateTimeKind.Local).AddTicks(416),
+                            CreatedDate = new DateTime(2026, 10, 9, 0, 29, 38, 899, DateTimeKind.Local).AddTicks(7666),
                             Email = "nigar@example.com",
                             FirstName = "Nigar",
                             IsBlocked = false,
@@ -4485,7 +4636,7 @@ namespace EHisseler.Web.Migrations
                         {
                             Id = 4,
                             ApprovalStatus = 2,
-                            CreatedDate = new DateTime(2026, 10, 5, 17, 42, 3, 365, DateTimeKind.Local).AddTicks(419),
+                            CreatedDate = new DateTime(2026, 10, 9, 0, 29, 38, 899, DateTimeKind.Local).AddTicks(7671),
                             Email = "admin@example.com",
                             FirstName = "Baş",
                             IsBlocked = false,
@@ -4499,7 +4650,7 @@ namespace EHisseler.Web.Migrations
                         {
                             Id = 5,
                             ApprovalStatus = 2,
-                            CreatedDate = new DateTime(2026, 10, 5, 17, 42, 3, 365, DateTimeKind.Local).AddTicks(422),
+                            CreatedDate = new DateTime(2026, 10, 9, 0, 29, 38, 899, DateTimeKind.Local).AddTicks(7673),
                             Email = "samir@example.com",
                             FirstName = "Samir",
                             IsBlocked = false,
@@ -4513,7 +4664,7 @@ namespace EHisseler.Web.Migrations
                         {
                             Id = 6,
                             ApprovalStatus = 2,
-                            CreatedDate = new DateTime(2026, 10, 5, 17, 42, 3, 365, DateTimeKind.Local).AddTicks(425),
+                            CreatedDate = new DateTime(2026, 10, 9, 0, 29, 38, 899, DateTimeKind.Local).AddTicks(7675),
                             Email = "vuqar@example.com",
                             FirstName = "Vuqar",
                             IsBlocked = false,
@@ -4527,7 +4678,7 @@ namespace EHisseler.Web.Migrations
                         {
                             Id = 7,
                             ApprovalStatus = 2,
-                            CreatedDate = new DateTime(2026, 10, 5, 17, 42, 3, 365, DateTimeKind.Local).AddTicks(431),
+                            CreatedDate = new DateTime(2026, 10, 9, 0, 29, 38, 899, DateTimeKind.Local).AddTicks(7678),
                             Email = "leyla@example.com",
                             FirstName = "Leyla",
                             IsBlocked = false,
@@ -4541,7 +4692,7 @@ namespace EHisseler.Web.Migrations
                         {
                             Id = 8,
                             ApprovalStatus = 1,
-                            CreatedDate = new DateTime(2026, 10, 5, 17, 42, 3, 365, DateTimeKind.Local).AddTicks(433),
+                            CreatedDate = new DateTime(2026, 10, 9, 0, 29, 38, 899, DateTimeKind.Local).AddTicks(7680),
                             Email = "taleh@example.com",
                             FirstName = "Taleh",
                             IsBlocked = false,
@@ -4555,7 +4706,7 @@ namespace EHisseler.Web.Migrations
                         {
                             Id = 9,
                             ApprovalStatus = 1,
-                            CreatedDate = new DateTime(2026, 10, 5, 17, 42, 3, 365, DateTimeKind.Local).AddTicks(436),
+                            CreatedDate = new DateTime(2026, 10, 9, 0, 29, 38, 899, DateTimeKind.Local).AddTicks(7682),
                             Email = "rustam@example.com",
                             FirstName = "Rustam",
                             IsBlocked = false,

@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Api, imageSrc } from '../api';
 import { Loading, ErrorBox } from './Categories';
@@ -84,8 +84,14 @@ function Details() {
                 <p className="product-desc">{seller.contactPerson}</p>
                 {seller.phone && <a href={`tel:${seller.phone}`} className="btn-outline text-decoration-none d-inline-block me-2"><i className="bi bi-telephone"></i> {seller.phone}</a>}
                 {seller.whatsAppNumber && (
-                  <a href={`https://wa.me/${seller.whatsAppNumber.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="btn-outline text-decoration-none d-inline-block">
-                    <i className="bi bi-whatsapp"></i> WhatsApp
+                  <a
+                    href={`https://wa.me/${seller.whatsAppNumber.replace(/\D/g, '')}?text=${encodeURIComponent(`Salam, ${part.title} (Elan ID: ${part.id}) haqqında e-hisse.az saytından yazıram. https://e-hisse.az/elan/${part.id}`)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn-outline text-decoration-none d-inline-block"
+                    style={{ backgroundColor: '#25D366', color: '#fff', borderColor: '#25D366' }}
+                  >
+                    <i className="bi bi-whatsapp"></i> WhatsApp ilə Əlaqə
                   </a>
                 )}
               </div>

@@ -1,204 +1,414 @@
-﻿import React, { useState, useEffect } from 'react';
-import { api as apiFetch } from '../../api';
-import { Table, statusBadge, Tabs, Modal } from '../../components/Panel';
+import React, { useState, useEffect } from 'react';
+import { api as apiFetch, imageSrc } from '../../api';
+import { Table, statusBadge, Tabs, Modal, fmtDate } from '../../components/Panel';
 
 export default function AdminRequests() {
   const [activeTab, setActiveTab] = useState('registration');
-  const [activeSubTab, setActiveSubTab] = useState('new');
-  const [requests, setRequests] = useState([]);
-  const [adRequests, setAdRequests] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Modal states
+  const [pendingUsers, setPendingUsers] = useState([]);
+  const [newAds, setNewAds] = useState([]);
+  const [updateAds, setUpdateAds] = useState([]);
+
+  // Modals & Actions
   const [selectedAd, setSelectedAd] = useState(null);
   const [rejectModalOpen, setRejectModalOpen] = useState(false);
+  const [rejectType, setRejectType] = useState('ad'); // 'ad' | 'user'
+  const [rejectTargetId, setRejectTargetId] = useState(null);
   const [rejectReason, setRejectReason] = useState('');
   const [notification, setNotification] = useState('');
+  const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
     loadRequests();
-    // Mock Ad requests
-    setAdRequests([
-      { Id: 101, Title: 'iPhone 13 Ekran', User: 'Eli', Phone: '+994501234567', Email: 'eli@mail.com', Status: 'Pending', Type: 'New' },
-      { Id: 102, Title: 'Samsung S22 Batareya', User: 'Veli', Phone: '+994551234567', Email: '', Status: 'Pending', Type: 'Update' }
-    ]);
   }, []);
 
   async function loadRequests() {
+    setLoading(true);
     try {
       const data = await apiFetch('/api/Admin/Requests');
-      setRequests(data);
+      setPendingUsers(data.pendingUsers || []);
+      setNewAds(data.newAdRequests || []);
+      setUpdateAds(data.updateAdRequests || []);
     } catch (err) {
       console.error(err);
-      // Mock if API fails
-      setRequests([
-         { Id: 1, Name: 'Test User', Email: 'test@test.com', Role: 'Usta', CreatedAt: '2023-01-01', Status: 'Pending' }
-      ]);
+      showNotification('Məlumatları yükləyərkən xəta baş verdi: ' + err.message, 'danger');
     } finally {
       setLoading(false);
     }
   }
 
-  // Registration handlers
-  async function handleApproveReg(id) {
-    if (!window.confirm('Təsdiqləmək istədiyinizə əminsiniz?')) return;
+  function showNotification(msg, type = 'success') {
+    setNotification({ text: msg, type });
+    setTimeout(() => setNotification(''), 5000);
+  }
+
+  // ============================================
+  // İSTİFADƏÇİ TƏSDİQ / İMTİNA
+  // ============================================
+  async function handleApproveUser(id) {
+    if (!window.confirm('Bu istifadəçinin qeydiyyatını təsdiqləmək istədiyinizə əminsiniz?')) return;
+    setActionLoading(true);
     try {
-      await apiFetch(`/api/Admin/ApproveRequest/${id}`, { method: 'POST' });
+      const res = await apiFetch(`/api/Admin/ApproveUser/${id}`, { method: 'POST' });
+      showNotification(res.message || 'İstifadəçi uğurla təsdiqləndi.');
       loadRequests();
     } catch (err) {
-      alert('Xəta: ' + err.message);
+      showNotification('Xəta: ' + err.message, 'danger');
+    } finally {
+      setActionLoading(false);
     }
   }
 
-  async function handleRejectReg(id) {
-    if (!window.confirm('Rədd etmək istədiyinizə əminsiniz?')) return;
+  function openRejectUserModal(id) {
+    setRejectType('user');
+    setRejectTargetId(id);
+    setRejectReason('');
+    setRejectModalOpen(true);
+  }
+
+  // ============================================
+  // ELAN TƏSDİQ / İMTİNA / BƏRPA
+  // ============================================
+  async function handleApproveAd(id) {
+    if (!window.confirm('Bu elanı təsdiq edib ictimai səhifəyə buraxmaq istədiyinizə əminsiniz?')) return;
+    setActionLoading(true);
     try {
-      await apiFetch(`/api/Admin/RejectRequest/${id}`, { method: 'POST' });
+      const res = await apiFetch(`/api/Admin/ApproveAd/${id}`, { method: 'POST' });
+      showNotification(res.message || 'Elan təsdiqləndi.');
+      setSelectedAd(null);
       loadRequests();
     } catch (err) {
-      alert('Xəta: ' + err.message);
+      showNotification('Xəta: ' + err.message, 'danger');
+    } finally {
+      setActionLoading(false);
     }
   }
 
-  // Ad requests handlers
-  function showNotification(msg) {
-    setNotification(msg);
-    setTimeout(() => setNotification(''), 4000);
+  async function handleRestoreAd(id) {
+    if (!window.confirm('Stoku yenilənmiş elanı bərpa edib aktivləşdirmək istədiyinizə əminsiniz?')) return;
+    setActionLoading(true);
+    try {
+      const res = await apiFetch(`/api/Admin/RestoreAd/${id}`, { method: 'POST' });
+      showNotification(res.message || 'Elan bərpa edildi və aktivləşdirildi.');
+      setSelectedAd(null);
+      loadRequests();
+    } catch (err) {
+      showNotification('Xəta: ' + err.message, 'danger');
+    } finally {
+      setActionLoading(false);
+    }
   }
 
-  function handleAcceptAd() {
-    if (!selectedAd) return;
-    let msg = `Elan qəbul edildi. SMS göndərildi: ${selectedAd.Phone}.`;
-    if (selectedAd.Email) msg += ` Email göndərildi: ${selectedAd.Email}.`;
-    
-    setAdRequests(adRequests.filter(a => a.Id !== selectedAd.Id));
-    setSelectedAd(null);
-    showNotification(msg);
+  function openRejectAdModal(id) {
+    setRejectType('ad');
+    setRejectTargetId(id);
+    setRejectReason('');
+    setRejectModalOpen(true);
   }
 
-  function handleRejectAdSubmit(e) {
+  async function handleRejectSubmit(e) {
     e.preventDefault();
     if (!rejectReason.trim()) {
-      alert('Zəhmət olmasa səbəb daxil edin');
+      alert('Zəhmət olmasa imtina səbəbini qeyd edin.');
       return;
     }
-    let msg = `Elan rədd edildi (Səbəb: ${rejectReason}). SMS göndərildi: ${selectedAd.Phone}.`;
-    if (selectedAd.Email) msg += ` Email göndərildi: ${selectedAd.Email}.`;
-    
-    setAdRequests(adRequests.filter(a => a.Id !== selectedAd.Id));
-    setRejectModalOpen(false);
-    setSelectedAd(null);
-    setRejectReason('');
-    showNotification(msg);
+    setActionLoading(true);
+    try {
+      if (rejectType === 'user') {
+        const res = await apiFetch(`/api/Admin/RejectUser/${rejectTargetId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reason: rejectReason })
+        });
+        showNotification(res.message || 'İstifadəçi müraciəti rədd edildi.');
+      } else {
+        const res = await apiFetch(`/api/Admin/RejectAd/${rejectTargetId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reason: rejectReason })
+        });
+        showNotification(res.message || 'Elan rədd edildi.');
+      }
+      setRejectModalOpen(false);
+      setSelectedAd(null);
+      loadRequests();
+    } catch (err) {
+      showNotification('Xəta: ' + err.message, 'danger');
+    } finally {
+      setActionLoading(false);
+    }
   }
 
-  const regColumns = [
-    { header: 'ID', accessor: 'Id', key: 'Id' },
-    { header: 'Ad', accessor: 'Name', key: 'Name' },
-    { header: 'Email', accessor: 'Email', key: 'Email' },
-    { header: 'Müraciət Növü', accessor: 'Role', key: 'Role' },
-    { header: 'Tarix', accessor: 'CreatedAt', key: 'CreatedAt' },
-    { header: 'Status', key: 'Status', render: (req) => statusBadge(req.Status) },
+  // Cədvəl sütunları
+  const userColumns = [
+    { key: 'id', label: 'ID' },
+    { key: 'fullName', label: 'Ad Soyad' },
+    { key: 'username', label: 'İstifadəçi Adı' },
+    { key: 'email', label: 'Email', render: (u) => u.email || '—' },
+    { key: 'phone', label: 'Telefon' },
+    { key: 'role', label: 'Rol', render: (u) => <span className="badge bg-secondary">{u.role}</span> },
+    { key: 'createdDate', label: 'Qeydiyyat Tarixi', render: (u) => fmtDate(u.createdDate) },
     {
-      header: 'Əməliyyatlar',
-      key: 'Actions',
-      render: (req) => (
-        <div className="flex space-x-2" style={{display: 'flex', gap: '0.5rem'}}>
-          {req.Status === 'Pending' && (
-            <>
-              <button onClick={() => handleApproveReg(req.Id)} className="btn btn-sm btn-outline text-success" style={{borderColor: 'green', color: 'green'}}>Təsdiqlə</button>
-              <button onClick={() => handleRejectReg(req.Id)} className="btn btn-sm btn-outline text-danger" style={{borderColor: 'red', color: 'red'}}>Rədd et</button>
-            </>
-          )}
+      key: 'actions',
+      label: 'Əməliyyatlar',
+      render: (u) => (
+        <div className="d-flex gap-2">
+          <button
+            onClick={() => handleApproveUser(u.id)}
+            disabled={actionLoading}
+            className="btn btn-sm"
+            style={{ backgroundColor: '#28a745', color: '#fff' }}
+          >
+            <i className="bi bi-check-lg me-1"></i> Təsdiq et
+          </button>
+          <button
+            onClick={() => openRejectUserModal(u.id)}
+            disabled={actionLoading}
+            className="btn btn-sm btn-outline-danger"
+          >
+            <i className="bi bi-x-lg me-1"></i> İmtina et
+          </button>
         </div>
       )
     }
   ];
 
   const adColumns = [
-    { header: 'ID', accessor: 'Id', key: 'Id' },
-    { header: 'Başlıq', accessor: 'Title', key: 'Title' },
-    { header: 'İstifadəçi', accessor: 'User', key: 'User' },
-    { header: 'Status', key: 'Status', render: (req) => statusBadge(req.Status) },
+    { key: 'id', label: 'ID' },
     {
-      header: 'Əməliyyatlar',
-      key: 'Actions',
-      render: (req) => (
-        <button onClick={() => setSelectedAd(req)} className="btn btn-sm btn-outline" style={{borderColor: 'var(--accent)', color: 'var(--accent)'}}>Detallara bax</button>
+      key: 'image',
+      label: 'Şəkil',
+      render: (a) => {
+        const mainImg = a.images?.find(i => i.isMain) || a.images?.[0];
+        const src = mainImg ? imageSrc(mainImg.imageUrl || mainImg.url) : null;
+        return src ? (
+          <img src={src} alt="" style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '6px' }} />
+        ) : (
+          <div style={{ width: '48px', height: '48px', background: 'var(--border-color)', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <i className="bi bi-image text-muted"></i>
+          </div>
+        );
+      }
+    },
+    { key: 'title', label: 'Başlıq' },
+    { key: 'model', label: 'Cihaz', render: (a) => `${a.brandName || ''} ${a.modelName || ''}`.trim() || '—' },
+    { key: 'partTypeName', label: 'Hissə Növü' },
+    { key: 'qualityTypeName', label: 'Keyfiyyət', render: (a) => <span className="badge bg-info text-dark">{a.qualityTypeName}</span> },
+    { key: 'price', label: 'Qiymət', render: (a) => <strong>{a.price} AZN</strong> },
+    { key: 'stockQuantity', label: 'Stok', render: (a) => <span className={`badge ${a.stockQuantity > 0 ? 'bg-success' : 'bg-danger'}`}>{a.stockQuantity} ədəd</span> },
+    { key: 'sellerName', label: 'Satıcı' },
+    {
+      key: 'actions',
+      label: 'Əməliyyatlar',
+      render: (a) => (
+        <button
+          onClick={() => setSelectedAd(a)}
+          className="btn btn-sm btn-outline"
+          style={{ borderColor: 'var(--accent)', color: 'var(--accent)' }}
+        >
+          <i className="bi bi-eye me-1"></i> Detallara bax
+        </button>
       )
     }
   ];
 
-  if (loading) return <div>Yüklənir...</div>;
+  // Restock Ads: Items where stock was restocked (stockQuantity > 0 and update submission)
+  const restockAds = updateAds.filter(a => a.stockQuantity > 0 && !a.isActive);
+  const regularUpdateAds = updateAds.filter(a => !(a.stockQuantity > 0 && !a.isActive));
+
+  const tabsConfig = [
+    { key: 'registration', label: 'Qeydiyyat Sorğuları', count: pendingUsers.length },
+    { key: 'newAds', label: 'Yeni Elanlar', count: newAds.length },
+    { key: 'updateAds', label: 'Redaktə Yoxlamaları', count: regularUpdateAds.length },
+    { key: 'restockAds', label: 'Stok Bərpası Sorğuları', count: restockAds.length },
+  ];
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-4 section-title">Gözləyən Müraciətlər</h2>
-      
-      {notification && <div className="alert alert-success" style={{backgroundColor: '#d4edda', color: '#155724', padding: '1rem', borderRadius: '8px', marginBottom: '1rem'}}>{notification}</div>}
+      <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h3 className="section-title mb-0">Moderasiya və Gözləyən Sorğular</h3>
+        <button onClick={loadRequests} className="btn btn-sm btn-outline">
+          <i className="bi bi-arrow-clockwise me-1"></i> Yenilə
+        </button>
+      </div>
 
-      <Tabs 
-        tabs={[
-          { key: 'registration', label: 'Qeydiyyat müraciətləri' },
-          { key: 'ads', label: 'Elan müraciətləri' }
-        ]}
-        active={activeTab}
-        onChange={setActiveTab}
-      />
+      {notification && (
+        <div className={`alert alert-${notification.type} mb-4 d-flex align-items-center justify-content-between`}>
+          <span>{notification.text}</span>
+          <button type="button" className="btn-close" onClick={() => setNotification('')}></button>
+        </div>
+      )}
 
-      <div style={{ marginTop: '1.5rem' }}>
-        {activeTab === 'registration' && (
-          <Table columns={regColumns} rows={requests} empty="Qeydiyyat müraciəti yoxdur" />
-        )}
+      <Tabs tabs={tabsConfig} active={activeTab} onChange={setActiveTab} />
 
-        {activeTab === 'ads' && (
-          <div>
-            <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-              <button className={`btn ${activeSubTab === 'new' ? 'bg-accent text-dark' : 'btn-outline'}`} onClick={() => setActiveSubTab('new')}>Yeni</button>
-              <button className={`btn ${activeSubTab === 'update' ? 'bg-accent text-dark' : 'btn-outline'}`} onClick={() => setActiveSubTab('update')}>Yenilənmə</button>
-            </div>
-            
-            <Table 
-              columns={adColumns} 
-              rows={adRequests.filter(a => a.Type.toLowerCase() === activeSubTab)} 
-              empty="Elan müraciəti yoxdur" 
-            />
-          </div>
+      <div className="mt-4">
+        {loading ? (
+          <div className="text-center py-5 text-muted">Məlumatlar yüklənir...</div>
+        ) : (
+          <>
+            {activeTab === 'registration' && (
+              <Table columns={userColumns} rows={pendingUsers} empty="Gözləyən qeydiyyat müraciəti yoxdur." />
+            )}
+
+            {activeTab === 'newAds' && (
+              <Table columns={adColumns} rows={newAds} empty="Təsdiq gözləyən yeni elan yoxdur." />
+            )}
+
+            {activeTab === 'updateAds' && (
+              <Table columns={adColumns} rows={regularUpdateAds} empty="Redaktə yoxlamasında olan elan yoxdur." />
+            )}
+
+            {activeTab === 'restockAds' && (
+              <Table columns={adColumns} rows={restockAds} empty="Stok bərpası gözləyən elan yoxdur." />
+            )}
+          </>
         )}
       </div>
 
-      {/* Ad Detail Modal */}
-      <Modal open={!!selectedAd && !rejectModalOpen} title="Elan Detalları" onClose={() => setSelectedAd(null)}>
+      {/* Elan Detalları Modalı */}
+      <Modal open={!!selectedAd && !rejectModalOpen} title="Elan Təfərrüatları və Moderasiya" onClose={() => setSelectedAd(null)}>
         {selectedAd && (
           <div>
-            <p><strong>Başlıq:</strong> {selectedAd.Title}</p>
-            <p><strong>İstifadəçi:</strong> {selectedAd.User}</p>
-            <p><strong>Telefon:</strong> {selectedAd.Phone}</p>
-            <p><strong>Email:</strong> {selectedAd.Email || 'Yoxdur'}</p>
-            
-            <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
-              <button className="btn bg-accent text-dark w-100" onClick={handleAcceptAd}>Qəbul et</button>
-              <button className="btn btn-outline w-100" style={{borderColor: 'red', color: 'red'}} onClick={() => setRejectModalOpen(true)}>İmtina et</button>
+            <div className="row g-3">
+              <div className="col-12 col-md-6">
+                <p className="mb-1 text-muted">Başlıq:</p>
+                <h6>{selectedAd.title}</h6>
+
+                <p className="mb-1 text-muted mt-3">Kateqoriya / Brend / Model:</p>
+                <div>
+                  <strong>{selectedAd.categoryName || '—'}</strong> &gt; {selectedAd.brandName} &gt; {selectedAd.modelName}
+                </div>
+
+                <p className="mb-1 text-muted mt-3">Hissə növü və Keyfiyyət:</p>
+                <div>
+                  <span className="badge bg-secondary me-2">{selectedAd.partTypeName}</span>
+                  <span className="badge bg-info text-dark">{selectedAd.qualityTypeName}</span>
+                </div>
+
+                <p className="mb-1 text-muted mt-3">Qiymət və Zəmanət:</p>
+                <div>
+                  <strong className="text-accent fs-5">{selectedAd.price} AZN</strong>
+                  <span className="ms-3 text-muted">Zəmanət: {selectedAd.warrantyMonths} ay</span>
+                </div>
+
+                <p className="mb-1 text-muted mt-3">Stok və Minimum Sifariş:</p>
+                <div>
+                  <strong>{selectedAd.stockQuantity} ədəd</strong> (Min. sifariş: {selectedAd.minOrderQuantity} ədəd)
+                </div>
+              </div>
+
+              <div className="col-12 col-md-6">
+                <p className="mb-1 text-muted">Satıcı Məlumatları:</p>
+                <div className="p-3 rounded" style={{ background: 'var(--surface-color)', border: '1px solid var(--border-color)' }}>
+                  <div><strong>{selectedAd.sellerName}</strong></div>
+                  <div>Telefon: {selectedAd.sellerPhone || '—'}</div>
+                  {selectedAd.sellerWhatsApp && (
+                    <div>WhatsApp: <a href={`https://wa.me/${selectedAd.sellerWhatsApp.replace(/\+/g, '')}`} target="_blank" rel="noreferrer">{selectedAd.sellerWhatsApp}</a></div>
+                  )}
+                </div>
+
+                <p className="mb-1 text-muted mt-3">Təsvir:</p>
+                <div className="p-2 rounded" style={{ background: 'var(--surface-color)', minHeight: '80px', whiteSpace: 'pre-wrap' }}>
+                  {selectedAd.description || 'Təsvir daxil edilməyib.'}
+                </div>
+              </div>
+
+              {/* Şəkillər Qalereyası */}
+              {selectedAd.images && selectedAd.images.length > 0 && (
+                <div className="col-12 mt-3">
+                  <p className="mb-2 text-muted">Yüklənmiş Şəkillər:</p>
+                  <div className="d-flex gap-2 flex-wrap">
+                    {selectedAd.images.map((img, idx) => {
+                      const src = imageSrc(img.imageUrl || img.url);
+                      return (
+                        <a key={img.id || idx} href={src} target="_blank" rel="noreferrer">
+                          <img
+                            src={src}
+                            alt=""
+                            style={{
+                              width: '80px',
+                              height: '80px',
+                              objectFit: 'cover',
+                              borderRadius: '8px',
+                              border: img.isMain ? '2px solid var(--accent)' : '1px solid var(--border-color)'
+                            }}
+                          />
+                        </a>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Əməliyyat Düymələri */}
+            <div className="d-flex gap-2 justify-content-end mt-4 pt-3 border-top">
+              {activeTab === 'restockAds' ? (
+                <button
+                  onClick={() => handleRestoreAd(selectedAd.id)}
+                  disabled={actionLoading}
+                  className="btn"
+                  style={{ backgroundColor: '#28a745', color: '#fff' }}
+                >
+                  <i className="bi bi-arrow-repeat me-1"></i> Bərpanı Təsdiq et və Aktivləşdir
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleApproveAd(selectedAd.id)}
+                  disabled={actionLoading}
+                  className="btn"
+                  style={{ backgroundColor: '#28a745', color: '#fff' }}
+                >
+                  <i className="bi bi-check-lg me-1"></i> Elanı Təsdiq et
+                </button>
+              )}
+
+              <button
+                onClick={() => openRejectAdModal(selectedAd.id)}
+                disabled={actionLoading}
+                className="btn btn-outline-danger"
+              >
+                <i className="bi bi-x-lg me-1"></i> İmtina et
+              </button>
+
+              <button
+                onClick={() => setSelectedAd(null)}
+                className="btn btn-outline-secondary"
+              >
+                Bağla
+              </button>
             </div>
           </div>
         )}
       </Modal>
 
-      {/* Reject Reason Modal */}
-      <Modal open={rejectModalOpen} title="İmtina Səbəbi" onClose={() => setRejectModalOpen(false)}>
-        <form onSubmit={handleRejectAdSubmit}>
-          <textarea 
-            className="form-control mb-3" 
-            rows="4" 
-            placeholder="İmtina səbəbini daxil edin..." 
-            value={rejectReason} 
-            onChange={e => setRejectReason(e.target.value)} 
-            required
-          ></textarea>
-          <button type="submit" className="btn w-100" style={{backgroundColor: 'red', color: 'white'}}>Rədd et və Bildiriş Göndər</button>
+      {/* İmtina Səbəbi Modalı */}
+      <Modal open={rejectModalOpen} title="İmtina Səbəbi Daxil Edin" onClose={() => setRejectModalOpen(false)}>
+        <form onSubmit={handleRejectSubmit}>
+          <div className="mb-3">
+            <label className="form-label text-muted">
+              {rejectType === 'user' ? 'İstifadəçiyə bildiriləcək səbəb:' : 'Satıcıya bildiriləcək imtina səbəbi:'}
+            </label>
+            <textarea
+              className="form-control"
+              rows="4"
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+              placeholder="Qaydalara uyğunsuzluq, məlumatların çatışmazlığı və s."
+              required
+            ></textarea>
+          </div>
+          <div className="d-flex justify-content-end gap-2">
+            <button type="button" className="btn btn-outline-secondary" onClick={() => setRejectModalOpen(false)}>
+              Ləğv et
+            </button>
+            <button type="submit" disabled={actionLoading} className="btn btn-danger">
+              <i className="bi bi-send me-1"></i> İmtina Qərarını Təsdiqlə
+            </button>
+          </div>
         </form>
       </Modal>
-
     </div>
   );
 }

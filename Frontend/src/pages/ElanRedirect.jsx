@@ -18,7 +18,7 @@ function ElanRedirect({ user }) {
         
         if (ad && (ad.sellerId === user.id || ad.sellerUsername === user.username)) {
           // Change to actual warehouse ad route if different
-          navigate(`/warehouse/ads/${id}`, { replace: true });
+          navigate(`/warehouse/part/${id}`, { replace: true });
         } else {
           navigate(`/details/${id}`, { replace: true });
         }

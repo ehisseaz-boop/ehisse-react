@@ -44,8 +44,8 @@
                         <p class="text-muted small mb-2">@roleName @(!string.IsNullOrEmpty(seller.ContactPerson) ? $"- {seller.ContactPerson}" : "")</p>
 
                         <div class="d-flex justify-content-center gap-3 mb-3 small text-muted">
-                            <div title="Aktiv elan sayı"><i class="bi bi-box-seam me-1"></i>Aktiv: <strong>@stats.Item2</strong></div>
-                            <div title="İndiyədək yerləşdiyi elan sayı"><i class="bi bi-list-check me-1"></i>Cəmi: <strong>@stats.Item1</strong></div>
+                            <div title="Aktiv elan sayı"><i class="bi bi-box-seam me-1 text-success"></i>Aktiv elan: <strong class="text-dark">@stats.Item2</strong></div>
+                            <div title="İndiyədək yerləşdiyi elan sayı"><i class="bi bi-clock-history me-1"></i>İndiyədək: <strong class="text-dark">@stats.Item1</strong></div>
                         </div>
 
                         <div class="d-flex justify-content-center gap-2 mb-4">

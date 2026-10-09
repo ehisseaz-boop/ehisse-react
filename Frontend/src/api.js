@@ -48,7 +48,12 @@ export const Api = {
   // HomeController
   catalog: (params) => api('/api/Home/Index', { params }),
   allCategories: () => api('/api/Home/Categories'),
-  sellers: (searchString) => api('/api/Home/Saticilar', { params: { searchString } }),
+  sellers: (params) => {
+    if (typeof params === 'string') {
+      return api('/api/Home/Saticilar', { params: { searchString: params } });
+    }
+    return api('/api/Home/Saticilar', { params });
+  },
   help: () => api('/api/Home/Yardim'),
   contact: () => api('/api/Home/Elaqe'),
   details: (id) => api(`/api/Home/Details/${id}`),

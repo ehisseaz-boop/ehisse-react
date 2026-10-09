@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Routes, Route, Link, NavLink, useNavigate } from 'react-router-dom';
+import { Routes, Route, Link, NavLink, useNavigate, Navigate } from 'react-router-dom';
 import './index.css';
 import { Api } from './api';
 import Home from './pages/Home';
@@ -131,6 +131,10 @@ function App() {
           <Route path="/elaqe" element={<Elaqe />} />
           <Route path="/details/:id" element={<Details user={user} />} />
           <Route path="/elan/:id" element={<ElanRedirect user={user} />} />
+          <Route path="/elan-yerlesdir" element={<Navigate to="/warehouse/add-part" replace />} />
+          <Route path="/elan-elave-et" element={<Navigate to="/warehouse/add-part" replace />} />
+          <Route path="/yeni-elan" element={<Navigate to="/warehouse/add-part" replace />} />
+          <Route path="/add-part" element={<Navigate to="/warehouse/add-part" replace />} />
           <Route path="/login" element={<Login onLogin={refreshUser} />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -138,8 +142,11 @@ function App() {
           <Route path="/warehouse" element={<RequireRole roles={['Anbardar', 'Usta']} user={user}><PanelLayout title="Satıcı kabineti" links={warehouseLinks} /></RequireRole>}>
             <Route index element={<WarehouseIndex />} />
             <Route path="part/:id" element={<WarehousePartDetails />} />
+            <Route path="ads/:id" element={<WarehousePartDetails />} />
             <Route path="add-part" element={<PartForm />} />
+            <Route path="add" element={<PartForm />} />
             <Route path="edit-part/:id" element={<PartForm />} />
+            <Route path="edit/:id" element={<PartForm />} />
             <Route path="sales" element={<SalesHistory />} />
             <Route path="settings" element={<Settings />} />
           </Route>
