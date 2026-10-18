@@ -380,20 +380,18 @@ function Home() {
       </Modal>
 
       <section id="catalog-section">
-        <div className="section-header" style={{ alignItems: 'center' }}>
-          <div>
-            <div className="section-label">
-              {searchTerm || activeCategoryId ? 'Axtarış nəticələri' : 'Anbarda olanlar'}
+        {(searchTerm || activeCategoryId) && (
+          <div className="section-header" style={{ alignItems: 'center' }}>
+            <div>
+              <div className="section-label">Axtarış nəticələri</div>
+              <h2 className="section-title">Tapılan hissələr</h2>
             </div>
-            <h2 className="section-title">
-              {searchTerm || activeCategoryId ? 'Tapılan hissələr' : 'Populyar hissələr'}
-            </h2>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button className="btn-outline" style={{ padding: '0.5rem', borderColor: 'var(--text-muted)' }}><i className="bi bi-grid-fill text-accent"></i></button>
+              <button className="btn-outline" style={{ padding: '0.5rem' }}><i className="bi bi-list"></i></button>
+            </div>
           </div>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <button className="btn-outline" style={{ padding: '0.5rem', borderColor: 'var(--text-muted)' }}><i className="bi bi-grid-fill text-accent"></i></button>
-            <button className="btn-outline" style={{ padding: '0.5rem' }}><i className="bi bi-list"></i></button>
-          </div>
-        </div>
+        )}
 
         {activeSellerId && (
           <div className="d-flex align-items-center justify-content-between p-2 px-3 rounded mb-3" style={{ background: 'var(--accent-dark)', border: '1px solid var(--accent)' }}>
