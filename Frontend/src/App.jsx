@@ -208,7 +208,7 @@ function App() {
           <Route path="/terms" element={<Terms />} />
           <Route path="/thank-you" element={<ThankYou />} />
 
-          <Route path="/warehouse" element={<RequireRole roles={['Anbardar', 'Usta']} user={user}><PanelLayout title="Satıcı kabineti" links={warehouseLinks} /></RequireRole>}>
+          <Route path="/warehouse" element={<RequireRole roles={['Anbardar', 'Usta', 'Admin']} user={user}><PanelLayout title="Satıcı kabineti" links={warehouseLinks} /></RequireRole>}>
             <Route index element={<WarehouseIndex />} />
             <Route path="part/:id" element={<WarehousePartDetails />} />
             <Route path="ads/:id" element={<WarehousePartDetails />} />
