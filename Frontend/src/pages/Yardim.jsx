@@ -2,8 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Api } from '../api';
 import { Loading, ErrorBox } from './Categories';
+import { usePageSeo } from '../utils/seo';
 
 function Yardim() {
+  usePageSeo({
+    title: 'Yardım Mərkəzi və FAQ',
+    description: 'e-hisse.az istifadəsi, elan yerləşdirmə, sifariş və çatdırılma haqqında tez-tez verilən suallar.'
+  });
+
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
   const [open, setOpen] = useState(0);

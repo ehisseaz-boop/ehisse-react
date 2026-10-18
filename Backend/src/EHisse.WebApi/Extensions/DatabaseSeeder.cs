@@ -1,0 +1,184 @@
+using EHisse.Domain.Entities;
+using EHisse.Domain.Enums;
+using EHisse.Persistence.Context;
+using Microsoft.EntityFrameworkCore;
+
+namespace EHisse.WebApi.Extensions;
+
+public static class DatabaseSeeder
+{
+    public static void SeedDatabase(IApplicationBuilder app)
+    {
+        using var scope = app.ApplicationServices.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        try
+        {
+            context.Database.Migrate();
+        }
+        catch
+        {
+            context.Database.EnsureCreated();
+        }
+
+        // Fix any null SKUs in legacy data
+        var nullSkus = context.SpareParts.Where(s => s.SKU == null || s.SKU == "").ToList();
+        if (nullSkus.Any())
+        {
+            foreach (var item in nullSkus)
+            {
+                item.SKU = "LEGACY-" + item.Id;
+            }
+            context.SaveChanges();
+        }
+
+        var categories = context.Categories.ToList();
+        foreach (var c in categories)
+        {
+            if (c.Name.Contains("Avadanl") && (c.Name.Contains("b?k?") || c.Name.Contains("bəkə")))
+            {
+                c.Name = "Şəbəkə Avadanlıqları";
+            }
+            else if (c.Name.Contains("T?mir") || c.Name.Contains("Al?tl?r") || c.Name.Contains("Alətlər"))
+            {
+                c.Name = "Alətlər və Təmir Avadanlıqları";
+            }
+            else if (c.Name.Contains("Saat"))
+            {
+                c.Name = "Smart Saat ehtiyat hissələri";
+            }
+            else if (c.Name.Contains("Qulaq"))
+            {
+                c.Name = "Qulaqlıq ehtiyat hissələri";
+            }
+        }
+        context.SaveChanges();
+
+        // Seeding default categories if needed
+        if (context.Categories.Count() < 10)
+        {
+            var newCategories = new[]
+            {
+                new Category { Name = "Smart Saat ehtiyat hissələri", DisplayOrder = 4, IsActive = true },
+                new Category { Name = "Qulaqlıq ehtiyat hissələri", DisplayOrder = 5, IsActive = true },
+                new Category { Name = "Kompüter (PC) ehtiyat hissələri", DisplayOrder = 6, IsActive = true },
+                new Category { Name = "Televizor ehtiyat hissələri", DisplayOrder = 7, IsActive = true },
+                new Category { Name = "Oyun Konsolu ehtiyat hissələri", DisplayOrder = 8, IsActive = true },
+                new Category { Name = "Foto/Video Kamera ehtiyat hissələri", DisplayOrder = 9, IsActive = true },
+                new Category { Name = "Alətlər və Təmir Avadanlıqları", DisplayOrder = 10, IsActive = true },
+                new Category { Name = "Dron ehtiyat hissələri", DisplayOrder = 11, IsActive = true },
+                new Category { Name = "Elektrikli Samokat ehtiyat hissələri", DisplayOrder = 12, IsActive = true },
+                new Category { Name = "Şəbəkə Avadanlıqları", DisplayOrder = 13, IsActive = true },
+                new Category { Name = "Adapterlər və Kabellər", DisplayOrder = 14, IsActive = true }
+            };
+
+            foreach (var cat in newCategories)
+            {
+                if (!context.Categories.Any(c => c.Name == cat.Name))
+                {
+                    context.Categories.Add(cat);
+                }
+            }
+            context.SaveChanges();
+        }
+
+        // Seeding default relationships for empty categories
+        var emptyCategories = context.Categories.Where(c => !context.DeviceModels.Any(m => m.CategoryId == c.Id)).ToList();
+        if (emptyCategories.Any())
+        {
+            var otherBrand = context.DeviceBrands.FirstOrDefault(b => b.Name == "Digər");
+            if (otherBrand == null)
+            {
+                otherBrand = new DeviceBrand { Name = "Digər", IsActive = true };
+                context.DeviceBrands.Add(otherBrand);
+                context.SaveChanges();
+            }
+
+            var otherPartType = context.SparePartTypes.FirstOrDefault(pt => pt.Name == "Digər");
+            if (otherPartType == null)
+            {
+                otherPartType = new SparePartType { Name = "Digər", Key = "other", IsAccessory = false, IsPortable = false };
+                context.SparePartTypes.Add(otherPartType);
+                context.SaveChanges();
+            }
+
+            foreach (var cat in emptyCategories)
+            {
+                if (!context.CategoryBrands.Any(cb => cb.CategoryId == cat.Id && cb.BrandId == otherBrand.Id))
+                    context.CategoryBrands.Add(new CategoryBrand { CategoryId = cat.Id, BrandId = otherBrand.Id });
+
+                if (!context.CategoryPartTypes.Any(cpt => cpt.CategoryId == cat.Id && cpt.PartTypeId == otherPartType.Id))
+                    context.CategoryPartTypes.Add(new CategoryPartType { CategoryId = cat.Id, PartTypeId = otherPartType.Id });
+
+                context.DeviceModels.Add(new DeviceModel
+                {
+                    CategoryId = cat.Id,
+                    BrandId = otherBrand.Id,
+                    Name = "Digər (Ümumi)",
+                    ModelCode = "OTHER",
+                    ReleaseYear = DateTime.Now.Year,
+                    IsActive = true
+                });
+            }
+            context.SaveChanges();
+        }
+
+        // Seed sample products if needed
+        if (context.SpareParts.Count() < 17)
+        {
+            var firstSeller = context.SellerProfiles.FirstOrDefault();
+            var firstModel = context.DeviceModels.FirstOrDefault();
+            var firstPartType = context.SparePartTypes.FirstOrDefault();
+            var firstQuality = context.QualityTypes.FirstOrDefault();
+
+            if (firstSeller != null && firstModel != null && firstPartType != null && firstQuality != null)
+            {
+                var rnd = new Random();
+                for (int i = 1; i <= 15; i++)
+                {
+                    context.SpareParts.Add(new SparePart
+                    {
+                        Title = $"Nümunəvi Ehtiyat Hissəsi {i}",
+                        Description = $"Bu sistem tərəfindən avtomatik əlavə edilmiş test məhsuludur {i}.",
+                        Price = rnd.Next(10, 500) + 0.99m,
+                        StockQuantity = rnd.Next(1, 100),
+                        DeviceModelId = firstModel.Id,
+                        PartTypeId = firstPartType.Id,
+                        QualityTypeId = firstQuality.Id,
+                        SellerId = firstSeller.Id,
+                        ModerationStatus = ApprovalStatus.Approved,
+                        IsDeleted = false,
+                        CreatedDate = DateTime.UtcNow,
+                        ViewCount = 0,
+                        SKU = $"DUMMY-SKU-{i}"
+                    });
+                }
+                context.SaveChanges();
+            }
+        }
+
+        // Seed images for spare parts if missing
+        var sparePartsWithoutImages = context.SpareParts.Include(sp => sp.Images).Where(sp => !sp.Images.Any()).ToList();
+        if (sparePartsWithoutImages.Any())
+        {
+            var random = new Random();
+            var availableImages = new[]
+            {
+                "/images/images (1).jpg", "/images/images (2).jpg", "/images/images (3).jpg",
+                "/images/images (4).jpg", "/images/images (5).jpg", "/images/images (6).jpg",
+                "/images/images (7).jpg", "/images/images.jpg"
+            };
+
+            foreach (var sp in sparePartsWithoutImages)
+            {
+                sp.Images.Add(new SparePartImage
+                {
+                    ImageUrl = availableImages[random.Next(availableImages.Length)],
+                    IsMain = true,
+                    DisplayOrder = 1
+                });
+            }
+            context.SaveChanges();
+        }
+    }
+}

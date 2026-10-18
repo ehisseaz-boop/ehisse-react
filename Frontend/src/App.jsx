@@ -28,6 +28,14 @@ import WarehousePartDetails from './pages/warehouse/WarehousePartDetails';
 import PartForm from './pages/warehouse/PartForm';
 import { SalesHistory, Settings } from './pages/warehouse/WarehouseExtra';
 
+import WarehouseDeleted from './pages/warehouse/WarehouseDeleted';
+
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
+import ThankYou from './pages/ThankYou';
+import CookieBanner from './components/CookieBanner';
+import MobileStickyBar from './components/MobileStickyBar';
+
 import { RequireRole, PanelLayout } from './components/Panel';
 
 const adminLinks = [
@@ -43,6 +51,7 @@ const warehouseLinks = [
   { to: '/warehouse', end: true, icon: 'bi-card-list', label: 'Elanlarım' },
   { to: '/warehouse/add-part', icon: 'bi-plus-lg', label: 'Yeni elan' },
   { to: '/warehouse/sales', icon: 'bi-receipt', label: 'Satış tarixçəsi' },
+  { to: '/warehouse/deleted', icon: 'bi-trash3', label: 'Silinən elanlar' },
   { to: '/warehouse/settings', icon: 'bi-gear', label: 'Profil və əlaqə' },
 ];
 
@@ -138,6 +147,9 @@ function App() {
           <Route path="/login" element={<Login onLogin={refreshUser} />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/thank-you" element={<ThankYou />} />
 
           <Route path="/warehouse" element={<RequireRole roles={['Anbardar', 'Usta']} user={user}><PanelLayout title="Satıcı kabineti" links={warehouseLinks} /></RequireRole>}>
             <Route index element={<WarehouseIndex />} />
@@ -148,6 +160,7 @@ function App() {
             <Route path="edit-part/:id" element={<PartForm />} />
             <Route path="edit/:id" element={<PartForm />} />
             <Route path="sales" element={<SalesHistory />} />
+            <Route path="deleted" element={<WarehouseDeleted />} />
             <Route path="settings" element={<Settings />} />
           </Route>
 
@@ -166,18 +179,80 @@ function App() {
         </Routes>
       </main>
 
-      <footer>
-        <div className="container footer-content">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <div className="logo-icon" style={{ width: '24px', height: '24px', fontSize: '0.9rem', marginRight: 0 }}>e</div>
-              <strong style={{ color: 'var(--text-main)' }}>- hisse.az</strong>
+      <footer className="mt-5 border-top" style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border-color)' }}>
+        <div className="container py-4">
+          <div className="row g-4 justify-content-between">
+            {/* 1. Brend və Haqqında */}
+            <div className="col-12 col-md-4">
+              <div className="d-flex align-items-center gap-2 mb-2">
+                <div className="logo-icon">e</div>
+                <strong style={{ color: 'var(--text-main)', fontSize: '1.2rem' }}>- hisse<span className="text-accent">.az</span></strong>
+              </div>
+              <p className="text-muted small mb-3">
+                Mobil telefon, planşet və noutbuk ehtiyat hissələrinin ən böyük axtarış və sifariş platforması. Ustalar və anbarlar üçün etibarlı həll.
+              </p>
+              <div className="footer-status d-inline-block">
+                <i className="bi bi-shield-check text-accent me-1"></i> Bütün sistemlər aktivdir
+              </div>
             </div>
-            <span className="d-none d-md-inline">© 2024 e-hisse.az - Ustalar üçün daha ağıllı alış-veriş</span>
+
+            {/* 2. Sürətli Keçidlər */}
+            <div className="col-6 col-md-2">
+              <h6 className="text-main fw-bold mb-3">Keçidlər</h6>
+              <ul className="list-unstyled small d-flex flex-column gap-2 mb-0">
+                <li><Link to="/" className="text-muted text-decoration-none hover-accent">Kataloq</Link></li>
+                <li><Link to="/categories" className="text-muted text-decoration-none hover-accent">Kateqoriyalar</Link></li>
+                <li><Link to="/saticilar" className="text-muted text-decoration-none hover-accent">Satıcılar</Link></li>
+                <li><Link to="/yardim" className="text-muted text-decoration-none hover-accent">Yardım və FAQ</Link></li>
+              </ul>
+            </div>
+
+            {/* 3. Hüquqi və Qaydalar */}
+            <div className="col-6 col-md-3">
+              <h6 className="text-main fw-bold mb-3">Hüquqi</h6>
+              <ul className="list-unstyled small d-flex flex-column gap-2 mb-0">
+                <li><Link to="/privacy" className="text-muted text-decoration-none hover-accent">Gizlilik Politikası (Məxfilik)</Link></li>
+                <li><Link to="/terms" className="text-muted text-decoration-none hover-accent">Kullanım Koşulları (İstifadə)</Link></li>
+                <li><Link to="/elaqe" className="text-muted text-decoration-none hover-accent">Bizə yazın</Link></li>
+              </ul>
+            </div>
+
+            {/* 4. Əlaqə məlumatları */}
+            <div className="col-12 col-md-3">
+              <h6 className="text-main fw-bold mb-3">Əlaqə Məlumatları</h6>
+              <div className="small text-muted d-flex flex-column gap-2">
+                <div>
+                  <i className="bi bi-telephone-fill text-accent me-2"></i>
+                  <a href="tel:+994102523226" className="text-decoration-none text-main">+994 10 252 32 26</a>
+                </div>
+                <div>
+                  <i className="bi bi-whatsapp text-success me-2"></i>
+                  <a href="https://wa.me/994103961501" target="_blank" rel="noreferrer" className="text-decoration-none text-main">+994 10 396 15 01</a>
+                </div>
+                <div>
+                  <i className="bi bi-envelope-fill text-accent me-2"></i>
+                  <a href="mailto:info@e-hisse.az" className="text-decoration-none text-main">info@e-hisse.az</a>
+                </div>
+                <div>
+                  <i className="bi bi-geo-alt-fill text-accent me-2"></i>
+                  <span>Bakı şəh., 28 May / Nizami küç.</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="footer-status">Sistem işləkdir</div>
+
+          <div className="border-top pt-3 mt-4 d-flex flex-column flex-md-row justify-content-between align-items-center text-muted small" style={{ borderColor: 'var(--border-color)' }}>
+            <div>© {new Date().getFullYear()} e-hisse.az. Bütün hüquqlar qorunur.</div>
+            <div className="mt-2 mt-md-0">Doğru hissəni tez tap.</div>
+          </div>
         </div>
       </footer>
+
+      {/* Sabit Mobil Alt Bar (Sticky Mobile CTA) */}
+      <MobileStickyBar user={user} />
+
+      {/* Çərəz Bildirişi (Cookie Banner) */}
+      <CookieBanner />
     </>
   );
 }

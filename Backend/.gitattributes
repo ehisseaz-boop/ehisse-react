@@ -1,0 +1,31 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# C# and .NET
+*.cs text diff=csharp
+*.csproj text
+*.sln text
+*.slnx text
+*.json text
+*.config text
+
+# Web
+*.html text diff=html
+*.css text diff=css
+*.js text
+*.ts text
+*.tsx text
+*.jsx text
+
+# Documents
+*.md text
+*.txt text
+
+# Binaries
+*.dll binary
+*.exe binary
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.webp binary
+*.ico binary

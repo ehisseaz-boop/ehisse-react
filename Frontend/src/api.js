@@ -2,6 +2,58 @@
 // Vite proxy sayəsində nisbi URL istifadə olunur (/api/...), brauzer URL-i dəyişmir.
 const BASE = import.meta.env.VITE_API_URL || '';
 
+function sanitizeString(str) {
+  if (typeof str !== 'string') return str;
+  return str
+    .replace(/\u00c6\u008f/g, 'Ə')
+    .replace(/\u00c6\s*\u008f/g, 'Ə')
+    .replace(/\u00e6\u008f/g, 'ə')
+    .replace(/\u00c6[\s\u0080-\u009f]*liyev/gi, 'Əliyev')
+    .replace(/\u00c6[\s\u0080-\u009f]*hmədli/gi, 'Əhmədli')
+    .replace(/\u00c6[\s\u0080-\u009f]*sas/gi, 'Əsas')
+    .replace(/Æ\x8f/g, 'Ə')
+    .replace(/Æ\s*liyev/gi, 'Əliyev')
+    .replace(/Æ\s*hmədli/gi, 'Əhmədli')
+    .replace(/Æ\s*sas/gi, 'Əsas')
+    .replace(/Æ/g, 'Ə')
+    .replace(/Â·/g, '·')
+    .replace(/Â/g, '')
+    .replace(/\bHiss\?si\b/gi, 'Hissəsi')
+    .replace(/\b\?n Kamera\b/gi, 'Ön Kamera')
+    .replace(/\b\?arj\b/gi, 'Şarj')
+    .replace(/\bSetkas\?\b/gi, 'Setkası')
+    .replace(/\bT\?mir\b/gi, 'Təmir')
+    .replace(/\bM\?rk\?zi\b/gi, 'Mərkəzi')
+    .replace(/\b\?\?l\?nmi\?\b/gi, 'İşlənmiş')
+    .replace(/\b\?stifad\b/gi, 'İstifad')
+    .replace(/k\?\?\./g, 'küç.')
+    .replace(/k\?\?h\./g, 'küç.')
+    .replace(/rayonu,\s*C\?f\?r/g, 'rayonu, Cəfər')
+    .replace(/Cabbarl\?\s*küç\./g, 'Cabbarlı küç.')
+    .replace(/N\?simi/g, 'Nəsimi')
+    .replace(/N\?rimanov/g, 'Nərimanov')
+    .replace(/M\?mm\?dov/g, 'Məmmədov')
+    .replace(/H\?s\?nova/g, 'Həsənova')
+    .replace(/El\?in/g, 'Elçin')
+    .replace(/R\?\?ad/g, 'Rəşad')
+    .replace(/Bak\?,/g, 'Bakı,')
+    .replace(/\s+/g, ' ');
+}
+
+function deepSanitize(val) {
+  if (!val) return val;
+  if (typeof val === 'string') return sanitizeString(val);
+  if (Array.isArray(val)) return val.map(deepSanitize);
+  if (typeof val === 'object') {
+    const res = {};
+    for (const [k, v] of Object.entries(val)) {
+      res[k] = deepSanitize(v);
+    }
+    return res;
+  }
+  return val;
+}
+
 export async function api(path, { method = 'GET', body, params } = {}) {
   let url = BASE + path;
   if (params) {
@@ -27,12 +79,12 @@ export async function api(path, { method = 'GET', body, params } = {}) {
     let message = data?.message || data?.title;
     if (!message && res.status === 401) message = 'Bu əməliyyat üçün daxil olmalısınız.';
     if (!message && res.status === 403) message = 'Bu əməliyyat üçün icazəniz yoxdur.';
-    const err = new Error(message || `Xəta: ${res.status}`);
+    const err = new Error(sanitizeString(message || `Xəta: ${res.status}`));
     err.status = res.status;
     err.data = data;
     throw err;
   }
-  return data;
+  return deepSanitize(data);
 }
 
 export function imageSrc(url) {
@@ -88,6 +140,8 @@ export const Api = {
     deactivate: (id) => api(`/api/Warehouse/ToggleActive/${id}`, { method: 'POST' }),
     toggleActive: (id) => api(`/api/Warehouse/ToggleActive/${id}`, { method: 'POST' }),
     remove: (id) => api(`/api/Warehouse/DeletePart/${id}`, { method: 'DELETE' }),
+    deletedAds: () => api('/api/Warehouse/DeletedAds'),
+    restorePart: (id) => api(`/api/Warehouse/RestorePart/${id}`, { method: 'POST' }),
     recordSale: (id, expectedStock) => api(`/api/Warehouse/RecordSale/${id}`, { method: 'POST', body: { expectedStock } }),
     salesHistory: () => api('/api/Warehouse/SalesHistory'),
     settings: () => api('/api/Warehouse/Settings'),

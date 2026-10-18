@@ -1,0 +1,6 @@
+@EHisse.WebApi_HostAddress = http://localhost:5250
+
+GET {{EHisse.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

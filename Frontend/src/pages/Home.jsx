@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Api, imageSrc } from '../api';
 import { Modal } from '../components/Panel';
+import { usePageSeo } from '../utils/seo';
 
 const isToday = (dateString) => {
     if (!dateString) return false;
@@ -12,7 +13,30 @@ const isToday = (dateString) => {
            date.getFullYear() === today.getFullYear();
 };
 
+function formatCleanTitle(part) {
+  let model = (part.modelName || '').trim();
+  let brand = (part.brandName || '').trim();
+  let partType = (part.partTypeName || '').trim();
+
+  // Əgər model adı artıq brendlə başlamırsa (məs: "15 Pro" -> "iPhone 15 Pro")
+  let fullModel = model;
+  if (brand && !model.toLowerCase().startsWith(brand.toLowerCase())) {
+    fullModel = `${brand} ${model}`;
+  }
+
+  // Təmiz ad formalaşdırırıq: məs. "iPhone 16 Pro Max Batareya"
+  if (fullModel && partType) {
+    return `${fullModel} ${partType}`;
+  }
+  return part.title || fullModel || 'Ehtiyat hissəsi';
+}
+
 function Home() {
+  usePageSeo({
+    title: 'Doğru hissəni tez tap - Ehtiyat hissələri kataloqu',
+    description: 'Telefon, planşet və noutbuk ehtiyat hissələri. Yoxlanılmış satıcılardan, real stokla ekran, batareya, korpus və aksesuarlar.'
+  });
+
   const [searchParams, setSearchParams] = useSearchParams();
   const initialCategory = searchParams.get('categoryId') ? Number(searchParams.get('categoryId')) : null;
   const initialSeller = searchParams.get('sellerId') ? Number(searchParams.get('sellerId')) : null;
@@ -163,7 +187,7 @@ function Home() {
           <form className="w-100" style={{ maxWidth: '900px' }} onSubmit={(e) => { e.preventDefault(); setPage(1); fetchProducts(searchTerm, activeCategoryId, activeSellerId, 1, pageSize); }}>
             <div className="search-box mb-2 d-flex align-items-center" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: '50px', padding: '0.5rem 1rem' }}>
               <i className="bi bi-search text-muted me-2 flex-shrink-0"></i>
-              <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Brend, model, ehtiyat hissəsi adı (məs: Apple iPhone 13 ekran)..." style={{ flex: 1, background: 'transparent', border: 'none', color: 'var(--text-main)', outline: 'none', minWidth: 0, textOverflow: 'ellipsis' }} />
+              <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Brend, model və ya detal adı yazın (məsələn, iPhone 16 ekran)..." style={{ flex: 1, background: 'transparent', border: 'none', color: 'var(--text-main)', outline: 'none', minWidth: 0, textOverflow: 'ellipsis' }} />
               
               <button 
                 type="button" 
@@ -181,8 +205,29 @@ function Home() {
               <button type="submit" className="btn btn-sm btn-primary bg-accent text-dark fw-bold px-3 ms-2 ms-md-3 rounded-pill flex-shrink-0">Axtar</button>
             </div>
           </form>
+
+          {/* İlk ekranda CTA Butonları (Above the fold Call-To-Action) */}
+          <div className="d-flex flex-wrap justify-content-center gap-3 my-3">
+            <a 
+              href="#catalog-section" 
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('catalog-section')?.scrollIntoView({ behavior: 'smooth' });
+              }} 
+              className="btn btn-primary bg-accent text-dark fw-bold px-4 py-2 rounded-pill shadow-sm text-decoration-none"
+            >
+              <i className="bi bi-grid-3x3-gap-fill me-2"></i> Kataloqa bax
+            </a>
+            <Link 
+              to="/warehouse/add-part" 
+              className="btn btn-outline px-4 py-2 rounded-pill text-decoration-none"
+              style={{ borderColor: 'var(--border-color)', color: 'var(--text-main)' }}
+            >
+              <i className="bi bi-plus-circle me-2 text-accent"></i> Elan yerləşdir
+            </Link>
+          </div>
           
-          <div className="hero-stats justify-content-center w-100 mt-3">
+          <div className="hero-stats justify-content-center w-100 mt-2">
             <span>{totalItems || products.length}+</span> aktiv hissə
             <span className="dot">•</span>
             <span>10+</span> təsdiqli satıcı
@@ -334,7 +379,7 @@ function Home() {
         </div>
       </Modal>
 
-      <section>
+      <section id="catalog-section">
         <div className="section-header" style={{ alignItems: 'center' }}>
           <div>
             <div className="section-label">
@@ -381,9 +426,9 @@ function Home() {
                 <i className="bi bi-x-circle me-1"></i> Filtrləri təmizlə
               </button>
             )}
-            <a href="#" onClick={(e) => { e.preventDefault(); setSearchTerm(''); fetchProducts('', activeCategoryId); }} className={`btn-outline ${!searchTerm ? 'bg-accent text-dark fw-bold' : 'text-main'} text-decoration-none`} style={{ borderRadius: '20px', fontSize: '0.85rem', padding: '0.5rem 1.5rem' }}>Hamisi</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); setSearchTerm('Ekran'); fetchProducts('Ekran', activeCategoryId); }} className={`btn-outline ${searchTerm === 'Ekran' ? 'bg-accent text-dark fw-bold' : 'text-main'} text-decoration-none`} style={{ borderRadius: '20px', fontSize: '0.85rem' }}>Ekran</a>
-            <a href="#" onClick={(e) => { e.preventDefault(); setSearchTerm('Batareya'); fetchProducts('Batareya', activeCategoryId); }} className={`btn-outline ${searchTerm === 'Batareya' ? 'bg-accent text-dark fw-bold' : 'text-main'} text-decoration-none`} style={{ borderRadius: '20px', fontSize: '0.85rem' }}>Batareya</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); setSearchTerm(''); setPage(1); fetchProducts('', activeCategoryId, activeSellerId, 1, pageSize); }} className={`btn-outline ${!searchTerm ? 'bg-accent text-dark fw-bold' : 'text-main'} text-decoration-none`} style={{ borderRadius: '20px', fontSize: '0.85rem', padding: '0.5rem 1.5rem' }}>Hamisi</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); setSearchTerm('Ekran'); setPage(1); fetchProducts('Ekran', activeCategoryId, activeSellerId, 1, pageSize); }} className={`btn-outline ${searchTerm === 'Ekran' ? 'bg-accent text-dark fw-bold' : 'text-main'} text-decoration-none`} style={{ borderRadius: '20px', fontSize: '0.85rem' }}>Ekran</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); setSearchTerm('Batareya'); setPage(1); fetchProducts('Batareya', activeCategoryId, activeSellerId, 1, pageSize); }} className={`btn-outline ${searchTerm === 'Batareya' ? 'bg-accent text-dark fw-bold' : 'text-main'} text-decoration-none`} style={{ borderRadius: '20px', fontSize: '0.85rem' }}>Batareya</a>
           </div>
           <div 
             id="sort-dropdown-container" 
@@ -416,7 +461,12 @@ function Home() {
                             
                             <Link to={`/details/${part.id}`} className="product-image text-decoration-none">
                                 {mainImage ? (
-                                    <img src={imageSrc(mainImage.url)} alt={part.title} />
+                                    <img 
+                                        src={imageSrc(mainImage.url)} 
+                                        alt={`${formatCleanTitle(part)} - ehtiyat hissəsi e-hisse.az`} 
+                                        loading="lazy" 
+                                        decoding="async" 
+                                    />
                                 ) : (
                                     <div style={{ width: '80px', height: '80px', border: '4px solid var(--accent)', borderRadius: '50%', boxShadow: '0 0 20px var(--accent)', opacity: 0.8 }}></div>
                                 )}
@@ -427,8 +477,9 @@ function Home() {
                                 <span className="product-stock">Stokda {part.stockQuantity} ədəd</span>
                             </div>
                             
-                            <Link to={`/details/${part.id}`} className="text-decoration-none text-main"><h3 className="product-title">{part.brandName} {part.modelName} {part.title}</h3></Link>
-                            <p className="product-desc">{part.modelName} - {part.qualityTypeName}</p>
+                            <Link to={`/details/${part.id}`} className="text-decoration-none text-main">
+                                <h3 className="product-title">{formatCleanTitle(part)}</h3>
+                            </Link>
                             
                             <div className="product-condition">
                                 {part.qualityTypeName}
@@ -465,7 +516,7 @@ function Home() {
                     const newSize = Number(e.target.value);
                     setPageSize(newSize);
                     setPage(1);
-                    fetchProducts(searchTerm, activeCategoryId, 1, newSize);
+                    fetchProducts(searchTerm, activeCategoryId, activeSellerId, 1, newSize);
                   }}
                   style={{ width: 'auto', display: 'inline-block' }}
                 >
@@ -480,7 +531,7 @@ function Home() {
                   <button className="page-link" onClick={() => {
                     const prev = Math.max(1, page - 1);
                     setPage(prev);
-                    fetchProducts(searchTerm, activeCategoryId, prev, pageSize);
+                    fetchProducts(searchTerm, activeCategoryId, activeSellerId, prev, pageSize);
                   }}>Əvvəlki</button>
                 </li>
                 <li className="page-item disabled">
@@ -490,7 +541,7 @@ function Home() {
                   <button className="page-link" onClick={() => {
                     const next = Math.min(totalPages, page + 1);
                     setPage(next);
-                    fetchProducts(searchTerm, activeCategoryId, next, pageSize);
+                    fetchProducts(searchTerm, activeCategoryId, activeSellerId, next, pageSize);
                   }}>Növbəti</button>
                 </li>
               </ul>

@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/EHisse.Application/EHisse.Application.csproj" />
+    <Project Path="src/EHisse.Domain/EHisse.Domain.csproj" />
+    <Project Path="src/EHisse.Infrastructure/EHisse.Infrastructure.csproj" />
+    <Project Path="src/EHisse.Persistence/EHisse.Persistence.csproj" />
+    <Project Path="src/EHisse.WebApi/EHisse.WebApi.csproj" />
+  </Folder>
+</Solution>

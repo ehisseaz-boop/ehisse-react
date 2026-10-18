@@ -2,8 +2,14 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Api } from '../api';
 import { Loading, ErrorBox } from './Categories';
+import { usePageSeo } from '../utils/seo';
 
 function Saticilar() {
+  usePageSeo({
+    title: 'Satıcılar və Anbarlar',
+    description: 'Etibarlı təchizatçılar, mobil telefon və kompüter təmiri ustaları və anbarlar.'
+  });
+
   const [sellers, setSellers] = useState(null);
   const [search, setSearch] = useState('');
   const [searchType, setSearchType] = useState('all'); // 'all', 'servis', 'usta', 'anbardar'

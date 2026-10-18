@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /warehouse
+Disallow: /warehouse/
+
+Sitemap: https://e-hisse.az/sitemap.xml

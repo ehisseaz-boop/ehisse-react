@@ -14,10 +14,12 @@ function ElanRedirect({ user }) {
           return;
         }
         
-        const ad = await Api.getSparePart(id);
+        const res = await Api.details(id);
+        const part = res?.part;
+        const seller = res?.seller;
         
-        if (ad && (ad.sellerId === user.id || ad.sellerUsername === user.username)) {
-          // Change to actual warehouse ad route if different
+        // Elanın cari istifadəçiyə aid olmasını yoxla
+        if (user && (seller?.userId === user.id || part?.sellerId === user.sellerId || part?.sellerUserId === user.id)) {
           navigate(`/warehouse/part/${id}`, { replace: true });
         } else {
           navigate(`/details/${id}`, { replace: true });

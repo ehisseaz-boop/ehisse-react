@@ -713,3 +713,58 @@ footer {
     border-top: 1px solid var(--border-color);
 }
 
+/* Mobile Sticky CTA Bar */
+.mobile-sticky-cta {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 1040;
+    padding: 0 0.5rem;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.sticky-cta-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-decoration: none;
+    flex: 1;
+    height: 100%;
+    transition: color 0.2s;
+}
+
+.sticky-cta-item i {
+    font-size: 1.25rem;
+    margin-bottom: 2px;
+}
+
+.sticky-cta-item:hover, .sticky-cta-item:active {
+    color: var(--accent);
+}
+
+.sticky-cta-item.whatsapp-cta i {
+    color: #25D366;
+}
+
+.sticky-cta-item.highlight {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+@media (max-width: 991.98px) {
+    body {
+        padding-bottom: 70px;
+    }
+}
+

@@ -1,0 +1,49 @@
+# OS / editor
+.vscode/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# .NET build output
+**/bin/
+**/obj/
+**/.vs/
+*.user
+*.suo
+*.cache
+*.pdb
+
+# Secrets and local config (uncommented for deployment)
+# **/appsettings.json
+
+
+# SQLite / local database files
+*.db
+*.sqlite
+*.sqlite3
+*.db-shm
+*.db-wal
+
+# Large local runtime binaries
+Backend/cloudflared2.exe
+
+# Logs
+*.log
+app_err.txt
+app_out.txt
+
+# Node / frontend build output
+**/node_modules/
+**/dist/
+**/build/
+**/coverage/
+
+# NPM / package manager
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Misc
+*.tmp
+*.temp

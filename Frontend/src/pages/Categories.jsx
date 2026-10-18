@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Api } from '../api';
+import { usePageSeo } from '../utils/seo';
 
 export function Loading() {
   return (
@@ -15,6 +16,11 @@ export function ErrorBox({ message }) {
 }
 
 function Categories() {
+  usePageSeo({
+    title: 'Kateqoriyalar',
+    description: 'Mobil telefon, planşet və noutbuk ehtiyat hissələri kateqoriyaları.'
+  });
+
   const [items, setItems] = useState(null);
   const [error, setError] = useState('');
 
