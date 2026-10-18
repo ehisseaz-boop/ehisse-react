@@ -71,17 +71,17 @@ public static class DatabaseSeeder
         }
         context.SaveChanges();
 
-        // Fix part type names (e.g. remove "Telefon üçün" so they are generic for all categories)
+        // Fix part type names: ensure 'Ekranlar' and 'Batareyalar'
         var partTypesToFix = context.SparePartTypes.ToList();
         foreach (var pt in partTypesToFix)
         {
-            if (pt.Name.Contains("Telefon üçün ekranlar", StringComparison.OrdinalIgnoreCase))
+            if (pt.Name.Contains("ekran", StringComparison.OrdinalIgnoreCase) && !pt.Name.Contains("şüşə", StringComparison.OrdinalIgnoreCase) && !pt.Name.Contains("suse", StringComparison.OrdinalIgnoreCase))
             {
-                pt.Name = "Ekran";
+                pt.Name = "Ekranlar";
             }
-            else if (pt.Name.Contains("Telefon üçün batareyalar", StringComparison.OrdinalIgnoreCase))
+            else if (pt.Name.Contains("batarey", StringComparison.OrdinalIgnoreCase))
             {
-                pt.Name = "Batareya";
+                pt.Name = "Batareyalar";
             }
             else if (pt.Name.Contains("Telefon üçün sensorlar və ekran şüşələri", StringComparison.OrdinalIgnoreCase))
             {
@@ -89,6 +89,25 @@ public static class DatabaseSeeder
             }
         }
         context.SaveChanges();
+
+        // Also clean up any legacy ad titles containing "telefon üçün"
+        try
+        {
+            context.Database.ExecuteSqlRaw(@"
+                UPDATE ""SpareParts""
+                SET ""Title"" = REPLACE(REPLACE(REPLACE(""Title"", 'Telefon üçün ekranlar', 'Ekranlar'), 'Telefon üçün batareyalar', 'Batareyalar'), 'Telefon üçün ', '')
+                WHERE ""Title"" ILIKE '%telefon üçün%';
+
+                UPDATE ""SparePartTypes""
+                SET ""Name"" = 'Ekranlar'
+                WHERE ""Key"" = 'SCREEN' OR ""Name"" ILIKE '%telefon üçün ekran%';
+
+                UPDATE ""SparePartTypes""
+                SET ""Name"" = 'Batareyalar'
+                WHERE ""Key"" = 'BATTERY' OR ""Name"" ILIKE '%telefon üçün batarey%';
+            ");
+        }
+        catch { }
 
         // Seeding default categories if needed
         if (context.Categories.Count() < 10)

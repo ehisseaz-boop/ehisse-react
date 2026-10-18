@@ -120,8 +120,8 @@ namespace EHisse.Persistence.Context
 
             // 5. Part Types
             modelBuilder.Entity<SparePartType>().HasData(
-                new SparePartType { Id = 1, Name = "Ekran", Key = "SCREEN", IsPortable = false, IsAccessory = false },
-                new SparePartType { Id = 2, Name = "Batareya", Key = "BATTERY", IsPortable = false, IsAccessory = false },
+                new SparePartType { Id = 1, Name = "Ekranlar", Key = "SCREEN", IsPortable = false, IsAccessory = false },
+                new SparePartType { Id = 2, Name = "Batareyalar", Key = "BATTERY", IsPortable = false, IsAccessory = false },
                 new SparePartType { Id = 3, Name = "Kameralar", Key = "CAM_REAR", IsPortable = false, IsAccessory = false },
                 new SparePartType { Id = 4, Name = "Kamera şüşələri", Key = "CAM_FRONT", IsPortable = false, IsAccessory = false },
                 new SparePartType { Id = 5, Name = "Motherboard", Key = "MB", IsPortable = false, IsAccessory = false },

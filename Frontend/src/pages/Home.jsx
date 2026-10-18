@@ -16,10 +16,12 @@ const isToday = (dateString) => {
 export function cleanPartTypeName(name) {
   if (!name) return '';
   let clean = name.trim();
-  // "Telefon üçün ekranlar" -> "Ekran"
-  clean = clean.replace(/telefon\s+üçün\s+ekranlar/gi, 'Ekran');
-  // "Telefon üçün batareyalar" -> "Batareya"
-  clean = clean.replace(/telefon\s+üçün\s+batareyalar/gi, 'Batareya');
+  // "Telefon üçün ekranlar" -> "Ekranlar"
+  clean = clean.replace(/telefon\s+üçün\s+ekranlar/gi, 'Ekranlar');
+  clean = clean.replace(/telefon\s+üçün\s+ekran/gi, 'Ekranlar');
+  // "Telefon üçün batareyalar" -> "Batareyalar"
+  clean = clean.replace(/telefon\s+üçün\s+batareyalar/gi, 'Batareyalar');
+  clean = clean.replace(/telefon\s+üçün\s+batareya/gi, 'Batareyalar');
   // "Telefon üçün sensorlar və ekran şüşələri" -> "Sensor və ekran şüşələri"
   clean = clean.replace(/telefon\s+üçün\s+sensorlar/gi, 'Sensorlar');
   clean = clean.replace(/telefon\s+üçün\s+/gi, '');
@@ -37,11 +39,14 @@ function formatCleanTitle(part) {
     fullModel = `${brand} ${model}`;
   }
 
-  // Təmiz ad formalaşdırırıq: məs. "iPhone 16 Pro Max Batareya"
+  // Təmiz ad formalaşdırırıq: məs. "iPhone 16 Pro Max Batareyalar"
   if (fullModel && partType) {
     return `${fullModel} ${partType}`;
   }
-  return part.title || fullModel || 'Ehtiyat hissəsi';
+  let fallback = part.title || fullModel || 'Ehtiyat hissəsi';
+  return fallback.replace(/telefon\s+üçün\s+ekranlar/gi, 'Ekranlar')
+                 .replace(/telefon\s+üçün\s+batareyalar/gi, 'Batareyalar')
+                 .replace(/telefon\s+üçün\s+/gi, '');
 }
 
 function ProductCardImageSlider({ part }) {

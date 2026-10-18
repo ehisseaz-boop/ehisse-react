@@ -67,6 +67,9 @@ const getCleanTitle = (part) => {
         res = res.replace(model, '').trim();
         res = `${model} ${res}`;
     }
+    res = res.replace(/telefon\s+üçün\s+ekranlar/gi, 'Ekranlar')
+             .replace(/telefon\s+üçün\s+batareyalar/gi, 'Batareyalar')
+             .replace(/telefon\s+üçün\s+/gi, '');
     return cleanText(res.replace(/\s+/g, ' ').trim());
 };
 
@@ -188,7 +191,7 @@ function Details() {
           <div className="product-card p-4 mb-4" style={{ borderRadius: '12px' }}>
             <div className="mb-3">
               <span className="text-muted small d-block mb-1">
-                {data.categoryName} · {part.partTypeName}
+                {data.categoryName} · {part.partTypeName ? part.partTypeName.replace(/telefon\s+üçün\s+ekranlar/gi, 'Ekranlar').replace(/telefon\s+üçün\s+batareyalar/gi, 'Batareyalar').replace(/telefon\s+üçün\s+/gi, '') : ''}
               </span>
               <h2 className="product-title m-0" style={{ fontSize: '1.5rem', fontWeight: 700, lineHeight: 1.3 }}>
                 {displayTitle}
