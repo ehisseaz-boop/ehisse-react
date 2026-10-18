@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Api } from '../api';
 import { usePageSeo } from '../utils/seo';
 
@@ -16,14 +16,16 @@ function Login({ onLogin }) {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from || '/';
 
   const submit = async (e) => {
     e.preventDefault();
     setError(''); setBusy(true);
     try {
       await Api.login({ username, password });
-      onLogin?.();
-      navigate('/');
+      await onLogin?.();
+      navigate(from, { replace: true });
     } catch (err) {
       setError(err.message || 'İstifadəçi adı və ya şifrə yanlışdır.');
     } finally {
