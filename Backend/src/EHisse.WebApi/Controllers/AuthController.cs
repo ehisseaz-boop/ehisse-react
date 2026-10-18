@@ -1,4 +1,5 @@
-﻿using EHisse.Application.Interfaces;
+﻿using EHisse.WebApi.Services;
+using EHisse.Application.Interfaces;
 using EHisse.Domain.Entities;
 using EHisse.Domain.Enums;
 using EHisse.Application.DTOs;
@@ -19,7 +20,8 @@ namespace EHisse.WebApi.Controllers
     public record LoginRequest(string Username, string Password);
     public record RegisterRequest(string FirstName, string LastName, string Phone, string? Email, string Password, UserRole Role);
     public record ForgotPasswordRequest(string Username);
-    public record ResetPasswordRequest(string Username, string NewPassword);
+    public record VerifyResetOtpRequest(string Username, string Code);
+    public record ResetPasswordRequest(string Username, string Code, string NewPassword);
 
     [Route("api/[controller]")]
     [ApiController]
@@ -243,39 +245,70 @@ namespace EHisse.WebApi.Controllers
                 u.Phone == normalizedPhone);
 
             if (user == null)
-                return NotFound(new { message = "BelÉ™ bir istifadÉ™Ã§i tapÄ±lmadÄ±." });
+                return NotFound(new { message = "Belə bir istifadəçi tapılmadı." });
 
-            if (!string.IsNullOrWhiteSpace(user.Email))
+            if (string.IsNullOrWhiteSpace(user.Email))
+                return BadRequest(new { message = "Hesabınıza bağlı heç bir e-poçt ünvanı tapılmadı. Zəhmət olmasa adminlə əlaqə saxlayın." });
+
+            // 6 rəqəmli OTP kod generasiyası
+            var random = new Random();
+            var code = random.Next(100000, 999999).ToString();
+            OtpStore.SetCode(user.Username, code, TimeSpan.FromMinutes(10));
+
+            var emailBody = $@"
+                <div style=""font-family: Arial, sans-serif; max-width: 550px; margin: 0 auto; padding: 25px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #ffffff;"">
+                    <div style=""text-align: center; margin-bottom: 25px;"">
+                        <h2 style=""color: #2b3a4a; margin: 0;"">E-Hisse.az — Şifrə Bərpası</h2>
+                    </div>
+                    <p style=""font-size: 15px; color: #333;"">Hörmətli <b>{user.FirstName} {user.LastName}</b>,</p>
+                    <p style=""font-size: 14px; color: #555; line-height: 1.6;"">
+                        Hesabınızın şifrəsini bərpa etmək üçün təsdiq kodunuz aşağıdadır:
+                    </p>
+                    <div style=""text-align: center; margin: 30px 0;"">
+                        <span style=""display: inline-block; font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #2f80ed; background: #f0f7ff; padding: 12px 30px; border-radius: 8px; border: 1px dashed #2f80ed;"">
+                            {code}
+                        </span>
+                    </div>
+                    <p style=""font-size: 13px; color: #777; line-height: 1.5;"">
+                        Bu kod <b>10 dəqiqə</b> ərzində etibarlıdır. Əgər bu müraciəti siz etməmisinizsə, zəhmət olmasa bu məktubu nəzərə almayın.
+                    </p>
+                    <hr style=""border: none; border-top: 1px solid #eee; margin: 25px 0;"" />
+                    <p style=""font-size: 12px; color: #aaa; text-align: center;"">© 2026 E-Hisse.az. Bütün hüquqlar qorunur.</p>
+                </div>";
+
+            _ = Task.Run(async () =>
             {
-                var emailBody = $@"
-                    <div style=""font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #ffffff;"">
-                        <div style=""text-align: center; margin-bottom: 20px;"">
-                            <h2 style=""color: #2b3a4a; margin: 0;"">E-Hisse.az â€” ÅifrÉ™ BÉ™rpasÄ±</h2>
-                        </div>
-                        <p style=""font-size: 15px; color: #333;"">HÃ¶rmÉ™tli <b>{user.FirstName} {user.LastName}</b>,</p>
-                        <p style=""font-size: 14px; color: #555; line-height: 1.6;"">
-                            HesabÄ±nÄ±z Ã¼Ã§Ã¼n ÅŸifrÉ™ bÉ™rpasÄ± mÃ¼raciÉ™ti qÉ™bul edildi. Sayta keÃ§É™rÉ™k yeni ÅŸifrÉ™nizi tÉ™yin edÉ™ bilÉ™rsiniz.
-                        </p>
-                        <div style=""background-color: #f7f9fa; border-left: 4px solid #27ae60; padding: 15px; margin: 20px 0; border-radius: 4px;"">
-                            <p style=""margin: 5px 0; font-size: 14px;""><b>Ä°stifadÉ™Ã§i adÄ±nÄ±z:</b> {user.Username}</p>
-                            <p style=""margin: 5px 0; font-size: 14px;""><b>QeydiyyatlÄ± e-poÃ§t:</b> {user.Email}</p>
-                        </div>
-                        <p style=""font-size: 13px; color: #888;"">ÆgÉ™r bu sorÄŸunu siz gÃ¶ndÉ™rmÉ™misinizsÉ™, dÉ™rhal bizimlÉ™ É™laqÉ™ saxlayÄ±n.</p>
-                        <hr style=""border: none; border-top: 1px solid #eee; margin: 20px 0;"" />
-                        <p style=""font-size: 12px; color: #aaa; text-align: center;"">Â© 2026 E-Hisse.az. BÃ¼tÃ¼n hÃ¼quqlar qorunur.</p>
-                    </div>";
-
-                _ = Task.Run(async () =>
+                try
                 {
-                    try
-                    {
-                        await _notificationService.SendEmailAsync(user.Email, "E-Hisse.az â€” ÅifrÉ™ BÉ™rpasÄ± MÃ¼raciÉ™ti", emailBody);
-                    }
-                    catch { }
-                });
+                    await _notificationService.SendEmailAsync(user.Email, $"{code} — E-Hisse.az Şifrə Bərpa Kodu", emailBody);
+                }
+                catch { }
+            });
+
+            // Maskalanmış email göstəririk: m***i@gmail.com
+            string maskedEmail = user.Email;
+            var parts = user.Email.Split('@');
+            if (parts.Length == 2 && parts[0].Length > 2)
+            {
+                maskedEmail = parts[0][0] + new string('*', parts[0].Length - 2) + parts[0][^1] + "@" + parts[1];
             }
 
-            return Ok(new { success = true, username = user.Username, email = user.Email });
+            return Ok(new { success = true, username = user.Username, email = maskedEmail });
+        }
+
+        // POST api/Auth/VerifyResetOtp
+        [HttpPost("[action]")]
+        public IActionResult VerifyResetOtp([FromBody] VerifyResetOtpRequest req)
+        {
+            if (string.IsNullOrWhiteSpace(req.Code) || req.Code.Length != 6)
+                return BadRequest(new { message = "6 rəqəmli təsdiq kodunu daxil edin." });
+
+            if (!OtpStore.ValidateCode(req.Username, req.Code))
+                return BadRequest(new { message = "Daxil edilmiş kod yanlışdır və ya vaxtı bitib." });
+
+            // Yenidən şifrə dəyişmə zamanı yoxlamaq üçün 10 dəqiqəlik icazə tokeni qoyuruq
+            OtpStore.SetCode("RESET_PERMIT_" + req.Username, "PERMITTED", TimeSpan.FromMinutes(10));
+            return Ok(new { success = true });
         }
 
         // POST api/Auth/ResetPassword
@@ -283,9 +316,18 @@ namespace EHisse.WebApi.Controllers
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest req)
         {
             if (string.IsNullOrWhiteSpace(req.NewPassword) || req.NewPassword.Length < 6)
-                return BadRequest(new { message = "ÅifrÉ™ minimum 6 simvol olmalÄ±dÄ±r." });
+                return BadRequest(new { message = "Şifrə minimum 6 simvol olmalıdır." });
 
             var username = req.Username?.Trim() ?? string.Empty;
+
+            // Əgər kod vasitəsilə təsdiqlənməyibsə icazə vermirik
+            if (!OtpStore.ValidateCode("RESET_PERMIT_" + username, "PERMITTED"))
+            {
+                // Əgər birbaşa req.Code ilə göndəribsə
+                if (!OtpStore.ValidateCode(username, req.Code))
+                    return BadRequest(new { message = "Təsdiq kodu yanlışdır və ya vaxtı bitib. Zəhmət olmasa yenidən cəhd edin." });
+            }
+
             string normalizedPhone = username;
             if (PhoneNumberHelper.TryNormalizeAzNumber(username, out string _, out string nTel))
             {
@@ -298,45 +340,38 @@ namespace EHisse.WebApi.Controllers
                 u.Phone == normalizedPhone);
 
             if (user == null)
-                return NotFound(new { message = "XÉ™ta baÅŸ verdi." });
+                return NotFound(new { message = "Xəta baş verdi. İstifadəçi tapılmadı." });
 
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(req.NewPassword);
             await _context.SaveChangesAsync();
 
-            // Yeni ÅŸifrÉ™ barÉ™dÉ™ mail bildiriÅŸi gÃ¶ndÉ™ririk
             if (!string.IsNullOrWhiteSpace(user.Email))
             {
                 var emailBody = $@"
-                    <div style=""font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #ffffff;"">
-                        <div style=""text-align: center; margin-bottom: 20px;"">
-                            <h2 style=""color: #2b3a4a; margin: 0;"">ÅifrÉ™niz UÄŸurla YenilÉ™ndi</h2>
+                    <div style=""font-family: Arial, sans-serif; max-width: 550px; margin: 0 auto; padding: 25px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #ffffff;"">
+                        <div style=""text-align: center; margin-bottom: 25px;"">
+                            <h2 style=""color: #2b3a4a; margin: 0;"">Şifrəniz Yeniləndi</h2>
                         </div>
-                        <p style=""font-size: 15px; color: #333;"">HÃ¶rmÉ™tli <b>{user.FirstName} {user.LastName}</b>,</p>
+                        <p style=""font-size: 15px; color: #333;"">Hörmətli <b>{user.FirstName} {user.LastName}</b>,</p>
                         <p style=""font-size: 14px; color: #555; line-height: 1.6;"">
-                            HesabÄ±nÄ±zÄ±n ÅŸifrÉ™si uÄŸurla dÉ™yiÅŸdirildi.
+                            Hesabınızın şifrəsi uğurla dəyişdirildi. İndi yeni şifrənizlə daxil ola bilərsiniz.
                         </p>
-                        <div style=""background-color: #f7f9fa; border-left: 4px solid #2f80ed; padding: 15px; margin: 20px 0; border-radius: 4px;"">
-                            <p style=""margin: 5px 0; font-size: 14px;""><b>Ä°stifadÉ™Ã§i adÄ±nÄ±z:</b> {user.Username}</p>
-                            <p style=""margin: 5px 0; font-size: 14px;""><b>Yeni ÅifrÉ™niz:</b> {req.NewPassword}</p>
-                        </div>
-                        <p style=""font-size: 13px; color: #888;"">ÆgÉ™r bu dÉ™yiÅŸikliyi siz etmÉ™misinizsÉ™, dÉ™rhal rÉ™hbÉ™rliklÉ™ É™laqÉ™ saxlayÄ±n.</p>
-                        <hr style=""border: none; border-top: 1px solid #eee; margin: 20px 0;"" />
-                        <p style=""font-size: 12px; color: #aaa; text-align: center;"">Â© 2026 E-Hisse.az. BÃ¼tÃ¼n hÃ¼quqlar qorunur.</p>
+                        <hr style=""border: none; border-top: 1px solid #eee; margin: 25px 0;"" />
+                        <p style=""font-size: 12px; color: #aaa; text-align: center;"">© 2026 E-Hisse.az. Bütün hüquqlar qorunur.</p>
                     </div>";
 
                 _ = Task.Run(async () =>
                 {
                     try
                     {
-                        await _notificationService.SendEmailAsync(user.Email, "E-Hisse.az â€” ÅifrÉ™niz YenilÉ™ndi", emailBody);
+                        await _notificationService.SendEmailAsync(user.Email, "E-Hisse.az — Şifrəniz Yeniləndi", emailBody);
                     }
                     catch { }
                 });
             }
 
-            return Ok(new { success = true });
+            return Ok(new { success = true, message = "Şifrəniz uğurla yeniləndi!" });
         }
     }
 }
-
 

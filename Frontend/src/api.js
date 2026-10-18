@@ -118,6 +118,7 @@ export const Api = {
   resendOtp: (body) => api('/api/Auth/ResendOtp', { method: 'POST', body }),
   logout: () => api('/api/Auth/Logout', { method: 'POST' }),
   forgotPassword: (body) => api('/api/Auth/ForgotPassword', { method: 'POST', body }),
+  verifyResetOtp: (body) => api('/api/Auth/VerifyResetOtp', { method: 'POST', body }),
   resetPassword: (body) => api('/api/Auth/ResetPassword', { method: 'POST', body }),
 
   // AjaxController (asılı seçimlər + axtarış)
