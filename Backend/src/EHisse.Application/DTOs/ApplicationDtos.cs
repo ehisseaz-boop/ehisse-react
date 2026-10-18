@@ -23,7 +23,7 @@ public class SparePartSearchQuery
 }
 
 public record LoginRequest(string Username, string Password);
-public record RegisterRequest(string FirstName, string LastName, string Phone, string? Email, string Password, UserRole Role);
+public record RegisterRequest(string FirstName, string LastName, string Phone, string? Email, string Password, UserRole Role, string? Pin = null, string? IdCardImageUrl = null);
 public record ForgotPasswordRequest(string Username);
 public record ResetPasswordRequest(string Username, string NewPassword);
 

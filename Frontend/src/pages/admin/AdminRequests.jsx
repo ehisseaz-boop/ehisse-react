@@ -140,13 +140,30 @@ export default function AdminRequests() {
     }
   }
 
+  const [previewIdCard, setPreviewIdCard] = useState(null);
+
   // Cədvəl sütunları
   const userColumns = [
     { key: 'id', label: 'ID' },
     { key: 'fullName', label: 'Ad Soyad' },
-    { key: 'username', label: 'İstifadəçi Adı' },
-    { key: 'email', label: 'Email', render: (u) => u.email || '—' },
+    { key: 'pin', label: 'FİN Kod', render: (u) => <strong>{u.pin || '—'}</strong> },
     { key: 'phone', label: 'Telefon' },
+    { key: 'email', label: 'Email', render: (u) => u.email || '—' },
+    {
+      key: 'idCardImageUrl',
+      label: 'Vəsiqə Şəkli',
+      render: (u) => u.idCardImageUrl ? (
+        <button
+          onClick={() => setPreviewIdCard({ url: u.idCardImageUrl, name: u.fullName, pin: u.pin })}
+          className="btn btn-sm btn-outline-info py-0 px-2"
+          title="Vəsiqə şəklinə bax"
+        >
+          <i className="bi bi-card-image me-1"></i> Vəsiqə
+        </button>
+      ) : (
+        <span className="text-muted small">Yoxdur</span>
+      )
+    },
     { key: 'role', label: 'Rol', render: (u) => <span className="badge bg-secondary">{u.role}</span> },
     { key: 'createdDate', label: 'Qeydiyyat Tarixi', render: (u) => fmtDate(u.createdDate) },
     {
@@ -408,6 +425,41 @@ export default function AdminRequests() {
             </button>
           </div>
         </form>
+      </Modal>
+
+      {/* Vəsiqə Şəkli Önbaxış Modalı */}
+      <Modal open={!!previewIdCard} title={`Vəsiqə Şəkli: ${previewIdCard?.name || ''}`} onClose={() => setPreviewIdCard(null)}>
+        {previewIdCard && (
+          <div className="text-center p-2">
+            <div className="mb-2 text-muted">
+              <strong>FİN Kod:</strong> <span className="badge bg-dark ms-1" style={{ fontSize: '1rem', letterSpacing: '2px' }}>{previewIdCard.pin || 'Qeyd edilməyib'}</span>
+            </div>
+            <div style={{ maxHeight: '75vh', overflow: 'auto' }}>
+              <img 
+                src={imageSrc(previewIdCard.url)} 
+                alt="Vəsiqə" 
+                style={{ maxWidth: '100%', maxHeight: '65vh', objectFit: 'contain', borderRadius: '8px', border: '1px solid var(--border-color)' }} 
+              />
+            </div>
+            <div className="mt-3">
+              <a 
+                href={imageSrc(previewIdCard.url)} 
+                target="_blank" 
+                rel="noreferrer" 
+                className="btn btn-sm btn-outline-info me-2"
+              >
+                <i className="bi bi-box-arrow-up-right me-1"></i> Yeni tabda aç
+              </a>
+              <button 
+                type="button" 
+                className="btn btn-sm btn-secondary" 
+                onClick={() => setPreviewIdCard(null)}
+              >
+                Bağla
+              </button>
+            </div>
+          </div>
+        )}
       </Modal>
     </div>
   );

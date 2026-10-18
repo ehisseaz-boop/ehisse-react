@@ -44,6 +44,7 @@ namespace EHisse.Persistence.Repositories
         public async Task<List<User>> GetPendingUsersAsync()
         {
             return await _context.Users
+                .Include(u => u.SellerProfile)
                 .Where(u => u.ApprovalStatus == ApprovalStatus.Pending)
                 .OrderByDescending(u => u.CreatedDate)
                 .ToListAsync();
@@ -322,8 +323,16 @@ namespace EHisse.Persistence.Repositories
         public async Task<List<User>> GetAllUsersAsync()
         {
             return await _context.Users
+                .Include(u => u.SellerProfile)
                 .OrderByDescending(u => u.CreatedDate)
                 .ToListAsync();
+        }
+
+        public async Task<User?> GetUserByIdAsync(int id)
+        {
+            return await _context.Users
+                .Include(u => u.SellerProfile)
+                .FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task<List<SparePart>> GetAllAdsAsync()

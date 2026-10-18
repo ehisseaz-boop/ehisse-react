@@ -44,6 +44,8 @@ namespace EHisse.WebApi.Controllers
             fullName = $"{u.FirstName} {u.LastName}".Trim(),
             email = u.Email,
             phone = u.Phone,
+            pin = u.Pin,
+            idCardImageUrl = u.IdCardImageUrl,
             role = u.Role.ToString(),
             approvalStatus = u.ApprovalStatus.ToString(),
             rejectionReason = u.RejectionReason,
@@ -173,6 +175,15 @@ namespace EHisse.WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> AllUsers()
             => Ok((await _adminService.GetAllUsersAsync()).Select(MapUser));
+
+        [HttpGet("{id:int}")]
+        [ActionName("UserDetails")]
+        public async Task<IActionResult> UserDetails(int id)
+        {
+            var u = await _adminService.GetUserByIdAsync(id);
+            if (u == null) return NotFound(new { message = "İstifadəçi tapılmadı." });
+            return Ok(MapUser(u));
+        }
 
         [HttpGet]
         public async Task<IActionResult> AllAds()

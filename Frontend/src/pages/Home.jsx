@@ -684,6 +684,7 @@ function Home() {
                       const prev = page - 1;
                       setPage(prev);
                       fetchProducts(searchTerm, activeCategoryId, activeSellerId, prev, pageSize);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}>Əvvəlki</button>
                   </li>
                 )}
@@ -711,6 +712,7 @@ function Home() {
                               if (p !== page) {
                                 setPage(p);
                                 fetchProducts(searchTerm, activeCategoryId, activeSellerId, p, pageSize);
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
                               }
                             }}
                           >
@@ -733,6 +735,7 @@ function Home() {
                       const next = page + 1;
                       setPage(next);
                       fetchProducts(searchTerm, activeCategoryId, activeSellerId, next, pageSize);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}>Növbəti</button>
                   </li>
                 )}

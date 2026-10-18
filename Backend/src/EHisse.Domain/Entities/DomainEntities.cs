@@ -13,6 +13,8 @@ public class User : BaseEntity
     public string LastName { get; set; } = null!;
     public string? Phone { get; set; }
     public string Email { get; set; } = string.Empty;
+    public string? Pin { get; set; } // FİN kod (şəxsiyyət vəsiqəsi)
+    public string? IdCardImageUrl { get; set; } // Vəsiqə şəkli URL-i
 
     public ApprovalStatus ApprovalStatus { get; set; } = ApprovalStatus.Pending;
     public string? RejectionReason { get; set; }

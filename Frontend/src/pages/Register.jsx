@@ -12,7 +12,20 @@ function Register({ onRegister }) {
   });
 
   const navigate = useNavigate();
-  const [form, setForm] = useState({ firstName: '', lastName: '', operator: '50', phone: '', email: '', password: '', role: 2 });
+  const [form, setForm] = useState({ 
+    firstName: '', 
+    lastName: '', 
+    operator: '50', 
+    phone: '', 
+    email: '', 
+    pin: '',
+    idCardImageUrl: '',
+    password: '', 
+    role: 2 
+  });
+  const [idCardFile, setIdCardFile] = useState(null);
+  const [idCardPreview, setIdCardPreview] = useState('');
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [showOtp, setShowOtp] = useState(false);
@@ -25,6 +38,46 @@ function Register({ onRegister }) {
     setForm(prev => ({ ...prev, phone: val }));
   };
 
+  const handlePinChange = (e) => {
+    // FİN kod 7 simvol (rəqəm və hərflər, böyük hərflərlə)
+    const val = e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 7);
+    setForm(prev => ({ ...prev, pin: val }));
+  };
+
+  const handleIdCardFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      setError('Şəkil ölçüsü 10 MB-dan çox ola bilməz.');
+      return;
+    }
+
+    setIdCardFile(file);
+    setIdCardPreview(URL.createObjectURL(file));
+
+    // Dərhal serverə yükləyirik və URL əldə edirik
+    setUploadingImage(true);
+    setError('');
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch('/api/FileUpload/upload', {
+        method: 'POST',
+        body: fd
+      });
+      const data = await res.json();
+      if (!res.ok || !data.url) {
+        throw new Error(data.message || 'Şəkil yüklənərkən xəta baş verdi.');
+      }
+      setForm(prev => ({ ...prev, idCardImageUrl: data.url }));
+    } catch (err) {
+      setError('Vəsiqə şəkli yüklənərkən xəta: ' + err.message);
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const validate = () => {
     if (!form.firstName.trim()) return 'Zəhmət olmasa adınızı daxil edin.';
     if (!form.lastName.trim()) return 'Zəhmət olmasa soyadınızı daxil edin.';
@@ -34,6 +87,15 @@ function Register({ onRegister }) {
     
     const cleanNumber = form.phone.replace(/\D/g, '');
     if (cleanNumber.length !== 7) return 'Mobil nömrə 7 rəqəmli olmalıdır (məsələn: 123 45 67).';
+
+    if (!form.pin.trim() || form.pin.trim().length !== 7) {
+      return 'FİN kod mütləqdir və 7 simvoldan ibarət olmalıdır (məs: 7ABC123).';
+    }
+
+    if (!form.idCardImageUrl) {
+      return 'Zəhmət olmasa şəxsiyyət vəsiqəsinin şəklini yükləyin.';
+    }
+
     if (!form.password || form.password.length < 6) return 'Şifrə minimum 6 simvoldan ibarət olmalıdır.';
     return null;
   };
@@ -70,7 +132,14 @@ function Register({ onRegister }) {
       const cleanPhone = form.phone.replace(/\D/g, '');
       const fullPhone = `+994${form.operator}${cleanPhone}`;
       // 2. Kodu backend-də yoxlayıb istifadəçini qeydiyyatdan keçiririk
-      const res = await Api.register({ ...form, phone: fullPhone, role: Number(form.role), code: otp.trim() });
+      const res = await Api.register({ 
+        ...form, 
+        phone: fullPhone, 
+        role: Number(form.role), 
+        pin: form.pin.trim().toUpperCase(),
+        idCardImageUrl: form.idCardImageUrl,
+        code: otp.trim() 
+      });
       if (res && res.username) {
         const loggedUser = {
           isAuthenticated: true,
@@ -134,12 +203,60 @@ function Register({ onRegister }) {
         </div>
 
         <input className="form-control mb-2" type="email" placeholder="Email" value={form.email} onChange={set('email')} autoComplete="off" required />
+
+        {/* FİN kod */}
+        <div className="mb-2">
+          <input 
+            className="form-control" 
+            placeholder="FİN kod (7 simvol, məs: 7ABC123)" 
+            value={form.pin} 
+            onChange={handlePinChange} 
+            maxLength={7}
+            autoComplete="off"
+            style={{ textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 'bold' }}
+            required 
+          />
+          <div className="text-muted small mt-1" style={{ fontSize: '11px' }}>
+            Şəxsiyyət vəsiqənizin sağ aşağı küncündəki 7 simvollu kod.
+          </div>
+        </div>
+
+        {/* Vəsiqə şəkli */}
+        <div className="mb-3">
+          <label className="form-label small text-muted mb-1 d-block text-start">
+            Şəxsiyyət vəsiqəsinin şəkli (üz tərəfi):
+          </label>
+          <input 
+            type="file" 
+            className="form-control form-control-sm" 
+            accept="image/*" 
+            onChange={handleIdCardFileChange}
+            required 
+          />
+          {uploadingImage && (
+            <div className="text-info small mt-1 d-flex align-items-center gap-1">
+              <span className="spinner-border spinner-border-sm" role="status"></span>
+              <span>Şəkil yüklənir...</span>
+            </div>
+          )}
+          {idCardPreview && !uploadingImage && (
+            <div className="mt-2 text-start">
+              <img 
+                src={idCardPreview} 
+                alt="Vəsiqə önbaxış" 
+                style={{ maxHeight: '110px', borderRadius: '6px', border: '1px solid var(--border-color)', objectFit: 'cover' }} 
+              />
+              <span className="text-success small ms-2"><i className="bi bi-check-circle-fill"></i> Yükləndi</span>
+            </div>
+          )}
+        </div>
+
         <input className="form-control mb-2" type="password" placeholder="Şifrə (min 6 simvol)" minLength={6} value={form.password} onChange={set('password')} autoComplete="new-password" required />
         <select className="form-select mb-3" value={form.role} onChange={set('role')}>
           <option value={2}>Usta</option>
           <option value={3}>Anbardar</option>
         </select>
-        <button type="submit" className="btn btn-primary bg-accent text-dark fw-bold w-100 d-flex align-items-center justify-content-center gap-2" disabled={busy}>
+        <button type="submit" className="btn btn-primary bg-accent text-dark fw-bold w-100 d-flex align-items-center justify-content-center gap-2" disabled={busy || uploadingImage}>
           {busy ? (
             <>
               <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>

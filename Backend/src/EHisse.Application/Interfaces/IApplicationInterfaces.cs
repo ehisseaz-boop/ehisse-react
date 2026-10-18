@@ -66,6 +66,7 @@ public interface IAdminService
     Task<(bool Success, string ErrorMessage)> RestoreAdAsync(int adId, int adminId);
     Task<bool> DeactivateAdAsync(int adId, int adminId, string reason);
     Task<List<User>> GetAllUsersAsync();
+    Task<User?> GetUserByIdAsync(int id);
     Task<List<SparePart>> GetAllAdsAsync();
 
     // Kataloq - Kateqoriyalar

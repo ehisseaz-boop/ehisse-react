@@ -183,7 +183,7 @@ export const Api = {
   admin: {
     dashboard: () => api('/api/Admin/Dashboard'),
     requests: () => api('/api/Admin/Requests'),
-    user: (id) => api(`/api/Admin/User/${id}`),
+    user: (id) => api(`/api/Admin/UserDetails/${id}`),
     approveUser: (id) => api(`/api/Admin/ApproveUser/${id}`, { method: 'POST' }),
     rejectUser: (id, reason) => api(`/api/Admin/RejectUser/${id}`, { method: 'POST', body: { reason } }),
     blockUser: (id, reason) => api(`/api/Admin/BlockUser/${id}`, { method: 'POST', body: { reason } }),

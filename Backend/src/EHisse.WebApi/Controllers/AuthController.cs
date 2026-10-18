@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 namespace EHisse.WebApi.Controllers
 {
     public record LoginRequest(string Username, string Password);
-    public record RegisterRequest(string FirstName, string LastName, string Phone, string? Email, string Password, UserRole Role, string? Code);
+    public record RegisterRequest(string FirstName, string LastName, string Phone, string? Email, string Password, UserRole Role, string? Code, string? Pin = null, string? IdCardImageUrl = null);
     public record SendRegisterOtpRequest(string Email);
     public record ForgotPasswordRequest(string Username);
     public record VerifyResetOtpRequest(string Username, string Code);
@@ -203,6 +203,13 @@ namespace EHisse.WebApi.Controllers
                 string.IsNullOrWhiteSpace(req.Phone) || string.IsNullOrWhiteSpace(req.Password) || req.Password.Length < 6)
                 return BadRequest(new { message = "Ad, Soyad, Mobil nömrə və Şifrə məcburidir. Şifrə minimum 6 simvol olmalıdır." });
 
+            var pin = req.Pin?.Trim().ToUpperInvariant();
+            if (string.IsNullOrWhiteSpace(pin) || pin.Length != 7)
+                return BadRequest(new { message = "FİN kod mütləqdir və 7 simvoldan ibarət olmalıdır." });
+
+            if (string.IsNullOrWhiteSpace(req.IdCardImageUrl))
+                return BadRequest(new { message = "Şəxsiyyət vəsiqəsinin şəkli mütləq yüklənməlidir." });
+
             string? normalizedTel = null;
             if (!PhoneNumberHelper.TryNormalizeAzNumber(req.Phone, out string _, out string tel))
                 return BadRequest(new { message = "Mobil nömrə düzgün formatda deyil." });
@@ -210,7 +217,11 @@ namespace EHisse.WebApi.Controllers
 
             var email = req.Email?.Trim() ?? string.Empty;
             if (!string.IsNullOrEmpty(email) && await _context.Users.AnyAsync(u => u.Email != null && u.Email.ToLower() == email.ToLower()))
-                return BadRequest(new { message = "Bu email ünvanı artıq mövcuddur." });
+                return BadRequest(new { message = "Bu email ünvanı artıq qeydiyyatdan keçib." });
+
+            // FİN kod üzrə eynilik yoxlaması - eyni FİN ilə birdən çox istifadəçi qeydiyyatdan keçə bilməz
+            if (await _context.Users.AnyAsync(u => u.Pin != null && u.Pin.ToUpper() == pin))
+                return BadRequest(new { message = "Bu FİN kod artıq qeydiyyatdan keçib." });
 
             if (await _context.Users.AnyAsync(u => u.Phone == normalizedTel))
                 return BadRequest(new { message = "Bu nömrə artıq mövcuddur." });
@@ -232,6 +243,8 @@ namespace EHisse.WebApi.Controllers
                 LastName = req.LastName,
                 Phone = normalizedTel,
                 Email = email,
+                Pin = pin,
+                IdCardImageUrl = req.IdCardImageUrl,
                 Username = generatedUsername,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(req.Password),
                 Role = req.Role,

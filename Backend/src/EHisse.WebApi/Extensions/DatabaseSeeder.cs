@@ -21,6 +21,23 @@ public static class DatabaseSeeder
             context.Database.EnsureCreated();
         }
 
+        // Add Pin and IdCardImageUrl columns to Users table if they do not exist
+        try
+        {
+            context.Database.ExecuteSqlRaw(@"
+                DO $$ 
+                BEGIN 
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Users' AND column_name='Pin') THEN
+                        ALTER TABLE ""Users"" ADD COLUMN ""Pin"" text NULL;
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Users' AND column_name='IdCardImageUrl') THEN
+                        ALTER TABLE ""Users"" ADD COLUMN ""IdCardImageUrl"" text NULL;
+                    END IF;
+                END $$;
+            ");
+        }
+        catch { }
+
         // Fix any null SKUs in legacy data
         var nullSkus = context.SpareParts.Where(s => s.SKU == null || s.SKU == "").ToList();
         if (nullSkus.Any())
