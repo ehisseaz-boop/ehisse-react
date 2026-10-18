@@ -568,24 +568,65 @@ function Home() {
                 </select>
               </div>
               
-              <ul className="pagination pagination-sm mb-0">
-                <li className={`page-item ${page === 1 ? 'disabled' : ''}`}>
-                  <button className="page-link" onClick={() => {
-                    const prev = Math.max(1, page - 1);
-                    setPage(prev);
-                    fetchProducts(searchTerm, activeCategoryId, activeSellerId, prev, pageSize);
-                  }}>Əvvəlki</button>
-                </li>
-                <li className="page-item disabled">
-                  <span className="page-link">{page} / {totalPages}</span>
-                </li>
-                <li className={`page-item ${page === totalPages ? 'disabled' : ''}`}>
-                  <button className="page-link" onClick={() => {
-                    const next = Math.min(totalPages, page + 1);
-                    setPage(next);
-                    fetchProducts(searchTerm, activeCategoryId, activeSellerId, next, pageSize);
-                  }}>Növbəti</button>
-                </li>
+              <ul className="pagination pagination-sm mb-0 align-items-center">
+                {page > 1 && (
+                  <li className="page-item">
+                    <button className="page-link" onClick={() => {
+                      const prev = page - 1;
+                      setPage(prev);
+                      fetchProducts(searchTerm, activeCategoryId, activeSellerId, prev, pageSize);
+                    }}>Əvvəlki</button>
+                  </li>
+                )}
+
+                {(() => {
+                  const windowSize = 4;
+                  let start = page;
+                  if (start + windowSize - 1 > totalPages) {
+                    start = Math.max(1, totalPages - windowSize + 1);
+                  }
+                  const end = Math.min(totalPages, start + windowSize - 1);
+                  const pages = [];
+                  for (let i = start; i <= end; i++) {
+                    pages.push(i);
+                  }
+
+                  return (
+                    <>
+                      {pages.map(p => (
+                        <li key={p} className={`page-item ${p === page ? 'active' : ''}`}>
+                          <button
+                            className="page-link"
+                            style={p === page ? { backgroundColor: 'var(--accent)', borderColor: 'var(--accent)', color: 'var(--accent-text, #000)', fontWeight: 'bold' } : {}}
+                            onClick={() => {
+                              if (p !== page) {
+                                setPage(p);
+                                fetchProducts(searchTerm, activeCategoryId, activeSellerId, p, pageSize);
+                              }
+                            }}
+                          >
+                            {p}
+                          </button>
+                        </li>
+                      ))}
+                      {end < totalPages && (
+                        <li className="page-item disabled">
+                          <span className="page-link border-0">..</span>
+                        </li>
+                      )}
+                    </>
+                  );
+                })()}
+
+                {page < totalPages && (
+                  <li className="page-item">
+                    <button className="page-link" onClick={() => {
+                      const next = page + 1;
+                      setPage(next);
+                      fetchProducts(searchTerm, activeCategoryId, activeSellerId, next, pageSize);
+                    }}>Növbəti</button>
+                  </li>
+                )}
               </ul>
             </div>
         )}
