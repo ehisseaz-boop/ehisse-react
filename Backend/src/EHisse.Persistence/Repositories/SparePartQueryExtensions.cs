@@ -69,6 +69,7 @@ public static class SparePartQueryExtensions
         {
             "price_asc" => query.OrderBy(p => p.Price),
             "price_desc" => query.OrderByDescending(p => p.Price),
+            "views_desc" => query.OrderByDescending(p => p.ViewCount).ThenByDescending(p => p.CreatedDate),
             "date_asc" => query.OrderBy(p => p.CreatedDate),
             _ => query.OrderByDescending(p => p.CreatedDate),
         };
