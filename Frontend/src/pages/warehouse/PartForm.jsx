@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Api, imageSrc } from '../../api';
 import { Loading, ErrorBox } from '../Categories';
 import { statusBadge } from '../../components/Panel';
+import { cleanPartTypeName } from '../Home';
 
 const empty = {
   categoryId: '', brandId: '', deviceModelId: '', partTypeId: '', qualityTypeId: '',
@@ -358,7 +359,7 @@ function PartForm() {
           <label>Hissə növü</label>
           <select className="form-select mb-2" value={form.partTypeId} onChange={set('partTypeId')} required disabled={!partTypes.length}>
             <option value="">Seçin</option>
-            {partTypes.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+            {partTypes.map(p => <option key={p.id} value={p.id}>{cleanPartTypeName(p.name)}</option>)}
           </select>
         </div>
         <div className="col-md-6">

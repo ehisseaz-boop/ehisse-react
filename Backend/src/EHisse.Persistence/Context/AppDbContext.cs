@@ -120,8 +120,8 @@ namespace EHisse.Persistence.Context
 
             // 5. Part Types
             modelBuilder.Entity<SparePartType>().HasData(
-                new SparePartType { Id = 1, Name = "Telefon üçün ekranlar", Key = "SCREEN", IsPortable = false, IsAccessory = false },
-                new SparePartType { Id = 2, Name = "Telefon üçün batareyalar", Key = "BATTERY", IsPortable = false, IsAccessory = false },
+                new SparePartType { Id = 1, Name = "Ekran", Key = "SCREEN", IsPortable = false, IsAccessory = false },
+                new SparePartType { Id = 2, Name = "Batareya", Key = "BATTERY", IsPortable = false, IsAccessory = false },
                 new SparePartType { Id = 3, Name = "Kameralar", Key = "CAM_REAR", IsPortable = false, IsAccessory = false },
                 new SparePartType { Id = 4, Name = "Kamera şüşələri", Key = "CAM_FRONT", IsPortable = false, IsAccessory = false },
                 new SparePartType { Id = 5, Name = "Motherboard", Key = "MB", IsPortable = false, IsAccessory = false },
@@ -135,7 +135,7 @@ namespace EHisse.Persistence.Context
                 new SparePartType { Id = 13, Name = "Ram", Key = "RAM", IsPortable = false, IsAccessory = false },
                 new SparePartType { Id = 14, Name = "Storage", Key = "STORAGE", IsPortable = false, IsAccessory = false },
                 new SparePartType { Id = 15, Name = "Adapter", Key = "ADAPTER", IsPortable = false, IsAccessory = true },
-                new SparePartType { Id = 16, Name = "Telefon üçün sensorlar və ekran şüşələri", Key = "SENSOR_GLASS", IsPortable = false, IsAccessory = false },
+                new SparePartType { Id = 16, Name = "Sensor və ekran şüşələri", Key = "SENSOR_GLASS", IsPortable = false, IsAccessory = false },
                 new SparePartType { Id = 17, Name = "Antenlər", Key = "ANTENNA", IsPortable = false, IsAccessory = false },
                 new SparePartType { Id = 18, Name = "Dinamik setkaları", Key = "SPEAKER_NET", IsPortable = false, IsAccessory = false },
                 new SparePartType { Id = 19, Name = "Korpus hissələri", Key = "BODY_PARTS", IsPortable = false, IsAccessory = false },

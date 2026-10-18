@@ -54,6 +54,25 @@ public static class DatabaseSeeder
         }
         context.SaveChanges();
 
+        // Fix part type names (e.g. remove "Telefon üçün" so they are generic for all categories)
+        var partTypesToFix = context.SparePartTypes.ToList();
+        foreach (var pt in partTypesToFix)
+        {
+            if (pt.Name.Contains("Telefon üçün ekranlar", StringComparison.OrdinalIgnoreCase))
+            {
+                pt.Name = "Ekran";
+            }
+            else if (pt.Name.Contains("Telefon üçün batareyalar", StringComparison.OrdinalIgnoreCase))
+            {
+                pt.Name = "Batareya";
+            }
+            else if (pt.Name.Contains("Telefon üçün sensorlar və ekran şüşələri", StringComparison.OrdinalIgnoreCase))
+            {
+                pt.Name = "Sensor və ekran şüşələri";
+            }
+        }
+        context.SaveChanges();
+
         // Seeding default categories if needed
         if (context.Categories.Count() < 10)
         {

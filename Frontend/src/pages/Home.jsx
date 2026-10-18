@@ -13,10 +13,23 @@ const isToday = (dateString) => {
            date.getFullYear() === today.getFullYear();
 };
 
+export function cleanPartTypeName(name) {
+  if (!name) return '';
+  let clean = name.trim();
+  // "Telefon üçün ekranlar" -> "Ekran"
+  clean = clean.replace(/telefon\s+üçün\s+ekranlar/gi, 'Ekran');
+  // "Telefon üçün batareyalar" -> "Batareya"
+  clean = clean.replace(/telefon\s+üçün\s+batareyalar/gi, 'Batareya');
+  // "Telefon üçün sensorlar və ekran şüşələri" -> "Sensor və ekran şüşələri"
+  clean = clean.replace(/telefon\s+üçün\s+sensorlar/gi, 'Sensorlar');
+  clean = clean.replace(/telefon\s+üçün\s+/gi, '');
+  return clean;
+}
+
 function formatCleanTitle(part) {
   let model = (part.modelName || '').trim();
   let brand = (part.brandName || '').trim();
-  let partType = (part.partTypeName || '').trim();
+  let partType = cleanPartTypeName(part.partTypeName || '');
 
   // Əgər model adı artıq brendlə başlamırsa (məs: "15 Pro" -> "iPhone 15 Pro")
   let fullModel = model;
@@ -331,7 +344,7 @@ function Home() {
             >
               <option value="">{activeCategoryId ? 'Bütün hissə növləri' : 'Əvvəlcə kateqoriya seçin'}</option>
               {partTypes.map(p => (
-                <option key={p.id} value={p.id}>{p.name}</option>
+                <option key={p.id} value={p.id}>{cleanPartTypeName(p.name)}</option>
               ))}
             </select>
           </div>
