@@ -1,6 +1,7 @@
-// Mərkəzi API köməkçisi — bütün backend sorğuları buradan keçir.
-// Əgər Vercel proxy rewrite işləmirsə, birbaşa Render backend URL-dən istifadə edirik
-const BASE = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app') ? 'https://ehisse-backend.onrender.com' : '');
+// Mərkəzi API köməkçisi — bütün backend sorğuları Vercel proxy (/api/...) üzərindən keçir.
+// BASE boş string olduqda bütün cookie-lər eyni domendə (First-party) işləyir və mobil brauzerlər tərəfindən ƏSLA bloklanmır!
+const BASE = '';
+
 
 
 function sanitizeString(str) {
