@@ -768,4 +768,23 @@ footer {
     }
 }
 
+/* Form Controls & Select Options */
+.form-select, .form-control {
+    background-color: var(--input-bg);
+    color: var(--text-main);
+    border-color: var(--input-border);
+}
+
+.form-select:focus, .form-control:focus {
+    background-color: var(--input-bg);
+    color: var(--text-main);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 0.25rem var(--accent-dark);
+}
+
+.form-select option {
+    background-color: var(--bg-surface);
+    color: var(--text-main);
+}
+
 

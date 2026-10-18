@@ -584,19 +584,19 @@ function Home() {
                 width: 'auto',
                 minWidth: '155px',
                 borderRadius: '20px',
-                backgroundColor: 'var(--bg-card)',
+                backgroundColor: 'var(--input-bg)',
                 color: 'var(--text-main)',
-                borderColor: 'var(--border-color)',
+                borderColor: 'var(--input-border)',
                 fontSize: '0.85rem',
                 cursor: 'pointer'
               }}
               value={sortOrder}
               onChange={(e) => handleSortChange(e.target.value)}
             >
-              <option value="">Əvvəlcə ən yeni</option>
-              <option value="price_asc">Əvvəlcə ən ucuz</option>
-              <option value="price_desc">Əvvəlcə ən baha</option>
-              <option value="views_desc">Əvvəlcə ən çox baxılan</option>
+              <option value="" style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-main)' }}>Əvvəlcə ən yeni</option>
+              <option value="price_asc" style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-main)' }}>Əvvəlcə ən ucuz</option>
+              <option value="price_desc" style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-main)' }}>Əvvəlcə ən baha</option>
+              <option value="views_desc" style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-main)' }}>Əvvəlcə ən çox baxılan</option>
             </select>
           </div>
         </div>
