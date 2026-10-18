@@ -133,13 +133,13 @@ function App() {
 
   return (
     <>
-      <header className="top-header d-flex justify-content-between align-items-center w-100">
-        <div className="d-flex align-items-center logo-container">
-          <Link to="/" className="logo text-decoration-none">
+      <header className="top-header d-flex justify-content-between align-items-center w-100 flex-nowrap" style={{ padding: '0.65rem 1.5rem' }}>
+        <div className="d-flex align-items-center logo-container flex-nowrap" style={{ gap: '1.5rem' }}>
+          <Link to="/" className="logo text-decoration-none text-nowrap" style={{ flexShrink: 0 }}>
             <div className="logo-icon">e</div>
             - hisse<span className="text-accent">.az</span>
           </Link>
-          <nav className="nav-links d-none d-lg-flex">
+          <nav className="nav-links d-none d-lg-flex align-items-center flex-nowrap" style={{ gap: '1.2rem', whiteSpace: 'nowrap' }}>
             <NavLink to="/" end className={navClass}>Kataloq</NavLink>
             <NavLink to="/saticilar" className={navClass}>Satıcılar</NavLink>
             <NavLink to="/yardim" className={navClass}>Yardım mərkəzi</NavLink>
@@ -147,25 +147,25 @@ function App() {
           </nav>
         </div>
 
-        <div className="header-actions d-flex align-items-center" style={{ gap: '0.85rem' }}>
-          <div className="d-none d-xl-flex align-items-center me-2" style={{ gap: '15px', fontSize: '0.95rem', fontWeight: 500 }}>
-            <a href="tel:+994102523226" className="text-decoration-none" style={{ color: 'var(--text-main)' }}>
-              <i className="bi bi-telephone-fill" style={{ color: 'var(--accent)', marginRight: '4px' }}></i> +994 10 252 32 26
+        <div className="header-actions d-flex align-items-center flex-nowrap" style={{ gap: '0.65rem' }}>
+          <div className="d-none d-xxl-flex align-items-center me-1 text-nowrap" style={{ gap: '12px', fontSize: '0.88rem', fontWeight: 500 }}>
+            <a href="tel:+994102523226" className="text-decoration-none d-inline-flex align-items-center" style={{ color: 'var(--text-main)', whiteSpace: 'nowrap' }}>
+              <i className="bi bi-telephone-fill" style={{ color: 'var(--accent)', marginRight: '5px' }}></i> +994 10 252 32 26
             </a>
-            <a href="https://wa.me/994103961501" target="_blank" rel="noreferrer" className="text-decoration-none" style={{ color: 'var(--text-main)' }}>
-              <i className="bi bi-whatsapp" style={{ color: '#25D366', marginRight: '4px' }}></i> +994 10 396 15 01
+            <a href="https://wa.me/994103961501" target="_blank" rel="noreferrer" className="text-decoration-none d-inline-flex align-items-center" style={{ color: 'var(--text-main)', whiteSpace: 'nowrap' }}>
+              <i className="bi bi-whatsapp" style={{ color: '#25D366', marginRight: '5px' }}></i> +994 10 396 15 01
             </a>
           </div>
 
           {/* Desktop Sevimlilər Düyməsi və Sayğacı */}
           <Link 
             to="/favorites" 
-            className="btn-outline position-relative d-none d-md-flex align-items-center gap-2"
+            className="btn-outline position-relative d-none d-md-inline-flex align-items-center gap-2 text-nowrap"
             title="Seçilmiş elanlar"
-            style={{ borderRadius: '20px' }}
+            style={{ borderRadius: '20px', padding: '0.45rem 0.85rem', fontSize: '0.9rem', flexShrink: 0 }}
           >
             <i className={`bi bi-heart${favoritesCount > 0 ? '-fill text-danger' : ''}`}></i>
-            <span className="d-none d-lg-inline">Seçilmişlər</span>
+            <span className="d-none d-xl-inline">Seçilmişlər</span>
             {favoritesCount > 0 && (
               <span 
                 className="badge rounded-pill bg-danger" 
@@ -176,9 +176,14 @@ function App() {
             )}
           </Link>
 
-          <button onClick={toggleTheme} className="btn-outline d-flex align-items-center gap-2" id="theme-toggle" style={{ background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-main)', borderRadius: '20px' }}>
+          <button 
+            onClick={toggleTheme} 
+            className="btn-outline d-inline-flex align-items-center gap-2 text-nowrap" 
+            id="theme-toggle" 
+            style={{ background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-main)', borderRadius: '20px', padding: '0.45rem 0.85rem', fontSize: '0.9rem', flexShrink: 0 }}
+          >
             <i className={`bi bi-${theme === 'dark' ? 'sun' : 'moon-stars'}`} id="theme-icon"></i>
-            <span className="d-none d-md-inline" id="theme-text">Rejim</span>
+            <span className="d-none d-xl-inline" id="theme-text">Rejim</span>
           </button>
 
           {user ? (
@@ -188,12 +193,13 @@ function App() {
               )}
               <Link 
                 to={user.role === 'Admin' ? '/admin' : '/warehouse'} 
-                className="user-profile text-decoration-none d-flex align-items-center gap-2"
+                className="user-profile text-decoration-none d-inline-flex align-items-center gap-2 text-nowrap"
                 title="Şəxsi kabinet"
+                style={{ flexShrink: 0 }}
               >
                 <div className="user-avatar" style={{
-                  width: '38px',
-                  height: '38px',
+                  width: '36px',
+                  height: '36px',
                   borderRadius: '50%',
                   backgroundColor: 'var(--accent)',
                   color: 'var(--accent-text)',
@@ -201,24 +207,25 @@ function App() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontWeight: 'bold',
-                  fontSize: '1rem',
+                  fontSize: '0.95rem',
                   boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
-                  border: '2px solid rgba(255,255,255,0.2)'
+                  border: '2px solid rgba(255,255,255,0.2)',
+                  flexShrink: 0
                 }}>
                   {(user.fullName || user.email || user.username || 'U')[0].toUpperCase()}
                 </div>
-                <div className="d-none d-md-flex flex-column text-start" style={{ lineHeight: '1.2' }}>
-                  <span className="user-name" style={{ color: 'var(--text-main)', fontWeight: 600, fontSize: '0.9rem' }}>
+                <div className="d-none d-lg-flex flex-column text-start" style={{ lineHeight: '1.2' }}>
+                  <span className="user-name" style={{ color: 'var(--text-main)', fontWeight: 600, fontSize: '0.85rem' }}>
                     {user.fullName || user.username}
                   </span>
-                  <span className="user-role" style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
+                  <span className="user-role" style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>
                     {user.role === 'Admin' ? 'Administrator' : user.role === 'Anbardar' ? 'Satıcı / Anbardar' : 'Usta / Alıcı'}
                   </span>
                 </div>
               </Link>
-              <button onClick={logout} className="btn-outline" title="Çıxış">
+              <button onClick={logout} className="btn-outline d-inline-flex align-items-center gap-1 text-nowrap" title="Çıxış" style={{ borderRadius: '20px', padding: '0.45rem 0.8rem', fontSize: '0.9rem', flexShrink: 0 }}>
                 <i className="bi bi-box-arrow-right"></i>
-                <span className="d-none d-md-inline">Çıxış</span>
+                <span className="d-none d-xl-inline">Çıxış</span>
               </button>
             </>
           ) : (
