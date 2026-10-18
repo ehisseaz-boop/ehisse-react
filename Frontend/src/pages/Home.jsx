@@ -44,6 +44,108 @@ function formatCleanTitle(part) {
   return part.title || fullModel || 'Ehtiyat hissəsi';
 }
 
+function ProductCardImageSlider({ part }) {
+  const images = (part.images && part.images.length > 0) ? part.images : [];
+  const [currentIdx, setCurrentIdx] = useState(0);
+
+  if (images.length === 0) {
+    return (
+      <Link to={`/details/${part.id}`} className="product-image text-decoration-none">
+        <div style={{ width: '80px', height: '80px', border: '4px solid var(--accent)', borderRadius: '50%', boxShadow: '0 0 20px var(--accent)', opacity: 0.8 }}></div>
+      </Link>
+    );
+  }
+
+  const nextImg = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentIdx((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImg = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentIdx((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  const currentImg = images[currentIdx] || images[0];
+
+  return (
+    <div className="product-image position-relative overflow-hidden group">
+      <Link to={`/details/${part.id}`} className="w-100 h-100 d-flex align-items-center justify-content-center text-decoration-none">
+        <img 
+          src={imageSrc(currentImg.url)} 
+          alt={`${formatCleanTitle(part)} - ehtiyat hissəsi e-hisse.az`} 
+          loading="lazy" 
+          decoding="async" 
+        />
+      </Link>
+
+      {images.length > 1 && (
+        <>
+          <button
+            type="button"
+            onClick={prevImg}
+            className="btn btn-sm btn-dark position-absolute top-50 start-0 translate-middle-y shadow-sm p-0 d-flex align-items-center justify-content-center"
+            style={{
+              width: '24px',
+              height: '24px',
+              borderRadius: '50%',
+              opacity: 0.85,
+              zIndex: 3,
+              marginLeft: '4px',
+              backgroundColor: 'rgba(0,0,0,0.65)',
+              border: 'none',
+              color: '#fff'
+            }}
+            title="Əvvəlki şəkil"
+          >
+            <i className="bi bi-chevron-left" style={{ fontSize: '12px' }}></i>
+          </button>
+
+          <button
+            type="button"
+            onClick={nextImg}
+            className="btn btn-sm btn-dark position-absolute top-50 end-0 translate-middle-y shadow-sm p-0 d-flex align-items-center justify-content-center"
+            style={{
+              width: '24px',
+              height: '24px',
+              borderRadius: '50%',
+              opacity: 0.85,
+              zIndex: 3,
+              marginRight: '4px',
+              backgroundColor: 'rgba(0,0,0,0.65)',
+              border: 'none',
+              color: '#fff'
+            }}
+            title="Növbəti şəkil"
+          >
+            <i className="bi bi-chevron-right" style={{ fontSize: '12px' }}></i>
+          </button>
+
+          <div
+            className="position-absolute bottom-0 start-50 translate-middle-x d-flex gap-1 mb-1"
+            style={{ zIndex: 3 }}
+          >
+            {images.map((_, idx) => (
+              <span
+                key={idx}
+                style={{
+                  width: idx === currentIdx ? '10px' : '5px',
+                  height: '5px',
+                  borderRadius: '3px',
+                  backgroundColor: idx === currentIdx ? 'var(--accent)' : 'rgba(255,255,255,0.4)',
+                  transition: 'all 0.2s'
+                }}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 function Home() {
   usePageSeo({
     title: 'Doğru hissəni tez tap - Ehtiyat hissələri kataloqu',
@@ -218,7 +320,7 @@ function Home() {
   };
 
   const hasActiveFilters = Boolean(
-    activeCategoryId || filterBrandId || filterModelId || filterPartTypeId || filterQualityTypeId || minPrice || maxPrice || sortOrder
+    activeCategoryId || filterBrandId || filterModelId || filterPartTypeId || filterQualityTypeId || minPrice || maxPrice
   );
 
   return (
@@ -391,7 +493,7 @@ function Home() {
               <option value="">Əvvəlcə ən yeni</option>
               <option value="price_asc">Əvvəlcə ən ucuz</option>
               <option value="price_desc">Əvvəlcə ən baha</option>
-              <option value="views_desc">Ən çox baxılan</option>
+              <option value="views_desc">Əvvəlcə ən çox baxılan</option>
             </select>
           </div>
 
@@ -494,7 +596,7 @@ function Home() {
               <option value="">Əvvəlcə ən yeni</option>
               <option value="price_asc">Əvvəlcə ən ucuz</option>
               <option value="price_desc">Əvvəlcə ən baha</option>
-              <option value="views_desc">Ən çox baxılan</option>
+              <option value="views_desc">Əvvəlcə ən çox baxılan</option>
             </select>
           </div>
         </div>
@@ -519,18 +621,7 @@ function Home() {
                                 <button className="btn-fav add-to-fav" data-id={part.id}><i className="bi bi-heart"></i></button>
                             </div>
                             
-                            <Link to={`/details/${part.id}`} className="product-image text-decoration-none">
-                                {mainImage ? (
-                                    <img 
-                                        src={imageSrc(mainImage.url)} 
-                                        alt={`${formatCleanTitle(part)} - ehtiyat hissəsi e-hisse.az`} 
-                                        loading="lazy" 
-                                        decoding="async" 
-                                    />
-                                ) : (
-                                    <div style={{ width: '80px', height: '80px', border: '4px solid var(--accent)', borderRadius: '50%', boxShadow: '0 0 20px var(--accent)', opacity: 0.8 }}></div>
-                                )}
-                            </Link>
+                            <ProductCardImageSlider part={part} />
                             
                             <div className="product-meta">
                                 <span className="product-category">{part.partTypeName || "DIGƏR"}</span>

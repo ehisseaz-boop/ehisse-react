@@ -56,7 +56,7 @@ const warehouseLinks = [
 ];
 
 function App() {
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
   const [user, setUser] = useState(() => {
     try {
       const saved = localStorage.getItem('ehisse_user');
