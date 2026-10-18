@@ -66,10 +66,25 @@ export async function api(path, { method = 'GET', body, params } = {}) {
     if (qs.toString()) url += '?' + qs.toString();
   }
 
+  const headers = {};
+  if (body && !(body instanceof FormData)) {
+    headers['Content-Type'] = 'application/json';
+  }
+
+  // Mobil brauzerlərin cookie bloklamasını aşmaq üçün istifadəçi ID-sini birbaşa Header ilə göndəririk
+  try {
+    const saved = localStorage.getItem('ehisse_user');
+    if (saved) {
+      const u = JSON.parse(saved);
+      if (u?.id) headers['X-User-Id'] = String(u.id);
+      if (u?.username) headers['X-Username'] = encodeURIComponent(u.username);
+    }
+  } catch { }
+
   const res = await fetch(url, {
     method,
     credentials: 'include',
-    headers: body && !(body instanceof FormData) ? { 'Content-Type': 'application/json' } : undefined,
+    headers,
     body: body instanceof FormData ? body : body ? JSON.stringify(body) : undefined,
   });
 

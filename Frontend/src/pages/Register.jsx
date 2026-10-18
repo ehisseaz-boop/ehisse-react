@@ -74,6 +74,7 @@ function Register({ onRegister }) {
       if (res && res.username) {
         const loggedUser = {
           isAuthenticated: true,
+          id: res.id,
           username: res.username,
           fullName: res.fullName,
           role: res.role,
