@@ -31,8 +31,11 @@ function PartForm() {
   useEffect(() => {
     (async () => {
       try {
-        const fd = await Api.warehouse.formData();
-        setLookups(fd);
+        const [categories, qualityTypes] = await Promise.all([
+          Api.lookupCategories(),
+          Api.qualityTypes()
+        ]);
+        setLookups({ categories, qualityTypes });
         if (isEdit) {
           const p = await Api.warehouse.get(id);
           setForm({
