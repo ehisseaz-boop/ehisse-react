@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Api, imageSrc } from '../api';
 import { Modal } from '../components/Panel';
@@ -236,6 +236,15 @@ function Home() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
 
+  const categoryScrollRef = useRef(null);
+
+  const scrollCategories = (direction) => {
+    if (categoryScrollRef.current) {
+      const scrollAmount = direction === 'left' ? -260 : 260;
+      categoryScrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
+
   const fetchProducts = (
     search = searchTerm,
     categoryId = activeCategoryId,
@@ -419,44 +428,64 @@ function Home() {
 
           {/* Vizual Kateqoriya İkonları Karuseli (Tap.az üslubunda) */}
           <div className="w-100 mt-2">
-            <div className="home-visual-categories">
-              {/* Kataloq açan düymə */}
-              <div 
-                className="home-cat-item katalog-btn"
-                onClick={() => setShowVisualCatalog(true)}
+            <div className="categories-carousel-wrapper">
+              <button 
+                type="button" 
+                className="carousel-nav-btn prev-btn d-none d-md-flex" 
+                onClick={() => scrollCategories('left')}
+                title="Geri"
               >
-                <div className="home-cat-icon">
-                  <i className="bi bi-grid-fill"></i>
+                <i className="bi bi-chevron-left"></i>
+              </button>
+
+              <div className="home-visual-categories" ref={categoryScrollRef}>
+                {/* Kataloq açan düymə */}
+                <div 
+                  className="home-cat-item katalog-btn"
+                  onClick={() => setShowVisualCatalog(true)}
+                >
+                  <div className="home-cat-icon">
+                    <i className="bi bi-grid-fill"></i>
+                  </div>
+                  <span className="home-cat-title">Kataloq</span>
                 </div>
-                <span className="home-cat-title">Kataloq</span>
+
+                {/* Kateqoriyalar */}
+                {categories.map(cat => {
+                  const isActive = activeCategoryId === cat.id;
+                  return (
+                    <div 
+                      key={cat.id}
+                      className={`home-cat-item ${isActive ? 'active' : ''}`}
+                      onClick={() => {
+                        if (isActive) {
+                          setActiveCategoryId(null);
+                          fetchProducts(searchTerm, null, activeSellerId, 1, pageSize);
+                        } else {
+                          setActiveCategoryId(cat.id);
+                          fetchProducts(searchTerm, cat.id, activeSellerId, 1, pageSize);
+                          const section = document.getElementById('catalog-section');
+                          if (section) section.scrollIntoView({ behavior: 'smooth' });
+                        }
+                      }}
+                    >
+                      <div className="home-cat-icon">
+                        <i className={`bi ${getCategoryIcon(cat.name)}`}></i>
+                      </div>
+                      <span className="home-cat-title">{cat.name.replace(' ehtiyat hissələri', '')}</span>
+                    </div>
+                  );
+                })}
               </div>
 
-              {/* Kateqoriyalar */}
-              {categories.map(cat => {
-                const isActive = activeCategoryId === cat.id;
-                return (
-                  <div 
-                    key={cat.id}
-                    className={`home-cat-item ${isActive ? 'active' : ''}`}
-                    onClick={() => {
-                      if (isActive) {
-                        setActiveCategoryId(null);
-                        fetchProducts(searchTerm, null, activeSellerId, 1, pageSize);
-                      } else {
-                        setActiveCategoryId(cat.id);
-                        fetchProducts(searchTerm, cat.id, activeSellerId, 1, pageSize);
-                        const section = document.getElementById('catalog-section');
-                        if (section) section.scrollIntoView({ behavior: 'smooth' });
-                      }
-                    }}
-                  >
-                    <div className="home-cat-icon">
-                      <i className={`bi ${getCategoryIcon(cat.name)}`}></i>
-                    </div>
-                    <span className="home-cat-title">{cat.name.replace(' ehtiyat hissələri', '')}</span>
-                  </div>
-                );
-              })}
+              <button 
+                type="button" 
+                className="carousel-nav-btn next-btn d-none d-md-flex" 
+                onClick={() => scrollCategories('right')}
+                title="İrəli"
+              >
+                <i className="bi bi-chevron-right"></i>
+              </button>
             </div>
           </div>
         </div>
