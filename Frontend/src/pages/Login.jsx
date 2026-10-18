@@ -23,7 +23,17 @@ function Login({ onLogin }) {
     e.preventDefault();
     setError(''); setBusy(true);
     try {
-      await Api.login({ username, password });
+      const res = await Api.login({ username, password });
+      if (res && res.username) {
+        const loggedUser = {
+          isAuthenticated: true,
+          username: res.username,
+          fullName: res.fullName,
+          role: res.role,
+          email: res.email
+        };
+        localStorage.setItem('ehisse_user', JSON.stringify(loggedUser));
+      }
       await onLogin?.();
       navigate(from, { replace: true });
     } catch (err) {

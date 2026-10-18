@@ -70,7 +70,17 @@ function Register({ onRegister }) {
       const cleanPhone = form.phone.replace(/\D/g, '');
       const fullPhone = `+994${form.operator}${cleanPhone}`;
       // 2. Kodu backend-də yoxlayıb istifadəçini qeydiyyatdan keçiririk
-      await Api.register({ ...form, phone: fullPhone, role: Number(form.role), code: otp.trim() });
+      const res = await Api.register({ ...form, phone: fullPhone, role: Number(form.role), code: otp.trim() });
+      if (res && res.username) {
+        const loggedUser = {
+          isAuthenticated: true,
+          username: res.username,
+          fullName: res.fullName,
+          role: res.role,
+          email: res.email
+        };
+        localStorage.setItem('ehisse_user', JSON.stringify(loggedUser));
+      }
       setShowOtp(false);
       await onRegister?.();
       navigate('/thank-you', {

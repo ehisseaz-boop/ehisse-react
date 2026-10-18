@@ -57,8 +57,14 @@ const warehouseLinks = [
 
 function App() {
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
-  // undefined → hələ yüklənir, null → daxil olmayıb
-  const [user, setUser] = useState(undefined);
+  const [user, setUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('ehisse_user');
+      return saved ? JSON.parse(saved) : undefined;
+    } catch {
+      return undefined;
+    }
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -67,7 +73,25 @@ function App() {
   }, [theme]);
 
   const refreshUser = useCallback(() => {
-    return Api.me().then(u => setUser(u?.isAuthenticated ? u : null)).catch(() => setUser(null));
+    return Api.me()
+      .then(u => {
+        if (u?.isAuthenticated) {
+          setUser(u);
+          localStorage.setItem('ehisse_user', JSON.stringify(u));
+        } else {
+          // Əgər cookie yoxdursa amma localStorage-də login olunmuş istifadəçi varsa, saxlayırıq
+          const saved = localStorage.getItem('ehisse_user');
+          if (!saved) {
+            setUser(null);
+          }
+        }
+      })
+      .catch(() => {
+        const saved = localStorage.getItem('ehisse_user');
+        if (!saved) {
+          setUser(null);
+        }
+      });
   }, []);
 
   useEffect(() => { refreshUser(); }, [refreshUser]);
@@ -75,7 +99,11 @@ function App() {
   const toggleTheme = () => setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
 
   const logout = async () => {
-    try { await Api.logout(); } finally { setUser(null); navigate('/'); }
+    try { await Api.logout(); } finally {
+      localStorage.removeItem('ehisse_user');
+      setUser(null);
+      navigate('/');
+    }
   };
 
   const navClass = ({ isActive }) => `text-decoration-none ${isActive ? 'active' : ''}`;

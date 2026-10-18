@@ -28,7 +28,7 @@ function MobileStickyBar({ user }) {
           <span>Elan ver</span>
         </Link>
       ) : (
-        <Link to="/register" className="sticky-cta-item highlight">
+        <Link to="/login" state={{ from: '/warehouse/add-part' }} className="sticky-cta-item highlight">
           <i className="bi bi-plus-circle-fill"></i>
           <span>Elan ver</span>
         </Link>

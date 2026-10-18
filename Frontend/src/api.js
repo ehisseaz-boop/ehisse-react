@@ -1,6 +1,7 @@
 // Mərkəzi API köməkçisi — bütün backend sorğuları buradan keçir.
-// Vite proxy sayəsində nisbi URL istifadə olunur (/api/...), brauzer URL-i dəyişmir.
-const BASE = import.meta.env.VITE_API_URL || '';
+// Əgər Vercel proxy rewrite işləmirsə, birbaşa Render backend URL-dən istifadə edirik
+const BASE = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' && window.location.hostname.includes('vercel.app') ? 'https://ehisse-backend.onrender.com' : '');
+
 
 function sanitizeString(str) {
   if (typeof str !== 'string') return str;
