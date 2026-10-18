@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { Api, imageSrc } from '../api';
 import { Modal } from '../components/Panel';
 import { usePageSeo } from '../utils/seo';
+import VisualSearchModal, { getCategoryIcon } from '../components/VisualSearchModal';
 
 const isToday = (dateString) => {
     if (!dateString) return false;
@@ -170,6 +171,7 @@ function Home() {
 
   // Detallı axtarış modalı və filtrlər
   const [showFilterModal, setShowFilterModal] = useState(false);
+  const [showVisualCatalog, setShowVisualCatalog] = useState(false);
   const [filterBrandId, setFilterBrandId] = useState('');
   const [filterModelId, setFilterModelId] = useState('');
   const [filterPartTypeId, setFilterPartTypeId] = useState('');
@@ -198,6 +200,29 @@ function Home() {
       if (phoneCat) setActiveCategoryId(phoneCat.id);
     }
     setShowFilterModal(true);
+  };
+
+  const handleVisualCatalogSelect = ({ categoryId, brandId, modelId, partTypeId }) => {
+    setActiveCategoryId(categoryId);
+    setFilterBrandId(brandId ? String(brandId) : '');
+    setFilterModelId(modelId ? String(modelId) : '');
+    setFilterPartTypeId(partTypeId ? String(partTypeId) : '');
+    setPage(1);
+
+    const newParams = new URLSearchParams(searchParams);
+    if (categoryId) newParams.set('categoryId', categoryId);
+    else newParams.delete('categoryId');
+    setSearchParams(newParams);
+
+    fetchProducts(searchTerm, categoryId, activeSellerId, 1, pageSize, {
+      brandId: brandId ? Number(brandId) : undefined,
+      modelId: modelId ? Number(modelId) : undefined,
+      partTypeId: partTypeId ? Number(partTypeId) : undefined
+    });
+
+    // Səhifənin elanlar hissəsinə sürüşdür
+    const section = document.getElementById('catalog-section');
+    if (section) section.scrollIntoView({ behavior: 'smooth' });
   };
 
   // Dropdown məlumatları
@@ -362,10 +387,18 @@ function Home() {
           <div className="d-flex flex-wrap justify-content-center gap-3 my-3">
             <button 
               type="button"
-              onClick={openFilterModal} 
-              className="btn btn-primary bg-accent text-dark fw-bold px-4 py-2 rounded-pill shadow-sm d-md-none"
+              onClick={() => setShowVisualCatalog(true)} 
+              className="btn btn-primary bg-accent text-dark fw-bold px-4 py-2 rounded-pill shadow-sm"
             >
-              <i className="bi bi-sliders me-2"></i> Detallı axtarış
+              <i className="bi bi-grid-fill me-2"></i> Kataloq
+            </button>
+            <button 
+              type="button"
+              onClick={openFilterModal} 
+              className="btn btn-outline px-4 py-2 rounded-pill"
+              style={{ borderColor: 'var(--border-color)', color: 'var(--text-main)' }}
+            >
+              <i className="bi bi-sliders me-2 text-accent"></i> Filtrlər
             </button>
             <Link 
               to="/warehouse/add-part" 
@@ -376,15 +409,66 @@ function Home() {
             </Link>
           </div>
           
-          <div className="hero-stats justify-content-center w-100 mt-2">
+          <div className="hero-stats justify-content-center w-100 mt-2 mb-3">
             <span>{totalItems || products.length}+</span> aktiv hissə
             <span className="dot">•</span>
             <span>10+</span> təsdiqli satıcı
             <span className="dot">•</span>
             <span>Bu gün</span> yenilənib
           </div>
+
+          {/* Vizual Kateqoriya İkonları Karuseli (Tap.az üslubunda) */}
+          <div className="w-100 mt-2">
+            <div className="home-visual-categories">
+              {/* Kataloq açan düymə */}
+              <div 
+                className="home-cat-item katalog-btn"
+                onClick={() => setShowVisualCatalog(true)}
+              >
+                <div className="home-cat-icon">
+                  <i className="bi bi-grid-fill"></i>
+                </div>
+                <span className="home-cat-title">Kataloq</span>
+              </div>
+
+              {/* Kateqoriyalar */}
+              {categories.map(cat => {
+                const isActive = activeCategoryId === cat.id;
+                return (
+                  <div 
+                    key={cat.id}
+                    className={`home-cat-item ${isActive ? 'active' : ''}`}
+                    onClick={() => {
+                      if (isActive) {
+                        setActiveCategoryId(null);
+                        fetchProducts(searchTerm, null, activeSellerId, 1, pageSize);
+                      } else {
+                        setActiveCategoryId(cat.id);
+                        fetchProducts(searchTerm, cat.id, activeSellerId, 1, pageSize);
+                        const section = document.getElementById('catalog-section');
+                        if (section) section.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    }}
+                  >
+                    <div className="home-cat-icon">
+                      <i className={`bi ${getCategoryIcon(cat.name)}`}></i>
+                    </div>
+                    <span className="home-cat-title">{cat.name.replace(' ehtiyat hissələri', '')}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </section>
+
+      {/* Tap.az Üslubunda Vizual Axtarış və Kataloq Modalı */}
+      <VisualSearchModal
+        open={showVisualCatalog}
+        onClose={() => setShowVisualCatalog(false)}
+        categories={categories}
+        onSelectResult={handleVisualCatalogSelect}
+      />
 
       {/* Detallı Axtarış Modalı */}
       <Modal
