@@ -53,6 +53,7 @@ function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialCategory = searchParams.get('categoryId') ? Number(searchParams.get('categoryId')) : null;
   const initialSeller = searchParams.get('sellerId') ? Number(searchParams.get('sellerId')) : null;
+  const initialSort = searchParams.get('sort') || sessionStorage.getItem('home_sortOrder') || '';
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -68,10 +69,18 @@ function Home() {
   const [filterQualityTypeId, setFilterQualityTypeId] = useState('');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
-  const [sortOrder, setSortOrder] = useState(''); // Default "" is newest (əvvəlcə ən yeni)
+  const [sortOrder, setSortOrder] = useState(initialSort);
 
   const handleSortChange = (newSort) => {
     setSortOrder(newSort);
+    sessionStorage.setItem('home_sortOrder', newSort);
+    const newParams = new URLSearchParams(searchParams);
+    if (newSort) {
+      newParams.set('sort', newSort);
+    } else {
+      newParams.delete('sort');
+    }
+    setSearchParams(newParams);
     setPage(1);
     fetchProducts(searchTerm, activeCategoryId, activeSellerId, 1, pageSize, { sortOrder: newSort });
   };
@@ -150,7 +159,7 @@ function Home() {
 
     setActiveCategoryId(initialCategory);
     setActiveSellerId(initialSeller);
-    fetchProducts('', initialCategory, initialSeller);
+    fetchProducts('', initialCategory, initialSeller, 1, pageSize, { sortOrder: initialSort });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialCategory, initialSeller]);
 
@@ -191,6 +200,7 @@ function Home() {
     setMinPrice('');
     setMaxPrice('');
     setSortOrder('');
+    sessionStorage.removeItem('home_sortOrder');
     setShowFilterModal(false);
     setPage(1);
     setSearchParams({});
