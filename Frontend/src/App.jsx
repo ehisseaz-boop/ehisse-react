@@ -116,11 +116,40 @@ function App() {
               {user.role === 'Admin' && (
                 <Link to="/admin" className="btn-outline" style={{ color: '#8a2be2', borderColor: '#8a2be2' }}>Admin Panel</Link>
               )}
-              {(user.role === 'Anbardar' || user.role === 'Usta') && (
-                <Link to="/warehouse" className="btn-outline" style={{ color: '#0dcaf0', borderColor: '#0dcaf0' }}>Kabinet</Link>
-              )}
-              <span className="d-none d-md-inline" style={{ color: 'var(--text-main)' }}><i className="bi bi-person-circle"></i> {user.fullName}</span>
-              <button onClick={logout} className="btn-outline">Çıxış</button>
+              <Link 
+                to={user.role === 'Admin' ? '/admin' : '/warehouse'} 
+                className="user-profile text-decoration-none d-flex align-items-center gap-2"
+                title="Şəxsi kabinet"
+              >
+                <div className="user-avatar" style={{
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--accent)',
+                  color: 'var(--accent-text)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 'bold',
+                  fontSize: '1rem',
+                  boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+                  border: '2px solid rgba(255,255,255,0.2)'
+                }}>
+                  {(user.fullName || user.email || user.username || 'U')[0].toUpperCase()}
+                </div>
+                <div className="d-none d-md-flex flex-column text-start" style={{ lineHeight: '1.2' }}>
+                  <span className="user-name" style={{ color: 'var(--text-main)', fontWeight: 600, fontSize: '0.9rem' }}>
+                    {user.fullName || user.username}
+                  </span>
+                  <span className="user-role" style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
+                    {user.role === 'Admin' ? 'Administrator' : user.role === 'Anbardar' ? 'Satıcı / Anbardar' : 'Usta / Alıcı'}
+                  </span>
+                </div>
+              </Link>
+              <button onClick={logout} className="btn-outline" title="Çıxış">
+                <i className="bi bi-box-arrow-right"></i>
+                <span className="d-none d-md-inline">Çıxış</span>
+              </button>
             </>
           ) : (
             <>
@@ -133,7 +162,7 @@ function App() {
 
       <main role="main">
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home user={user} />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/saticilar" element={<Saticilar />} />
           <Route path="/yardim" element={<Yardim />} />
@@ -145,7 +174,7 @@ function App() {
           <Route path="/yeni-elan" element={<Navigate to="/warehouse/add-part" replace />} />
           <Route path="/add-part" element={<Navigate to="/warehouse/add-part" replace />} />
           <Route path="/login" element={<Login onLogin={refreshUser} />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/register" element={<Register onRegister={refreshUser} />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />

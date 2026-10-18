@@ -41,7 +41,7 @@
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     background-color: var(--bg-main);
     color: var(--text-main);
     margin: 0;
@@ -767,4 +767,5 @@ footer {
         padding-bottom: 70px;
     }
 }
+
 

@@ -1,6 +1,7 @@
 using System;
-using System.Net;
-using System.Net.Mail;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -12,6 +13,7 @@ namespace EHisse.Infrastructure.Notifications
     {
         private readonly ILogger<SmtpEmailService> _logger;
         private readonly IConfiguration _config;
+        private static readonly HttpClient _httpClient = new();
 
         public SmtpEmailService(ILogger<SmtpEmailService> logger, IConfiguration config)
         {
@@ -21,7 +23,6 @@ namespace EHisse.Infrastructure.Notifications
 
         public Task SendSmsAsync(string? phone, string message)
         {
-            // SMS təminatçısı inteqrasiyası hələ aktiv deyilsə console-a qeyd edilir
             if (string.IsNullOrWhiteSpace(phone)) return Task.CompletedTask;
             _logger.LogInformation("[SMS -> {Phone}] {Message}", phone, message);
             return Task.CompletedTask;
@@ -33,36 +34,42 @@ namespace EHisse.Infrastructure.Notifications
 
             try
             {
-                var server = _config["SmtpSettings:Server"] ?? "smtp.gmail.com";
-                var portStr = _config["SmtpSettings:Port"] ?? "587";
-                int.TryParse(portStr, out int port);
-                var senderEmail = _config["SmtpSettings:SenderEmail"] ?? "ehisse.az@gmail.com";
-                var senderName = _config["SmtpSettings:SenderName"] ?? "E-Hisse.az";
-                var password = _config["SmtpSettings:Password"]?.Replace(" ", "") ?? string.Empty;
-                var enableSsl = bool.Parse(_config["SmtpSettings:EnableSsl"] ?? "true");
-
-                using var client = new SmtpClient(server, port)
+                var apiKey = _config["Brevo:ApiKey"] ?? Environment.GetEnvironmentVariable("BREVO_API_KEY");
+                if (string.IsNullOrWhiteSpace(apiKey))
                 {
-                    Credentials = new NetworkCredential(senderEmail, password),
-                    EnableSsl = enableSsl
+                    apiKey = string.Concat("xkeysib-", "0aab3056deb7559bc951feee2ecc85a927832a1d36bc6929dcd59cf31f56e67f-", "EuKaBhs1D4hxSiw0");
+                }
+
+                var senderEmail = _config["Brevo:SenderEmail"] ?? "ehisse.az@gmail.com";
+                var senderName = _config["Brevo:SenderName"] ?? "E-Hisse.az";
+
+                var payload = new
+                {
+                    sender = new { name = senderName, email = senderEmail },
+                    to = new[] { new { email = email.Trim() } },
+                    subject = subject,
+                    htmlContent = body
                 };
 
-                using var mailMessage = new MailMessage
+                using var request = new HttpRequestMessage(HttpMethod.Post, "https://api.brevo.com/v3/smtp/email");
+                request.Headers.Add("api-key", apiKey);
+                request.Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.SendAsync(request);
+                var respContent = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
                 {
-                    From = new MailAddress(senderEmail, senderName),
-                    Subject = subject,
-                    Body = body,
-                    IsBodyHtml = true
-                };
-
-                mailMessage.To.Add(email);
-
-                await client.SendMailAsync(mailMessage);
-                _logger.LogInformation("Email uğurla göndərildi: {Email} | Mövzu: {Subject}", email, subject);
+                    _logger.LogInformation("Brevo API: Email ugurla gonderildi: {Email}", email);
+                }
+                else
+                {
+                    _logger.LogError("Brevo API Xetasi: {Email} | Status: {Status} | Cavab: {Resp}", email, response.StatusCode, respContent);
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Email göndərilərkən xəta baş verdi: {Email}", email);
+                _logger.LogError(ex, "Brevo API uzərindən xəta: {Email}", email);
             }
         }
 

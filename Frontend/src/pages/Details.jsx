@@ -82,6 +82,15 @@ function Details() {
     Api.details(id).then(setData).catch(e => setError(e.message));
   }, [id]);
 
+  const displayTitle = data?.part ? getCleanTitle(data.part) : '';
+  const sellerCompany = cleanText(data?.seller?.companyName);
+  const sellerContact = cleanText(data?.seller?.contactPerson);
+
+  usePageSeo({
+    title: displayTitle ? `${displayTitle} (${data?.part?.qualityTypeName || 'Ehtiyat hissəsi'}) - ${Math.floor(data?.part?.price || 0)} AZN` : 'Məhsul detalları',
+    description: `${displayTitle || 'Ehtiyat hissəsi'}. Qiymət: ${Math.floor(data?.part?.price || 0)} AZN. Satıcı: ${sellerCompany || sellerContact || 'e-hisse.az'}. Stokda: ${data?.part?.stockQuantity || 0} ədəd.`
+  });
+
   if (error) return <div className="container py-4"><ErrorBox message={error} /></div>;
   if (!data) return <div className="container py-4"><Loading /></div>;
 
@@ -105,15 +114,7 @@ function Details() {
     ? rawPhone.slice(0, rawPhone.length - 4) + '••••'
     : rawPhone;
 
-  const displayTitle = getCleanTitle(part);
-  const sellerContact = cleanText(seller?.contactPerson);
-  const sellerCompany = cleanText(seller?.companyName);
   const sellerAddress = cleanText(part.locationAddress || seller?.address);
-
-  usePageSeo({
-    title: displayTitle ? `${displayTitle} (${part.qualityTypeName || 'Ehtiyat hissəsi'}) - ${Math.floor(part.price)} AZN` : 'Məhsul detalları',
-    description: `${displayTitle || 'Ehtiyat hissəsi'}. Qiymət: ${Math.floor(part.price)} AZN. Satıcı: ${sellerCompany || sellerContact || 'e-hisse.az'}. Stokda: ${part.stockQuantity} ədəd.`
-  });
 
   // WhatsApp nömrəsi (whatsapp sahəsi və ya telefon)
   const waTarget = seller?.whatsAppNumber || seller?.phone || '';

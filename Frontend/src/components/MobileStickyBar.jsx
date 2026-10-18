@@ -21,11 +21,11 @@ function MobileStickyBar({ user }) {
 
       {user ? (
         <Link 
-          to={user.role === 'Admin' ? '/admin' : '/warehouse'} 
+          to="/warehouse/add-part" 
           className="sticky-cta-item highlight"
         >
-          <i className="bi bi-person-circle"></i>
-          <span>Kabinet</span>
+          <i className="bi bi-plus-circle-fill"></i>
+          <span>Elan ver</span>
         </Link>
       ) : (
         <Link to="/register" className="sticky-cta-item highlight">

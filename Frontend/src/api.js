@@ -114,6 +114,7 @@ export const Api = {
   login: (body) => api('/api/Auth/Login', { method: 'POST', body }),
   operators: () => api('/api/Auth/Operators'),
   register: (body) => api('/api/Auth/Register', { method: 'POST', body }),
+  sendRegisterOtp: (body) => api('/api/Auth/SendRegisterOtp', { method: 'POST', body }),
   verifyOtp: (body) => api('/api/Auth/VerifyOtp', { method: 'POST', body }),
   resendOtp: (body) => api('/api/Auth/ResendOtp', { method: 'POST', body }),
   logout: () => api('/api/Auth/Logout', { method: 'POST' }),

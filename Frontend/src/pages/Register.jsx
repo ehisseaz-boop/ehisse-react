@@ -5,7 +5,7 @@ import { formStyle } from './Login';
 import { Modal } from '../components/Panel';
 import { usePageSeo } from '../utils/seo';
 
-function Register() {
+function Register({ onRegister }) {
   usePageSeo({
     title: 'Qeydiyyat',
     description: 'e-hisse.az platformasında usta və ya anbardar kimi qeydiyyatdan keçin.'
@@ -45,31 +45,44 @@ function Register() {
       setError(valError);
       return;
     }
-    setError(''); setBusy(true);
+    setError('');
+    setBusy(true);
     try {
-      const cleanPhone = form.phone.replace(/\D/g, '');
-      const fullPhone = `+994${form.operator}${cleanPhone}`;
-      await Api.register({ ...form, phone: fullPhone, role: Number(form.role) });
+      // 1. Əvvəlcə istifadəçinin daxil etdiyi email ünvanına 4 rəqəmli OTP kod göndəririk
+      await Api.sendRegisterOtp({ email: form.email.trim() });
       setShowOtp(true);
     } catch (err) {
-      setError(err.message || 'Qeydiyyat zamanı xəta baş verdi.');
+      setError(err.message || 'Təsdiq kodu göndərilərkən xəta baş verdi.');
     } finally {
       setBusy(false);
     }
   };
 
-  const verifyOtp = (e) => {
+  const verifyOtp = async (e) => {
     e.preventDefault();
     if (otp.length !== 4 || !/^\d{4}$/.test(otp)) {
       setError('Təsdiq kodu 4 rəqəmli olmalıdır.');
       return;
     }
-    setShowOtp(false);
-    navigate('/thank-you', {
-      state: {
-        message: 'Qeydiyyat müraciətiniz qəbul edildi! Hesabınız admin yoxlamasından sonra aktivləşdiriləcəkdir.'
-      }
-    });
+    setError('');
+    setBusy(true);
+    try {
+      const cleanPhone = form.phone.replace(/\D/g, '');
+      const fullPhone = `+994${form.operator}${cleanPhone}`;
+      // 2. Kodu backend-də yoxlayıb istifadəçini qeydiyyatdan keçiririk
+      await Api.register({ ...form, phone: fullPhone, role: Number(form.role), code: otp.trim() });
+      setShowOtp(false);
+      await onRegister?.();
+      navigate('/thank-you', {
+        state: {
+          message: 'Qeydiyyatınız uğurla tamamlandı və hesabınıza daxil oldunuz! Giriş məlumatlarınız və şifrəniz e-poçt ünvanınıza göndərildi. İndi birbaşa elan yerləşdirə bilərsiniz.'
+        }
+      });
+    } catch (err) {
+      setError(err.message || 'Təsdiq kodu yanlışdır və ya xəta baş verdi.');
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -128,11 +141,25 @@ function Register() {
         <div className="mt-3"><Link to="/login" className="link-accent">Artıq hesabım var</Link></div>
       </form>
 
-      <Modal open={showOtp} title="OTP Təsdiqi" onClose={() => setShowOtp(false)}>
+      <Modal open={showOtp} title="E-poçt OTP Təsdiqi" onClose={() => setShowOtp(false)}>
         <form onSubmit={verifyOtp}>
-          <p>Telefonunuza göndərilən 4 rəqəmli kodu daxil edin:</p>
-          <input className="form-control mb-3" placeholder="1234" value={otp} onChange={e => setOtp(e.target.value)} maxLength={4} required />
-          <button type="submit" className="btn btn-primary bg-accent text-dark fw-bold w-100">Təsdiqlə</button>
+          <div className="alert alert-info" style={{ fontSize: '13px' }}>
+            Təsdiq kodu <b>{form.email}</b> poçt ünvanınıza göndərildi. Zəhmət olmasa emailinizi yoxlayın.
+          </div>
+          <p style={{ fontSize: '14px', marginBottom: '8px' }}>E-poçtunuza göndərilən 4 rəqəmli kodu daxil edin:</p>
+          <input
+            className="form-control mb-3 text-center"
+            style={{ fontSize: '20px', letterSpacing: '4px', fontWeight: 'bold' }}
+            placeholder="••••"
+            value={otp}
+            onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 4))}
+            maxLength={4}
+            required
+            autoFocus
+          />
+          <button type="submit" className="btn btn-primary bg-accent text-dark fw-bold w-100" disabled={busy}>
+            {busy ? 'Yoxlanılır...' : 'Təsdiqlə və Tamamla'}
+          </button>
         </form>
       </Modal>
     </div>
