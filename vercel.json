@@ -1,0 +1,24 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://ehisse-backend.onrender.com/api/$1"
+    },
+    {
+      "source": "/Image/(.*)",
+      "destination": "https://ehisse-backend.onrender.com/Image/$1"
+    },
+    {
+      "source": "/images/(.*)",
+      "destination": "https://ehisse-backend.onrender.com/images/$1"
+    },
+    {
+      "source": "/uploads/(.*)",
+      "destination": "https://ehisse-backend.onrender.com/uploads/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
