@@ -63,6 +63,14 @@ function Home() {
     fetchProducts(searchTerm, activeCategoryId, activeSellerId, 1, pageSize, { sortOrder: newSort });
   };
 
+  const openFilterModal = () => {
+    if (!activeCategoryId && categories.length > 0) {
+      const phoneCat = categories.find(c => c.name.toLowerCase().includes('telefon')) || categories[0];
+      if (phoneCat) setActiveCategoryId(phoneCat.id);
+    }
+    setShowFilterModal(true);
+  };
+
   // Dropdown məlumatları
   const [brands, setBrands] = useState([]);
   const [models, setModels] = useState([]);
@@ -198,7 +206,7 @@ function Home() {
               <button 
                 type="button" 
                 className="btn p-0 position-relative ms-2 flex-shrink-0" 
-                onClick={() => setShowFilterModal(true)}
+                onClick={openFilterModal}
                 title="Detallı axtarış və filtrlər"
                 style={{ border: 'none', outline: 'none' }}
               >
@@ -212,18 +220,15 @@ function Home() {
             </div>
           </form>
 
-          {/* İlk ekranda CTA Butonları (Above the fold Call-To-Action) */}
+          {/* İlk ekranda CTA Butonları */}
           <div className="d-flex flex-wrap justify-content-center gap-3 my-3">
-            <a 
-              href="#catalog-section" 
-              onClick={(e) => {
-                e.preventDefault();
-                document.getElementById('catalog-section')?.scrollIntoView({ behavior: 'smooth' });
-              }} 
-              className="btn btn-primary bg-accent text-dark fw-bold px-4 py-2 rounded-pill shadow-sm text-decoration-none"
+            <button 
+              type="button"
+              onClick={openFilterModal} 
+              className="btn btn-primary bg-accent text-dark fw-bold px-4 py-2 rounded-pill shadow-sm d-md-none"
             >
-              <i className="bi bi-grid-3x3-gap-fill me-2"></i> Kataloqa bax
-            </a>
+              <i className="bi bi-sliders me-2"></i> Detallı axtarış
+            </button>
             <Link 
               to="/warehouse/add-part" 
               className="btn btn-outline px-4 py-2 rounded-pill text-decoration-none"
@@ -416,7 +421,7 @@ function Home() {
               type="button" 
               className={`btn-outline ${hasActiveFilters ? 'border-accent text-accent' : ''}`} 
               style={{ borderRadius: '20px', fontSize: '0.85rem' }}
-              onClick={() => setShowFilterModal(true)}
+              onClick={openFilterModal}
             >
               <i className="bi bi-sliders me-1"></i> Filtrlər {hasActiveFilters && '(Aktiv)'}
             </button>
