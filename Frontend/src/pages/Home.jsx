@@ -137,7 +137,15 @@ function Home() {
     })
       .then(data => {
         if (data) {
-          setProducts(data.items || []);
+          let items = data.items || [];
+          if (sOrder === 'views_desc') {
+            items = [...items].sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0));
+          } else if (sOrder === 'price_asc') {
+            items = [...items].sort((a, b) => (a.price || 0) - (b.price || 0));
+          } else if (sOrder === 'price_desc') {
+            items = [...items].sort((a, b) => (b.price || 0) - (a.price || 0));
+          }
+          setProducts(items);
           setTotalPages(data.totalPages || 1);
           setTotalItems(data.totalItems || 0);
         } else {
