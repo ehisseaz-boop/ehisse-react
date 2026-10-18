@@ -55,7 +55,13 @@ function Home() {
   const [filterQualityTypeId, setFilterQualityTypeId] = useState('');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
-  const [sortOrder, setSortOrder] = useState('');
+  const [sortOrder, setSortOrder] = useState(''); // Default "" is newest (əvvəlcə ən yeni)
+
+  const handleSortChange = (newSort) => {
+    setSortOrder(newSort);
+    setPage(1);
+    fetchProducts(searchTerm, activeCategoryId, activeSellerId, 1, pageSize, { sortOrder: newSort });
+  };
 
   // Dropdown məlumatları
   const [brands, setBrands] = useState([]);
@@ -346,9 +352,9 @@ function Home() {
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value)}
             >
-              <option value="">Tarixə görə (Ən yeni)</option>
-              <option value="price_asc">Qiymət (Ucuzdan bahaya)</option>
-              <option value="price_desc">Qiymət (Bahadan ucuza)</option>
+              <option value="">Əvvəlcə ən yeni</option>
+              <option value="price_asc">Əvvəlcə ən ucuz</option>
+              <option value="price_desc">Əvvəlcə ən baha</option>
               <option value="views_desc">Ən çox baxılan</option>
             </select>
           </div>
@@ -430,10 +436,30 @@ function Home() {
           </div>
           <div 
             id="sort-dropdown-container" 
-            style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}
-            onClick={() => setShowFilterModal(true)}
+            className="d-flex align-items-center gap-2 flex-shrink-0"
+            style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}
           >
-            Sırala: <strong style={{ color: 'var(--text-main)' }}>{sortOrder === 'price_asc' ? 'Ucuzdan bahaya' : sortOrder === 'price_desc' ? 'Bahadan ucuza' : sortOrder === 'views_desc' ? 'Ən çox baxılan' : 'Ən yeni'}</strong> <i className="bi bi-chevron-down"></i>
+            <span>Sırala:</span>
+            <select
+              className="form-select form-select-sm"
+              style={{
+                width: 'auto',
+                minWidth: '155px',
+                borderRadius: '20px',
+                backgroundColor: 'var(--bg-card)',
+                color: 'var(--text-main)',
+                borderColor: 'var(--border-color)',
+                fontSize: '0.85rem',
+                cursor: 'pointer'
+              }}
+              value={sortOrder}
+              onChange={(e) => handleSortChange(e.target.value)}
+            >
+              <option value="">Əvvəlcə ən yeni</option>
+              <option value="price_asc">Əvvəlcə ən ucuz</option>
+              <option value="price_desc">Əvvəlcə ən baha</option>
+              <option value="views_desc">Ən çox baxılan</option>
+            </select>
           </div>
         </div>
 
