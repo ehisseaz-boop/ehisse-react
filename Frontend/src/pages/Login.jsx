@@ -13,6 +13,7 @@ function Login({ onLogin }) {
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
@@ -63,17 +64,30 @@ function Login({ onLogin }) {
           required 
           autoComplete="new-password" 
         />
-        <input 
-          className="form-control mb-3" 
-          type="password" 
-          placeholder="Şifrə" 
-          name="login_pass_field"
-          id="login_pass_field"
-          value={password} 
-          onChange={e => setPassword(e.target.value)} 
-          required 
-          autoComplete="new-password" 
-        />
+        <div className="position-relative mb-3">
+          <input 
+            className="form-control" 
+            type={showPassword ? 'text' : 'password'} 
+            placeholder="Şifrə" 
+            name="login_pass_field"
+            id="login_pass_field"
+            value={password} 
+            onChange={e => setPassword(e.target.value)} 
+            required 
+            autoComplete="new-password" 
+            style={{ paddingRight: '42px' }}
+          />
+          <button
+            type="button"
+            className="btn btn-link position-absolute end-0 top-50 translate-middle-y text-secondary text-decoration-none border-0 p-0 me-3"
+            style={{ zIndex: 5, background: 'none', cursor: 'pointer' }}
+            onClick={() => setShowPassword(prev => !prev)}
+            title={showPassword ? 'Şifrəni gizlət' : 'Şifrəni göstər'}
+            aria-label={showPassword ? 'Şifrəni gizlət' : 'Şifrəni göstər'}
+          >
+            <i className={`bi bi-${showPassword ? 'eye-slash' : 'eye'}`} style={{ fontSize: '1.2rem' }}></i>
+          </button>
+        </div>
         <button type="submit" className="btn btn-primary bg-accent text-dark fw-bold w-100 d-flex align-items-center justify-content-center gap-2" disabled={busy}>
           {busy ? (
             <>

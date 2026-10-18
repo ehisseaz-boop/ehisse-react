@@ -141,6 +141,7 @@ namespace EHisse.WebApi.Controllers
             return Ok(new
             {
                 success = true,
+                id = user.Id,
                 username = user.Username,
                 fullName = $"{user.FirstName} {user.LastName}",
                 role = user.Role.ToString(),
@@ -311,6 +312,7 @@ namespace EHisse.WebApi.Controllers
             {
                 success = true,
                 message = "Qeydiyyatınız uğurla tamamlandı!",
+                id = newUser.Id,
                 username = newUser.Username,
                 fullName = $"{newUser.FirstName} {newUser.LastName}",
                 role = newUser.Role.ToString(),

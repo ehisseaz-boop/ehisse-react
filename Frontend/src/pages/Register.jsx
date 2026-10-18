@@ -111,14 +111,14 @@ function Register({ onRegister }) {
         <div className="d-flex mb-2 gap-2" style={{ alignItems: 'center' }}>
           <span style={{ fontWeight: 'bold' }}>+994</span>
           <select className="form-select" style={{ width: '90px' }} value={form.operator} onChange={set('operator')}>
-            <option value="50">050</option>
-            <option value="51">051</option>
-            <option value="55">055</option>
-            <option value="70">070</option>
-            <option value="77">077</option>
-            <option value="99">099</option>
-            <option value="10">010</option>
-            <option value="60">060</option>
+            <option value="50">50</option>
+            <option value="51">51</option>
+            <option value="55">55</option>
+            <option value="70">70</option>
+            <option value="77">77</option>
+            <option value="99">99</option>
+            <option value="10">10</option>
+            <option value="60">60</option>
           </select>
           <input 
             className="form-control" 

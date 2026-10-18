@@ -2,6 +2,14 @@ import React, { useEffect } from 'react';
 import { Navigate, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { Loading } from '../pages/Categories';
 
+// Giriş tələb edən səhifələr üçün qoruma
+export function RequireAuth({ user, children }) {
+  const location = useLocation();
+  if (user === undefined) return <div className="container"><Loading /></div>;
+  if (!user) return <Navigate to="/login" replace state={{ from: location.pathname + location.search }} />;
+  return children;
+}
+
 // Rol əsaslı qoruma: user === undefined → hələ yüklənir, null → daxil olmayıb
 export function RequireRole({ user, roles, children }) {
   const location = useLocation();

@@ -36,7 +36,7 @@ import ThankYou from './pages/ThankYou';
 import CookieBanner from './components/CookieBanner';
 import MobileStickyBar from './components/MobileStickyBar';
 
-import { RequireRole, PanelLayout } from './components/Panel';
+import { RequireRole, RequireAuth, PanelLayout } from './components/Panel';
 
 const adminLinks = [
   { to: '/admin', end: true, icon: 'bi-speedometer2', label: 'İdarə paneli' },
@@ -190,7 +190,7 @@ function App() {
 
       <main role="main">
         <Routes>
-          <Route path="/" element={<Home user={user} />} />
+          <Route path="/" element={<RequireAuth user={user}><Home user={user} /></RequireAuth>} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/saticilar" element={<Saticilar />} />
           <Route path="/yardim" element={<Yardim />} />

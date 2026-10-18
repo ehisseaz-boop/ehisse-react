@@ -27,7 +27,7 @@ namespace EHisse.WebApi.Controllers
 
     public record SettingsInput(string CompanyName, string ContactPerson, string? Phone, string? WhatsAppNumber, string? Address, bool ShowContactInfoInAds);
 
-    [Authorize(Roles = "Usta,Anbardar")]
+    [Authorize(Roles = "Usta,Anbardar,Admin")]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class WarehouseController : ControllerBase
@@ -45,9 +45,34 @@ namespace EHisse.WebApi.Controllers
 
         private int CurrentUserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-        private async Task<SellerProfile?> GetSellerAsync() => await _warehouseService.GetSellerProfileAsync(CurrentUserId);
+        private async Task<SellerProfile?> GetSellerAsync()
+        {
+            var profile = await _warehouseService.GetSellerProfileAsync(CurrentUserId);
+            if (profile == null)
+            {
+                var user = await _context.Users.FindAsync(CurrentUserId);
+                if (user != null)
+                {
+                    profile = new SellerProfile
+                    {
+                        UserId = user.Id,
+                        CompanyName = $"{user.FirstName} {user.LastName}",
+                        ContactPerson = $"{user.FirstName} {user.LastName}",
+                        Phone = user.Phone,
+                        WhatsAppNumber = user.Phone,
+                        Rating = 5.0m,
+                        ShowContactInfoInAds = true,
+                        IsPhoneVerified = true
+                    };
+                    _context.SellerProfiles.Add(profile);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            return profile;
+        }
 
         private static IActionResult NoSeller() => new ObjectResult(new { message = "Satıcı profili tapılmadı." }) { StatusCode = 403 };
+
 
         // GET api/Warehouse/Index
         [HttpGet]
@@ -100,6 +125,7 @@ namespace EHisse.WebApi.Controllers
 
         // GET api/Warehouse/FormData — kateqoriya və keyfiyyət siyahıları (Add/Edit formu üçün)
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> FormData()
         {
             var categories = await _warehouseService.GetCategoriesAsync();

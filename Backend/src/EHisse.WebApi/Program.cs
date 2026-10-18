@@ -70,6 +70,7 @@ app.UseRouting();
 app.UseCors("AllowReactApp");
 
 app.UseAuthentication();
+app.UseMiddleware<HeaderAuthenticationMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();
