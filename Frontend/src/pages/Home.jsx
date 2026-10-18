@@ -4,6 +4,7 @@ import { Api, imageSrc } from '../api';
 import { Modal } from '../components/Panel';
 import { usePageSeo } from '../utils/seo';
 import VisualSearchModal, { getCategoryIcon } from '../components/VisualSearchModal';
+import { toggleFavorite, isFavorite } from '../utils/favorites';
 
 const isToday = (dateString) => {
     if (!dateString) return false;
@@ -168,6 +169,13 @@ function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategoryId, setActiveCategoryId] = useState(initialCategory);
   const [activeSellerId, setActiveSellerId] = useState(initialSeller);
+  const [, setFavSync] = useState(0);
+
+  useEffect(() => {
+    const handleFavChange = () => setFavSync(prev => prev + 1);
+    window.addEventListener('favorites-updated', handleFavChange);
+    return () => window.removeEventListener('favorites-updated', handleFavChange);
+  }, []);
 
   // Detallı axtarış modalı və filtrlər
   const [showFilterModal, setShowFilterModal] = useState(false);
@@ -736,7 +744,19 @@ function Home() {
                                 <div>
                                     {isNew && <span className="badge-accent" style={{ marginBottom: '0.5rem', backgroundColor: '#28a745', color: '#fff' }}>Yeni</span>}
                                 </div>
-                                <button className="btn-fav add-to-fav" data-id={part.id}><i className="bi bi-heart"></i></button>
+                                <button 
+                                    type="button"
+                                    className={`btn-fav add-to-fav ${isFavorite(part.id) ? 'active' : ''}`}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        toggleFavorite(part);
+                                    }}
+                                    title={isFavorite(part.id) ? "Sevimlilərdən çıxar" : "Sevimlilərə əlavə et"}
+                                    aria-label="Sevimlilərə əlavə et"
+                                >
+                                    <i className={`bi bi-heart${isFavorite(part.id) ? '-fill text-danger' : ''}`}></i>
+                                </button>
                             </div>
                             
                             <ProductCardImageSlider part={part} />

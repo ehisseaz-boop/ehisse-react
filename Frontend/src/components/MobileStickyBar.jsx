@@ -1,7 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 
 function MobileStickyBar({ user }) {
+  const [favCount, setFavCount] = useState(() => {
+    try {
+      const raw = localStorage.getItem('ehisse_favorites');
+      return raw ? JSON.parse(raw).length : 0;
+    } catch {
+      return 0;
+    }
+  });
+
+  useEffect(() => {
+    const updateCount = () => {
+      try {
+        const raw = localStorage.getItem('ehisse_favorites');
+        setFavCount(raw ? JSON.parse(raw).length : 0);
+      } catch {
+        setFavCount(0);
+      }
+    };
+    window.addEventListener('favorites-updated', updateCount);
+    return () => window.removeEventListener('favorites-updated', updateCount);
+  }, []);
+
   return (
     <div className="mobile-sticky-cta d-lg-none">
       {/* 1. Əsas */}
@@ -14,15 +36,22 @@ function MobileStickyBar({ user }) {
         <span>Əsas</span>
       </NavLink>
 
-      {/* 2. Seçilmişlər */}
+      {/* 2. Seçilmişlər (Sayğacla) */}
       <NavLink 
-        to="/#favorites" 
-        className={({ isActive }) => `sticky-cta-item ${isActive ? 'active' : ''}`}
-        onClick={(e) => {
-          // Saytda Seçilmişlər / Favorites bölməsi və ya filtri
-        }}
+        to="/favorites" 
+        className={({ isActive }) => `sticky-cta-item position-relative ${isActive ? 'active' : ''}`}
       >
-        <i className="bi bi-heart"></i>
+        <div className="position-relative d-inline-block">
+          <i className={`bi bi-heart${favCount > 0 ? '-fill text-danger' : ''}`}></i>
+          {favCount > 0 && (
+            <span 
+              className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+              style={{ fontSize: '0.62rem', padding: '0.2em 0.45em' }}
+            >
+              {favCount}
+            </span>
+          )}
+        </div>
         <span>Seçilmişlər</span>
       </NavLink>
 

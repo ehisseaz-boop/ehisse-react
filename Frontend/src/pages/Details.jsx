@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { Api, imageSrc } from '../api';
 import { Loading, ErrorBox } from './Categories';
 import { usePageSeo } from '../utils/seo';
+import { toggleFavorite, isFavorite } from '../utils/favorites';
 
 const isToday = (dateString) => {
     if (!dateString) return false;
@@ -79,6 +80,13 @@ function Details() {
   const [error, setError] = useState('');
   const [activeImg, setActiveImg] = useState(0);
   const [showPhone, setShowPhone] = useState(false);
+  const [, setFavSync] = useState(0);
+
+  useEffect(() => {
+    const handleFav = () => setFavSync(v => v + 1);
+    window.addEventListener('favorites-updated', handleFav);
+    return () => window.removeEventListener('favorites-updated', handleFav);
+  }, []);
 
   useEffect(() => {
     setData(null); setError(''); setActiveImg(0); setShowPhone(false);
@@ -266,19 +274,39 @@ function Details() {
         <div className="col-lg-4" style={{ position: 'sticky', top: '1rem' }}>
           <div className="product-card p-4" style={{ borderRadius: '12px' }}>
             {/* BÖYÜK QİYMƏT */}
-            <div className="mb-4 pb-2 border-bottom" style={{ borderColor: 'var(--border-color)' }}>
-              <div className="text-muted small mb-1">Qiymət</div>
-              <div className="d-flex align-items-baseline gap-2">
-                <span className="text-accent fw-bold" style={{ fontSize: '2.5rem', lineHeight: 1 }}>
-                  {data.discountPrice || part.price}
-                </span>
-                <span className="text-main fw-bold" style={{ fontSize: '1.5rem' }}>
-                  {data.currency || 'AZN'}
-                </span>
-                {data.discountPrice && (
-                  <s className="text-muted ms-2" style={{ fontSize: '1.4rem' }}>{part.price} AZN</s>
-                )}
+            <div className="mb-4 pb-2 border-bottom d-flex justify-content-between align-items-center" style={{ borderColor: 'var(--border-color)' }}>
+              <div>
+                <div className="text-muted small mb-1">Qiymət</div>
+                <div className="d-flex align-items-baseline gap-2">
+                  <span className="text-accent fw-bold" style={{ fontSize: '2.5rem', lineHeight: 1 }}>
+                    {data.discountPrice || part.price}
+                  </span>
+                  <span className="text-main fw-bold" style={{ fontSize: '1.5rem' }}>
+                    {data.currency || 'AZN'}
+                  </span>
+                  {data.discountPrice && (
+                    <s className="text-muted ms-2" style={{ fontSize: '1.4rem' }}>{part.price} AZN</s>
+                  )}
+                </div>
               </div>
+              <button
+                type="button"
+                className={`btn d-flex align-items-center justify-content-center p-2 rounded-circle`}
+                style={{
+                  width: '44px',
+                  height: '44px',
+                  backgroundColor: 'var(--bg-surface-hover)',
+                  border: '1px solid var(--border-color)',
+                  color: isFavorite(part.id) ? '#ff4d4d' : 'var(--text-muted)',
+                  fontSize: '1.3rem',
+                  cursor: 'pointer'
+                }}
+                onClick={() => toggleFavorite(part)}
+                title={isFavorite(part.id) ? "Sevimlilərdən çıxar" : "Sevimlilərə əlavə et"}
+                aria-label="Sevimlilər"
+              >
+                <i className={`bi bi-heart${isFavorite(part.id) ? '-fill' : ''}`}></i>
+              </button>
             </div>
 
             {/* 1. Zəng et (Nömrəni göstər) - Zəng ikonası ilə */}

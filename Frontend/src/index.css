@@ -1072,9 +1072,14 @@ footer {
 }
 
 .home-cat-item.katalog-btn .home-cat-icon {
-    background: linear-gradient(135deg, rgba(255, 107, 61, 0.15), rgba(255, 87, 34, 0.25));
-    border-color: #ff5722;
-    color: #ff5722;
+    background: var(--accent-dark);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.home-cat-item.katalog-btn:hover .home-cat-icon {
+    background: var(--accent);
+    color: var(--accent-text);
 }
 
 .home-cat-title {

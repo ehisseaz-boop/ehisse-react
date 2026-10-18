@@ -12,6 +12,7 @@ import ElanRedirect from './pages/ElanRedirect';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
+import Favorites from './pages/Favorites';
 import NotFound from './pages/NotFound';
 
 import AdminIndex from './pages/admin/AdminIndex';
@@ -106,6 +107,28 @@ function App() {
     }
   };
 
+  const [favoritesCount, setFavoritesCount] = useState(() => {
+    try {
+      const raw = localStorage.getItem('ehisse_favorites');
+      return raw ? JSON.parse(raw).length : 0;
+    } catch {
+      return 0;
+    }
+  });
+
+  useEffect(() => {
+    const handleFavUpdate = () => {
+      try {
+        const raw = localStorage.getItem('ehisse_favorites');
+        setFavoritesCount(raw ? JSON.parse(raw).length : 0);
+      } catch {
+        setFavoritesCount(0);
+      }
+    };
+    window.addEventListener('favorites-updated', handleFavUpdate);
+    return () => window.removeEventListener('favorites-updated', handleFavUpdate);
+  }, []);
+
   const navClass = ({ isActive }) => `text-decoration-none ${isActive ? 'active' : ''}`;
 
   return (
@@ -124,7 +147,7 @@ function App() {
           </nav>
         </div>
 
-        <div className="header-actions d-flex align-items-center" style={{ gap: '1rem' }}>
+        <div className="header-actions d-flex align-items-center" style={{ gap: '0.85rem' }}>
           <div className="d-none d-xl-flex align-items-center me-2" style={{ gap: '15px', fontSize: '0.95rem', fontWeight: 500 }}>
             <a href="tel:+994102523226" className="text-decoration-none" style={{ color: 'var(--text-main)' }}>
               <i className="bi bi-telephone-fill" style={{ color: 'var(--accent)', marginRight: '4px' }}></i> +994 10 252 32 26
@@ -133,6 +156,25 @@ function App() {
               <i className="bi bi-whatsapp" style={{ color: '#25D366', marginRight: '4px' }}></i> +994 10 396 15 01
             </a>
           </div>
+
+          {/* Desktop Sevimlilər Düyməsi və Sayğacı */}
+          <Link 
+            to="/favorites" 
+            className="btn-outline position-relative d-none d-md-flex align-items-center gap-2"
+            title="Seçilmiş elanlar"
+            style={{ borderRadius: '20px' }}
+          >
+            <i className={`bi bi-heart${favoritesCount > 0 ? '-fill text-danger' : ''}`}></i>
+            <span className="d-none d-lg-inline">Seçilmişlər</span>
+            {favoritesCount > 0 && (
+              <span 
+                className="badge rounded-pill bg-danger" 
+                style={{ fontSize: '0.72rem', padding: '0.2em 0.55em' }}
+              >
+                {favoritesCount}
+              </span>
+            )}
+          </Link>
 
           <button onClick={toggleTheme} className="btn-outline d-flex align-items-center gap-2" id="theme-toggle" style={{ background: 'transparent', border: '1px solid var(--border-color)', color: 'var(--text-main)', borderRadius: '20px' }}>
             <i className={`bi bi-${theme === 'dark' ? 'sun' : 'moon-stars'}`} id="theme-icon"></i>
@@ -195,6 +237,7 @@ function App() {
           <Route path="/saticilar" element={<Saticilar />} />
           <Route path="/yardim" element={<Yardim />} />
           <Route path="/elaqe" element={<Elaqe />} />
+          <Route path="/favorites" element={<Favorites />} />
           <Route path="/details/:id" element={<Details user={user} />} />
           <Route path="/elan/:id" element={<ElanRedirect user={user} />} />
           <Route path="/elan-yerlesdir" element={<Navigate to="/warehouse/add-part" replace />} />
