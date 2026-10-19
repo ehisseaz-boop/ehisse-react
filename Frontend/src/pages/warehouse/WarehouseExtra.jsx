@@ -56,6 +56,8 @@ export function Settings() {
   const [emailError, setEmailError] = useState('');
   const [emailBusy, setEmailBusy] = useState(false);
 
+  const [uploadingShopPhoto, setUploadingShopPhoto] = useState(false);
+
   useEffect(() => {
     let cachedEmail = '';
     let cachedName = '';
@@ -82,8 +84,6 @@ export function Settings() {
   if (!form) return <Loading />;
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value });
-
-  const [uploadingShopPhoto, setUploadingShopPhoto] = useState(false);
 
   // Profil & Əlaqə məlumatlarının yadda saxlanması
   const submitProfile = async (e) => {
