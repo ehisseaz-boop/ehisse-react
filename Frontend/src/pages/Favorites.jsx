@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { getFavorites, toggleFavorite } from '../utils/favorites';
 import { imageSrc } from '../api';
 import { usePageSeo } from '../utils/seo';
+import { cleanPartTypeName } from './Home';
 
 export default function Favorites() {
   usePageSeo({
@@ -92,12 +93,17 @@ export default function Favorites() {
                 </Link>
 
                 <div className="product-meta">
-                  <span className="product-category">{part.partTypeName || "HİSSƏ"}</span>
+                  <span className="product-category">{cleanPartTypeName(part.partTypeName) || "HİSSƏ"}</span>
                   <span className="product-stock">Stokda {part.stockQuantity} ədəd</span>
                 </div>
 
                 <Link to={`/details/${part.id}`} className="text-decoration-none text-main">
-                  <h3 className="product-title">{part.title}</h3>
+                  <h3 className="product-title">
+                    {(part.title || '')
+                      .replace(/telefon\s+üçün\s+ekranlar/gi, 'Ekranlar')
+                      .replace(/telefon\s+üçün\s+batareyalar/gi, 'Batareyalar')
+                      .replace(/telefon\s+üçün\s+/gi, '')}
+                  </h3>
                 </Link>
 
                 <div className="product-condition">

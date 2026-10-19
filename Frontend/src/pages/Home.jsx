@@ -762,7 +762,7 @@ function Home() {
                             <ProductCardImageSlider part={part} />
                             
                             <div className="product-meta">
-                                <span className="product-category">{part.partTypeName || "DIGƏR"}</span>
+                                <span className="product-category">{cleanPartTypeName(part.partTypeName) || "DIGƏR"}</span>
                                 <span className="product-stock">Stokda {part.stockQuantity} ədəd</span>
                             </div>
                             

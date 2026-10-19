@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Api, imageSrc } from '../../api';
 import { Loading, ErrorBox } from '../Categories';
 import { Table, statusBadge } from '../../components/Panel';
+import { cleanPartTypeName } from '../Home';
 
 function WarehouseIndex() {
   const [data, setData] = useState(null);
@@ -35,7 +36,23 @@ function WarehouseIndex() {
   const parts = data.parts;
   const columns = [
     { key: 'image', label: '', render: p => p.image ? <img src={imageSrc(p.image)} alt="" style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 6 }} /> : null },
-    { key: 'title', label: 'Elan', render: p => <><Link to={`/warehouse/part/${p.id}`} className="text-decoration-none fw-semibold">{p.brandName} {p.modelName} {p.title}</Link><div className="text-muted" style={{ fontSize: '0.8rem' }}>{p.sku} · {p.partTypeName} · {p.qualityTypeName}</div></> },
+    { key: 'title', label: 'Elan', render: p => {
+      const cleanTitle = (p.title || '')
+        .replace(/telefon\s+üçün\s+ekranlar/gi, 'Ekranlar')
+        .replace(/telefon\s+üçün\s+batareyalar/gi, 'Batareyalar')
+        .replace(/telefon\s+üçün\s+/gi, '');
+      const cleanType = cleanPartTypeName(p.partTypeName);
+      return (
+        <>
+          <Link to={`/warehouse/part/${p.id}`} className="text-decoration-none fw-semibold">
+            {p.brandName} {p.modelName} {cleanTitle}
+          </Link>
+          <div className="text-muted" style={{ fontSize: '0.8rem' }}>
+            {p.sku ? `${p.sku} · ` : ''}{cleanType} · {p.qualityTypeName}
+          </div>
+        </>
+      );
+    }},
     { key: 'price', label: 'Qiymət', render: p => <a href="#" onClick={e => { e.preventDefault(); changePrice(p); }} title="Qiyməti dəyiş">{p.price} AZN</a> },
     { key: 'stockQuantity', label: 'Stok', render: p => <span className={`fw-bold ${p.stockQuantity <= 0 ? 'text-danger' : ''}`}>{p.stockQuantity} ədəd</span> },
     { key: 'viewCount', label: 'Baxış' },

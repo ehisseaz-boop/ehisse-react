@@ -100,10 +100,25 @@ namespace EHisse.WebApi.Controllers
                 {
                     var img = p.Images.FirstOrDefault(i => i.IsMain) ?? p.Images.FirstOrDefault();
                     var lastReview = p.Reviews.OrderByDescending(r => r.ReviewDate).FirstOrDefault();
+                    var rawPartType = p.PartType?.Name ?? "";
+                    var cleanPartType = rawPartType
+                        .Replace("Telefon üçün ekranlar", "Ekranlar", StringComparison.OrdinalIgnoreCase)
+                        .Replace("Telefon üçün batareyalar", "Batareyalar", StringComparison.OrdinalIgnoreCase)
+                        .Replace("Telefon üçün ekran", "Ekranlar", StringComparison.OrdinalIgnoreCase)
+                        .Replace("Telefon üçün batareya", "Batareyalar", StringComparison.OrdinalIgnoreCase)
+                        .Replace("Telefon üçün ", "", StringComparison.OrdinalIgnoreCase).Trim();
+
+                    var cleanTitle = (p.Title ?? "")
+                        .Replace("Telefon üçün ekranlar", "Ekranlar", StringComparison.OrdinalIgnoreCase)
+                        .Replace("Telefon üçün batareyalar", "Batareyalar", StringComparison.OrdinalIgnoreCase)
+                        .Replace("Telefon üçün ekran", "Ekranlar", StringComparison.OrdinalIgnoreCase)
+                        .Replace("Telefon üçün batareya", "Batareyalar", StringComparison.OrdinalIgnoreCase)
+                        .Replace("Telefon üçün ", "", StringComparison.OrdinalIgnoreCase).Trim();
+
                     return new
                     {
                         id = p.Id,
-                        title = p.Title,
+                        title = cleanTitle,
                         sku = p.SKU,
                         price = p.Price,
                         discountPrice = p.DiscountPrice,
@@ -114,7 +129,7 @@ namespace EHisse.WebApi.Controllers
                         rejectionReason = p.RejectionReason ?? lastReview?.Reason,
                         brandName = p.DeviceModel?.Brand?.Name,
                         modelName = p.DeviceModel?.Name,
-                        partTypeName = p.PartType?.Name,
+                        partTypeName = cleanPartType,
                         qualityTypeName = p.QualityType?.Name,
                         createdDate = p.CreatedDate,
                         image = img == null ? null : (urlMap.TryGetValue(img.ImageUrl, out var u) ? u : img.ImageUrl)
@@ -159,11 +174,27 @@ namespace EHisse.WebApi.Controllers
             {
                 var model = await _context.DeviceModels.Include(m => m.Brand).FirstOrDefaultAsync(m => m.Id == input.DeviceModelId);
                 var partType = await _context.SparePartTypes.FirstOrDefaultAsync(pt => pt.Id == input.PartTypeId);
-                var gen = $"{model?.Brand?.Name} {model?.Name} {partType?.Name}".Trim();
+                var rawPartTypeName = partType?.Name ?? "";
+                var cleanPartTypeName = rawPartTypeName
+                    .Replace("Telefon üçün ekranlar", "Ekranlar", StringComparison.OrdinalIgnoreCase)
+                    .Replace("Telefon üçün batareyalar", "Batareyalar", StringComparison.OrdinalIgnoreCase)
+                    .Replace("Telefon üçün ekran", "Ekranlar", StringComparison.OrdinalIgnoreCase)
+                    .Replace("Telefon üçün batareya", "Batareyalar", StringComparison.OrdinalIgnoreCase)
+                    .Replace("Telefon üçün ", "", StringComparison.OrdinalIgnoreCase).Trim();
+
+                var gen = $"{model?.Brand?.Name} {model?.Name} {cleanPartTypeName}".Trim();
                 if (string.IsNullOrWhiteSpace(gen)) gen = "Ehtiyat Hissəsi";
                 return input with { Title = gen };
             }
-            return input;
+            return input with
+            {
+                Title = (input.Title ?? "")
+                    .Replace("Telefon üçün ekranlar", "Ekranlar", StringComparison.OrdinalIgnoreCase)
+                    .Replace("Telefon üçün batareyalar", "Batareyalar", StringComparison.OrdinalIgnoreCase)
+                    .Replace("Telefon üçün ekran", "Ekranlar", StringComparison.OrdinalIgnoreCase)
+                    .Replace("Telefon üçün batareya", "Batareyalar", StringComparison.OrdinalIgnoreCase)
+                    .Replace("Telefon üçün ", "", StringComparison.OrdinalIgnoreCase).Trim()
+            };
         }
 
         private static SparePart ToEntity(PartInput i) => new SparePart

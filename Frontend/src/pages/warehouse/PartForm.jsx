@@ -130,7 +130,8 @@ function PartForm() {
 
     const selectedBrand = brands.find(b => String(b.id) === String(form.brandId))?.name || '';
     const selectedModel = models.find(m => String(m.id) === String(form.deviceModelId))?.name || '';
-    const selectedPartType = partTypes.find(p => String(p.id) === String(form.partTypeId))?.name || '';
+    const rawPartType = partTypes.find(p => String(p.id) === String(form.partTypeId))?.name || '';
+    const selectedPartType = cleanPartTypeName(rawPartType);
     const autoTitle = [selectedBrand, selectedModel, selectedPartType].filter(Boolean).join(' ') || form.title || '';
 
     const body = {
