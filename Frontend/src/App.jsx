@@ -1,39 +1,43 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { Routes, Route, Link, NavLink, useNavigate, Navigate, useLocation, useNavigationType } from 'react-router-dom';
 import './index.css';
 import { Api } from './api';
 import Home from './pages/Home';
-import Categories from './pages/Categories';
-import Saticilar from './pages/Saticilar';
-import Yardim from './pages/Yardim';
-import Elaqe from './pages/Elaqe';
-import Details from './pages/Details';
-import ElanRedirect from './pages/ElanRedirect';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import ForgotPassword from './pages/ForgotPassword';
-import Favorites from './pages/Favorites';
-import NotFound from './pages/NotFound';
 
-import AdminIndex from './pages/admin/AdminIndex';
-import AdminRequests from './pages/admin/AdminRequests';
-import AdminAdReview from './pages/admin/AdminAdReview';
-import AdminUserReview from './pages/admin/AdminUserReview';
-import AdminUsers from './pages/admin/AdminUsers';
-import AdminAds from './pages/admin/AdminAds';
-import AdminCatalog from './pages/admin/AdminCatalog';
-import AdminLogs from './pages/admin/AdminLogs';
+// Lazy loading səhifələr — Ana səhifə dərhal açılır, digər böyük modullar yalnız lazım olduqda yüklənir
+const Categories = lazy(() => import('./pages/Categories'));
+const Saticilar = lazy(() => import('./pages/Saticilar'));
+const Yardim = lazy(() => import('./pages/Yardim'));
+const Elaqe = lazy(() => import('./pages/Elaqe'));
+const Details = lazy(() => import('./pages/Details'));
+const ElanRedirect = lazy(() => import('./pages/ElanRedirect'));
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const Favorites = lazy(() => import('./pages/Favorites'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
-import WarehouseIndex from './pages/warehouse/WarehouseIndex';
-import WarehousePartDetails from './pages/warehouse/WarehousePartDetails';
-import PartForm from './pages/warehouse/PartForm';
-import { SalesHistory, Settings } from './pages/warehouse/WarehouseExtra';
+// Admin modulları (Geniş həcmli)
+const AdminIndex = lazy(() => import('./pages/admin/AdminIndex'));
+const AdminRequests = lazy(() => import('./pages/admin/AdminRequests'));
+const AdminAdReview = lazy(() => import('./pages/admin/AdminAdReview'));
+const AdminUserReview = lazy(() => import('./pages/admin/AdminUserReview'));
+const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
+const AdminAds = lazy(() => import('./pages/admin/AdminAds'));
+const AdminCatalog = lazy(() => import('./pages/admin/AdminCatalog'));
+const AdminLogs = lazy(() => import('./pages/admin/AdminLogs'));
 
-import WarehouseDeleted from './pages/warehouse/WarehouseDeleted';
+// Anbardar / Satıcı modulları
+const WarehouseIndex = lazy(() => import('./pages/warehouse/WarehouseIndex'));
+const WarehousePartDetails = lazy(() => import('./pages/warehouse/WarehousePartDetails'));
+const PartForm = lazy(() => import('./pages/warehouse/PartForm'));
+const WarehouseDeleted = lazy(() => import('./pages/warehouse/WarehouseDeleted'));
+const SalesHistory = lazy(() => import('./pages/warehouse/WarehouseExtra').then(m => ({ default: m.SalesHistory })));
+const Settings = lazy(() => import('./pages/warehouse/WarehouseExtra').then(m => ({ default: m.Settings })));
 
-import Privacy from './pages/Privacy';
-import Terms from './pages/Terms';
-import ThankYou from './pages/ThankYou';
+const Privacy = lazy(() => import('./pages/Privacy'));
+const Terms = lazy(() => import('./pages/Terms'));
+const ThankYou = lazy(() => import('./pages/ThankYou'));
 import CookieBanner from './components/CookieBanner';
 import MobileStickyBar from './components/MobileStickyBar';
 
@@ -251,52 +255,60 @@ function App() {
       </header>
 
       <main role="main">
-        <Routes>
-          <Route path="/" element={<RequireAuth user={user}><Home user={user} /></RequireAuth>} />
-          <Route path="/categories" element={<Categories />} />
-          <Route path="/saticilar" element={<Saticilar />} />
-          <Route path="/yardim" element={<Yardim />} />
-          <Route path="/elaqe" element={<Elaqe />} />
-          <Route path="/favorites" element={<Favorites />} />
-          <Route path="/details/:id" element={<Details user={user} />} />
-          <Route path="/elan/:id" element={<ElanRedirect user={user} />} />
-          <Route path="/elan-yerlesdir" element={<Navigate to="/warehouse/add-part" replace />} />
-          <Route path="/elan-elave-et" element={<Navigate to="/warehouse/add-part" replace />} />
-          <Route path="/yeni-elan" element={<Navigate to="/warehouse/add-part" replace />} />
-          <Route path="/add-part" element={<Navigate to="/warehouse/add-part" replace />} />
-          <Route path="/login" element={<Login onLogin={refreshUser} />} />
-          <Route path="/register" element={<Register onRegister={refreshUser} />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/thank-you" element={<ThankYou />} />
+        <Suspense fallback={
+          <div className="d-flex justify-content-center align-items-center py-5" style={{ minHeight: '50vh' }}>
+            <div className="spinner-border text-accent" role="status">
+              <span className="visually-hidden">Yüklənir...</span>
+            </div>
+          </div>
+        }>
+          <Routes>
+            <Route path="/" element={<RequireAuth user={user}><Home user={user} /></RequireAuth>} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/saticilar" element={<Saticilar />} />
+            <Route path="/yardim" element={<Yardim />} />
+            <Route path="/elaqe" element={<Elaqe />} />
+            <Route path="/favorites" element={<Favorites />} />
+            <Route path="/details/:id" element={<Details user={user} />} />
+            <Route path="/elan/:id" element={<ElanRedirect user={user} />} />
+            <Route path="/elan-yerlesdir" element={<Navigate to="/warehouse/add-part" replace />} />
+            <Route path="/elan-elave-et" element={<Navigate to="/warehouse/add-part" replace />} />
+            <Route path="/yeni-elan" element={<Navigate to="/warehouse/add-part" replace />} />
+            <Route path="/add-part" element={<Navigate to="/warehouse/add-part" replace />} />
+            <Route path="/login" element={<Login onLogin={refreshUser} />} />
+            <Route path="/register" element={<Register onRegister={refreshUser} />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/thank-you" element={<ThankYou />} />
 
-          <Route path="/warehouse" element={<RequireRole roles={['Anbardar', 'Usta', 'Admin']} user={user}><PanelLayout title="Satıcı kabineti" links={warehouseLinks} /></RequireRole>}>
-            <Route index element={<WarehouseIndex />} />
-            <Route path="part/:id" element={<WarehousePartDetails />} />
-            <Route path="ads/:id" element={<WarehousePartDetails />} />
-            <Route path="add-part" element={<PartForm />} />
-            <Route path="add" element={<PartForm />} />
-            <Route path="edit-part/:id" element={<PartForm />} />
-            <Route path="edit/:id" element={<PartForm />} />
-            <Route path="sales" element={<SalesHistory />} />
-            <Route path="deleted" element={<WarehouseDeleted />} />
-            <Route path="settings" element={<Settings />} />
-          </Route>
+            <Route path="/warehouse" element={<RequireRole roles={['Anbardar', 'Usta', 'Admin']} user={user}><PanelLayout title="Satıcı kabineti" links={warehouseLinks} /></RequireRole>}>
+              <Route index element={<WarehouseIndex />} />
+              <Route path="part/:id" element={<WarehousePartDetails />} />
+              <Route path="ads/:id" element={<WarehousePartDetails />} />
+              <Route path="add-part" element={<PartForm />} />
+              <Route path="add" element={<PartForm />} />
+              <Route path="edit-part/:id" element={<PartForm />} />
+              <Route path="edit/:id" element={<PartForm />} />
+              <Route path="sales" element={<SalesHistory />} />
+              <Route path="deleted" element={<WarehouseDeleted />} />
+              <Route path="settings" element={<Settings />} />
+            </Route>
 
-          <Route path="/admin" element={<RequireRole roles={['Admin']} user={user}><PanelLayout title="Admin Panel" links={adminLinks} /></RequireRole>}>
-            <Route index element={<AdminIndex />} />
-            <Route path="requests" element={<AdminRequests />} />
-            <Route path="requests/ad/:id" element={<AdminAdReview />} />
-            <Route path="requests/user/:id" element={<AdminUserReview />} />
-            <Route path="users" element={<AdminUsers />} />
-            <Route path="ads" element={<AdminAds />} />
-            <Route path="catalog" element={<AdminCatalog />} />
-            <Route path="logs" element={<AdminLogs />} />
-          </Route>
+            <Route path="/admin" element={<RequireRole roles={['Admin']} user={user}><PanelLayout title="Admin Panel" links={adminLinks} /></RequireRole>}>
+              <Route index element={<AdminIndex />} />
+              <Route path="requests" element={<AdminRequests />} />
+              <Route path="requests/ad/:id" element={<AdminAdReview />} />
+              <Route path="requests/user/:id" element={<AdminUserReview />} />
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="ads" element={<AdminAds />} />
+              <Route path="catalog" element={<AdminCatalog />} />
+              <Route path="logs" element={<AdminLogs />} />
+            </Route>
 
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </main>
 
       <footer className="mt-5 border-top" style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border-color)' }}>

@@ -297,6 +297,17 @@ function Home() {
           setProducts(items);
           setTotalPages(data.totalPages || 1);
           setTotalItems(data.totalItems || 0);
+
+          // Əsas səhifənin ilk 1-ci səhifəsini növbəti ziyarətlər üçün kəşlə
+          if (!search && !categoryId && !sellerId && !bId && !mId && !ptId && !qtId && !mnP && !mxP && p === 1) {
+            try {
+              sessionStorage.setItem('ehisse_cached_home_products', JSON.stringify({
+                items,
+                totalPages: data.totalPages || 1,
+                totalItems: data.totalItems || 0
+              }));
+            } catch {}
+          }
         } else {
           setProducts([]);
         }
@@ -324,6 +335,22 @@ function Home() {
     Api.qualityTypes()
       .then(data => setQualityTypes(data || []))
       .catch(() => setQualityTypes([]));
+
+    // SWR Cache: Əgər əvvəlki məhsul siyahısı kəşdə varsa, dərhal göstər (istifadəçi ağ ekran gözləməsin)
+    if (!initialCategory && !initialSeller) {
+      const cachedProducts = sessionStorage.getItem('ehisse_cached_home_products');
+      if (cachedProducts) {
+        try {
+          const parsed = JSON.parse(cachedProducts);
+          if (parsed && parsed.items && parsed.items.length) {
+            setProducts(parsed.items);
+            setTotalPages(parsed.totalPages || 1);
+            setTotalItems(parsed.totalItems || 0);
+            setLoading(false);
+          }
+        } catch {}
+      }
+    }
 
     setActiveCategoryId(initialCategory);
     setActiveSellerId(initialSeller);
