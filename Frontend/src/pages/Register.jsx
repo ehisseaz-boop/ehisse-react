@@ -189,22 +189,10 @@ function Register({ onRegister }) {
         idCardImageUrl: form.idCardImageUrl,
         code: otp.trim() 
       });
-      if (res && res.username) {
-        const loggedUser = {
-          isAuthenticated: true,
-          id: res.id,
-          username: res.username,
-          fullName: res.fullName,
-          role: res.role,
-          email: res.email
-        };
-        localStorage.setItem('ehisse_user', JSON.stringify(loggedUser));
-      }
       setShowOtp(false);
-      await onRegister?.();
       navigate('/thank-you', {
         state: {
-          message: 'Qeydiyyatınız uğurla tamamlandı və hesabınıza daxil oldunuz! Giriş məlumatlarınız və şifrəniz e-poçt ünvanınıza göndərildi. İndi birbaşa elan yerləşdirə bilərsiniz.'
+          message: 'Qeydiyyat müraciətiniz uğurla qəbul edildi! Təhlükəsizlik qaydalarına uyğun olaraq şəxsiyyət vəsiqəniz və məlumatlarınız admin tərəfindən yoxlanıldıqdan sonra hesabınız təsdiqlənəcək və siz sistemə daxil ola biləcəksiniz.'
         }
       });
     } catch (err) {

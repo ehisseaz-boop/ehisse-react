@@ -251,14 +251,14 @@ namespace EHisse.WebApi.Controllers
                 Username = generatedUsername,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(req.Password),
                 Role = req.Role,
-                ApprovalStatus = ApprovalStatus.Approved,
+                ApprovalStatus = ApprovalStatus.Pending,
                 CreatedDate = DateTime.UtcNow
             };
 
             _context.Users.Add(newUser);
             await _context.SaveChangesAsync();
 
-            // Satıcı profilini birbaşa yaradırıq ki, elan yerləşdirə bilsin
+            // Satıcı profilini yaradırıq (təsdiqləndikdən sonra hazır olsun)
             if (!await _context.SellerProfiles.AnyAsync(s => s.UserId == newUser.Id))
             {
                 var sellerProfile = new SellerProfile
@@ -276,40 +276,27 @@ namespace EHisse.WebApi.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            // Avtomatik daxil edirik (Auto-login)
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, newUser.Id.ToString()),
-                new Claim(ClaimTypes.Name, newUser.Username),
-                new Claim(ClaimTypes.GivenName, $"{newUser.FirstName} {newUser.LastName}"),
-                new Claim(ClaimTypes.Role, newUser.Role.ToString()),
-                new Claim(ClaimTypes.Email, newUser.Email ?? string.Empty)
-            };
-
-            var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-
-            // Qeydiyyat məlumatlarını və şifrəni istifadəçinin poçtuna göndəririk
+            // Qeydiyyat məlumatlarını və admin təsdiq bildirişini istifadəçinin poçtuna göndəririk
             if (!string.IsNullOrWhiteSpace(email))
             {
                 var roleName = req.Role == UserRole.Anbardar ? "Anbardar (Satıcı)" : "Usta (Alıcı)";
                 var emailBody = $@"
                     <div style=""font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #ffffff;"">
                         <div style=""text-align: center; margin-bottom: 20px;"">
-                            <h2 style=""color: #2b3a4a; margin: 0;"">E-Hisse.az Platformasına Xoş Gəlmisiniz!</h2>
+                            <h2 style=""color: #2b3a4a; margin: 0;"">E-Hisse.az — Qeydiyyat Müraciətiniz Qəbul Edildi</h2>
                         </div>
                         <p style=""font-size: 15px; color: #333;"">Hörmətli <b>{req.FirstName} {req.LastName}</b>,</p>
                         <p style=""font-size: 14px; color: #555; line-height: 1.6;"">
-                            Qeydiyyatınız uğurla tamamlandı. Platformaya daxil oldunuz və dərhal elanlarınızı yerləşdirə bilərsiniz.
+                            Qeydiyyat müraciətiniz uğurla qeydə alındı. Təhlükəsizlik qaydalarına əsasən şəxsiyyət vəsiqəniz və məlumatlarınız admin tərəfindən yoxlanıldıqdan sonra hesabınız aktivləşdiriləcəkdir.
                         </p>
-                        <div style=""background-color: #f7f9fa; border-left: 4px solid #27ae60; padding: 15px; margin: 20px 0; border-radius: 4px;"">
-                            <h4 style=""margin: 0 0 10px 0; color: #333;"">Giriş Məlumatlarınız:</h4>
+                        <div style=""background-color: #f7f9fa; border-left: 4px solid #f39c12; padding: 15px; margin: 20px 0; border-radius: 4px;"">
+                            <h4 style=""margin: 0 0 10px 0; color: #333;"">Müraciət Məlumatlarınız:</h4>
                             <p style=""margin: 5px 0; font-size: 14px;""><b>İstifadəçi adı (Mobil nömrə):</b> {normalizedTel}</p>
                             <p style=""margin: 5px 0; font-size: 14px;""><b>E-poçt ünvanı:</b> {email}</p>
-                            <p style=""margin: 5px 0; font-size: 14px;""><b>Şifrəniz:</b> {req.Password}</p>
                             <p style=""margin: 5px 0; font-size: 14px;""><b>Rolunuz:</b> {roleName}</p>
+                            <p style=""margin: 5px 0; font-size: 14px;""><b>Status:</b> Yoxlamadadır (Admin təsdiqi gözlənilir)</p>
                         </div>
-                        <p style=""font-size: 13px; color: #888;"">Təhlükəsizliyiniz üçün şifrənizi heç kimlə paylaşmayın.</p>
+                        <p style=""font-size: 13px; color: #888;"">Admin təsdiqindən sonra sistemə daxil olub elanlarınızı yerləşdirə bilərsiniz.</p>
                         <hr style=""border: none; border-top: 1px solid #eee; margin: 20px 0;"" />
                         <p style=""font-size: 12px; color: #aaa; text-align: center;"">© 2026 E-Hisse.az. Bütün hüquqlar qorunur.</p>
                     </div>";
@@ -318,7 +305,7 @@ namespace EHisse.WebApi.Controllers
                 {
                     try
                     {
-                        await _notificationService.SendEmailAsync(email, "E-Hisse.az — Qeydiyyat və Giriş Məlumatları", emailBody);
+                        await _notificationService.SendEmailAsync(email, "E-Hisse.az — Qeydiyyat Sorğunuz Qəbul Edildi", emailBody);
                     }
                     catch { }
                 });
@@ -327,7 +314,8 @@ namespace EHisse.WebApi.Controllers
             return Ok(new
             {
                 success = true,
-                message = "Qeydiyyatınız uğurla tamamlandı!",
+                isPending = true,
+                message = "Qeydiyyat müraciətiniz qəbul edildi. Admin təsdiqindən sonra hesabınız aktivləşəcək.",
                 id = newUser.Id,
                 username = newUser.Username,
                 fullName = $"{newUser.FirstName} {newUser.LastName}",

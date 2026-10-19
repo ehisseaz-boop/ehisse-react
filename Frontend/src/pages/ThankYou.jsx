@@ -35,14 +35,11 @@ function ThankYou() {
         </p>
 
         <div className="d-flex flex-wrap justify-content-center gap-3">
-          <Link to="/warehouse/add-part" className="btn btn-primary bg-accent text-dark fw-bold px-4 py-2 rounded-pill text-decoration-none shadow-sm">
-            <i className="bi bi-plus-circle me-1"></i> Yeni elan yerləşdir
-          </Link>
-          <Link to="/" className="btn btn-outline px-4 py-2 rounded-pill text-decoration-none">
+          <Link to="/" className="btn btn-primary bg-accent text-dark fw-bold px-4 py-2 rounded-pill text-decoration-none shadow-sm">
             <i className="bi bi-house me-1"></i> Ana səhifə
           </Link>
-          <Link to="/warehouse" className="btn btn-outline px-4 py-2 rounded-pill text-decoration-none">
-            <i className="bi bi-person-circle me-1"></i> Şəxsi kabinet
+          <Link to="/login" className="btn btn-outline px-4 py-2 rounded-pill text-decoration-none">
+            <i className="bi bi-box-arrow-in-right me-1"></i> Giriş səhifəsi
           </Link>
         </div>
       </div>
