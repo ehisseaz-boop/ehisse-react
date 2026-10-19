@@ -89,18 +89,13 @@ function App() {
           setUser(u);
           localStorage.setItem('ehisse_user', JSON.stringify(u));
         } else {
-          // Əgər cookie yoxdursa amma localStorage-də login olunmuş istifadəçi varsa, saxlayırıq
-          const saved = localStorage.getItem('ehisse_user');
-          if (!saved) {
-            setUser(null);
-          }
+          // Əgər server təsdiqləmirsə və ya sessiya yoxdursa, yerli yaddaşı da təmizləyirik
+          localStorage.removeItem('ehisse_user');
+          setUser(null);
         }
       })
       .catch(() => {
-        const saved = localStorage.getItem('ehisse_user');
-        if (!saved) {
-          setUser(null);
-        }
+        // Şəbəkə xətası olarsa mövcud saxlanmış istifadəçiyə toxunmuruq
       });
   }, []);
 

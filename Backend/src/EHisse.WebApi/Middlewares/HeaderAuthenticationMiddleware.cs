@@ -23,12 +23,11 @@ public class HeaderAuthenticationMiddleware
             return;
         }
 
-        // Mobil Safari və ya brauzer cookie göndərmədikdə X-User-Id və ya Authorization başlığı ilə tanı
         if (context.Request.Headers.TryGetValue("X-User-Id", out var userIdHeader) &&
             int.TryParse(userIdHeader.ToString(), out int userId))
         {
             var user = await dbContext.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
-            if (user != null && !user.IsBlocked)
+            if (user != null && !user.IsBlocked && (user.Role == Domain.Enums.UserRole.Admin || user.ApprovalStatus == Domain.Enums.ApprovalStatus.Approved))
             {
                 var claims = new List<Claim>
                 {

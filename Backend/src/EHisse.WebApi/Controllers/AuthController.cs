@@ -43,23 +43,33 @@ namespace EHisse.WebApi.Controllers
 
         // GET api/Auth/Me — cari istifadəçi (frontend header üçün)
         [HttpGet("[action]")]
-        public IActionResult Me()
+        public async Task<IActionResult> Me()
         {
             if (User.Identity?.IsAuthenticated != true)
                 return Ok(new { isAuthenticated = false });
 
             var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            int.TryParse(userIdStr, out int userId);
-            var seller = userId > 0 ? _context.SellerProfiles.FirstOrDefault(s => s.UserId == userId) : null;
+            if (!int.TryParse(userIdStr, out int userId) || userId <= 0)
+                return Ok(new { isAuthenticated = false });
+
+            var dbUser = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
+            if (dbUser == null || dbUser.IsBlocked || (dbUser.Role != UserRole.Admin && dbUser.ApprovalStatus != ApprovalStatus.Approved))
+            {
+                // İstifadəçi təsdiq olunmayıbsa və ya bloklanıbsa sessiyanı sonlandırırıq
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                return Ok(new { isAuthenticated = false });
+            }
+
+            var seller = await _context.SellerProfiles.AsNoTracking().FirstOrDefaultAsync(s => s.UserId == userId);
 
             return Ok(new
             {
                 isAuthenticated = true,
                 id = userIdStr,
-                username = User.FindFirstValue(ClaimTypes.Name),
-                fullName = User.FindFirstValue(ClaimTypes.GivenName),
-                role = User.FindFirstValue(ClaimTypes.Role),
-                email = User.FindFirstValue(ClaimTypes.Email),
+                username = dbUser.Username,
+                fullName = $"{dbUser.FirstName} {dbUser.LastName}",
+                role = dbUser.Role.ToString(),
+                email = dbUser.Email,
                 companyName = seller?.CompanyName,
                 shopPhotoUrl = seller?.ShopPhotoUrl
             });
