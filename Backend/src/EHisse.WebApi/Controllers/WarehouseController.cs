@@ -35,14 +35,12 @@ namespace EHisse.WebApi.Controllers
         private readonly IWarehouseService _warehouseService;
         private readonly AppDbContext _context;
         private readonly IBlobStorageService _blobService;
-        private readonly ICacheService _cacheService;
 
-        public WarehouseController(IWarehouseService warehouseService, AppDbContext context, IBlobStorageService blobService, ICacheService cacheService)
+        public WarehouseController(IWarehouseService warehouseService, AppDbContext context, IBlobStorageService blobService)
         {
             _warehouseService = warehouseService;
             _context = context;
             _blobService = blobService;
-            _cacheService = cacheService;
         }
 
         private int CurrentUserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -84,7 +82,6 @@ namespace EHisse.WebApi.Controllers
             if (seller == null) return NoSeller();
 
             var parts = await _context.SpareParts
-                .AsNoTracking()
                 .Include(p => p.DeviceModel).ThenInclude(m => m.Brand)
                 .Include(p => p.PartType)
                 .Include(p => p.QualityType)
@@ -232,7 +229,6 @@ namespace EHisse.WebApi.Controllers
             if (errors.Any()) return BadRequest(new { message = string.Join(" ", errors), errors });
 
             var part = await _warehouseService.AddPartAsync(ToEntity(input), CurrentUserId, seller.Id);
-            _cacheService.RemoveByTags("home_data", "categories");
             return Ok(new { success = true, id = part.Id, message = "Elan yaradıldı və təsdiq üçün admin moderasiyasına göndərildi." });
         }
 
@@ -244,7 +240,6 @@ namespace EHisse.WebApi.Controllers
             if (seller == null) return NoSeller();
 
             var part = await _context.SpareParts
-                .AsNoTracking()
                 .Include(p => p.DeviceModel)
                 .Include(p => p.Images)
                 .FirstOrDefaultAsync(p => p.Id == id && p.SellerId == seller.Id && !p.IsDeleted);
@@ -305,7 +300,6 @@ namespace EHisse.WebApi.Controllers
                 return BadRequest(new { message = result.ErrorMessage });
 
             var updatedPart = await _warehouseService.GetPartAsync(id, seller.Id);
-            _cacheService.RemoveByTags("home_data", "categories");
             var isPending = updatedPart?.ModerationStatus == ApprovalStatus.Pending;
             var msg = isPending
                 ? "Dəyişikliklər yadda saxlanıldı və admin təsdiqinə göndərildi (təsdiqləndikdən sonra saytda aktivləşəcək)."
@@ -326,7 +320,6 @@ namespace EHisse.WebApi.Controllers
             var success = await _warehouseService.UpdatePriceAsync(id, input.NewPrice, seller.Id);
             if (!success) return NotFound(new { message = "Elan tapılmadı." });
 
-            _cacheService.RemoveByTags("home_data");
             return Ok(new { success = true });
         }
 
@@ -341,7 +334,6 @@ namespace EHisse.WebApi.Controllers
             if (!result.Success && result.ErrorMessage == "Not Found") return NotFound(new { message = "Elan tapılmadı." });
             if (!result.Success) return BadRequest(new { message = result.ErrorMessage });
 
-            _cacheService.RemoveByTags("home_data", "categories");
             return Ok(new { success = true });
         }
 
@@ -355,7 +347,6 @@ namespace EHisse.WebApi.Controllers
             var success = await _warehouseService.DeletePartAsync(id, seller.Id);
             if (!success) return NotFound(new { message = "Elan tapılmadı." });
 
-            _cacheService.RemoveByTags("home_data", "categories");
             return Ok(new { success = true, message = "Elan zibil qutusuna göndərildi." });
         }
 
@@ -367,7 +358,6 @@ namespace EHisse.WebApi.Controllers
             if (seller == null) return NoSeller();
 
             var parts = await _context.SpareParts
-                .AsNoTracking()
                 .Include(p => p.DeviceModel).ThenInclude(m => m.Brand)
                 .Include(p => p.PartType)
                 .Include(p => p.QualityType)
@@ -417,7 +407,6 @@ namespace EHisse.WebApi.Controllers
             part.LastModifiedDate = DateTime.Now;
             await _context.SaveChangesAsync();
 
-            _cacheService.RemoveByTags("home_data", "categories");
             return Ok(new { success = true, message = "Elan uğurla bərpa edildi." });
         }
 
@@ -436,7 +425,6 @@ namespace EHisse.WebApi.Controllers
                 return BadRequest(new { message = result.ErrorMessage });
             }
 
-            _cacheService.RemoveByTags("home_data", "categories");
             return Ok(new { success = true });
         }
 
@@ -448,7 +436,6 @@ namespace EHisse.WebApi.Controllers
             if (seller == null) return NoSeller();
 
             var sales = await _context.SparePartSaleAudits
-                .AsNoTracking()
                 .Include(s => s.SparePart)
                 .Where(s => s.SellerId == seller.Id)
                 .OrderByDescending(s => s.Timestamp)

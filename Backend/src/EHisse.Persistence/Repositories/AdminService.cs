@@ -44,7 +44,6 @@ namespace EHisse.Persistence.Repositories
         public async Task<List<User>> GetPendingUsersAsync()
         {
             return await _context.Users
-                .AsNoTracking()
                 .Include(u => u.SellerProfile)
                 .Where(u => u.ApprovalStatus == ApprovalStatus.Pending)
                 .OrderByDescending(u => u.CreatedDate)
@@ -54,7 +53,6 @@ namespace EHisse.Persistence.Repositories
         public async Task<List<SparePart>> GetPendingAdsAsync()
         {
             return await _context.SpareParts
-                .AsNoTracking()
                 .Include(p => p.Seller)
                     .ThenInclude(s => s.User)
                 .Include(p => p.DeviceModel)
@@ -325,7 +323,6 @@ namespace EHisse.Persistence.Repositories
         public async Task<List<User>> GetAllUsersAsync()
         {
             return await _context.Users
-                .AsNoTracking()
                 .Include(u => u.SellerProfile)
                 .OrderByDescending(u => u.CreatedDate)
                 .ToListAsync();
@@ -334,7 +331,6 @@ namespace EHisse.Persistence.Repositories
         public async Task<User?> GetUserByIdAsync(int id)
         {
             return await _context.Users
-                .AsNoTracking()
                 .Include(u => u.SellerProfile)
                 .FirstOrDefaultAsync(u => u.Id == id);
         }
@@ -342,7 +338,6 @@ namespace EHisse.Persistence.Repositories
         public async Task<List<SparePart>> GetAllAdsAsync()
         {
             return await _context.SpareParts
-                .AsNoTracking()
                 .Include(p => p.Seller)
                     .ThenInclude(s => s.User)
                 .Include(p => p.DeviceModel)
@@ -362,7 +357,6 @@ namespace EHisse.Persistence.Repositories
         public async Task<List<Category>> GetCategoriesAsync()
         {
             return await _context.Categories
-                .AsNoTracking()
                 .OrderBy(c => c.DisplayOrder)
                 .ToListAsync();
         }
@@ -408,7 +402,6 @@ namespace EHisse.Persistence.Repositories
         public async Task<List<DeviceBrand>> GetBrandsAsync()
         {
             return await _context.DeviceBrands
-                .AsNoTracking()
                 .OrderBy(b => b.Name)
                 .ToListAsync();
         }
@@ -448,7 +441,7 @@ namespace EHisse.Persistence.Repositories
 
         public async Task<List<CategoryBrand>> GetCategoryBrandsAsync()
         {
-            return await _context.CategoryBrands.AsNoTracking().ToListAsync();
+            return await _context.CategoryBrands.ToListAsync();
         }
 
         public async Task<bool> AssignBrandToCategoryAsync(int categoryId, int brandId)
@@ -477,7 +470,6 @@ namespace EHisse.Persistence.Repositories
         public async Task<List<DeviceModel>> GetModelsAndBrandsAsync()
         {
             return await _context.DeviceModels
-                .AsNoTracking()
                 .Include(m => m.Brand)
                 .Include(m => m.Category)
                 .OrderBy(m => m.Name)
@@ -531,7 +523,6 @@ namespace EHisse.Persistence.Repositories
         public async Task<List<SparePartType>> GetPartTypesAsync()
         {
             return await _context.SparePartTypes
-                .AsNoTracking()
                 .OrderBy(p => p.Name)
                 .ToListAsync();
         }
@@ -565,7 +556,7 @@ namespace EHisse.Persistence.Repositories
 
         public async Task<List<CategoryPartType>> GetCategoryPartTypesAsync()
         {
-            return await _context.CategoryPartTypes.AsNoTracking().ToListAsync();
+            return await _context.CategoryPartTypes.ToListAsync();
         }
 
         public async Task<bool> AssignPartTypeToCategoryAsync(int categoryId, int partTypeId)
@@ -594,7 +585,6 @@ namespace EHisse.Persistence.Repositories
         public async Task<List<QualityType>> GetQualityTypesAsync()
         {
             return await _context.QualityTypes
-                .AsNoTracking()
                 .OrderBy(q => q.DisplayOrder)
                 .ToListAsync();
         }
@@ -605,7 +595,6 @@ namespace EHisse.Persistence.Repositories
         public async Task<List<ActivityLog>> GetActivityLogsAsync(int count)
         {
             return await _context.ActivityLogs
-                .AsNoTracking()
                 .OrderByDescending(l => l.Date)
                 .Take(count)
                 .ToListAsync();
@@ -614,7 +603,6 @@ namespace EHisse.Persistence.Repositories
         public async Task<List<SparePartSaleAudit>> GetSaleAuditsAsync(int count)
         {
             return await _context.SparePartSaleAudits
-                .AsNoTracking()
                 .Include(s => s.SparePart)
                 .OrderByDescending(s => s.Timestamp)
                 .Take(count)

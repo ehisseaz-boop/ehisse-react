@@ -34,7 +34,6 @@ public static class InfrastructureServiceRegistration
 
         services.AddScoped<IStorageService, R2StorageService>();
         services.AddScoped<INotificationService, SmtpEmailService>();
-        services.AddSingleton<ICacheService, EHisse.Infrastructure.Caching.CacheService>();
 
         return services;
     }

@@ -22,13 +22,11 @@ namespace EHisse.WebApi.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IBlobStorageService _blobService;
-        private readonly ICacheService _cacheService;
 
-        public HomeController(AppDbContext context, IBlobStorageService blobService, ICacheService cacheService)
+        public HomeController(AppDbContext context, IBlobStorageService blobService)
         {
             _context = context;
             _blobService = blobService;
-            _cacheService = cacheService;
         }
 
         // GET api/Home/Index
@@ -50,72 +48,18 @@ namespace EHisse.WebApi.Controllers
         {
             if (pageNumber < 1) pageNumber = 1;
 
-            bool isDefaultFirstPage = string.IsNullOrWhiteSpace(searchString)
-                && !categoryId.HasValue
-                && !brandId.HasValue
-                && !modelId.HasValue
-                && !partTypeId.HasValue
-                && !qualityTypeId.HasValue
-                && !minPrice.HasValue
-                && !maxPrice.HasValue
-                && !sellerId.HasValue
-                && inStockOnly
-                && (string.IsNullOrEmpty(sortOrder) || sortOrder == "date_desc")
-                && pageNumber == 1
-                && pageSize == 20;
+            // Sidebar üçün ümumi statistika (filtrsiz)
+            var activeAdsQuery = _context.SpareParts
+                .Where(p => p.ModerationStatus == ApprovalStatus.Approved && !p.IsDeleted && p.IsActive);
+            if (inStockOnly) activeAdsQuery = activeAdsQuery.Where(p => p.StockQuantity > 0);
 
-            if (isDefaultFirstPage)
-            {
-                var cachedIndex = await _cacheService.GetOrCreateAsync<object>("home_index_default", async () =>
-                {
-                    return await ExecuteIndexAsync(
-                        searchString, categoryId, brandId, modelId, partTypeId, qualityTypeId,
-                        minPrice, maxPrice, sellerId, inStockOnly, sortOrder, pageNumber, pageSize);
-                }, absoluteExpiration: TimeSpan.FromMinutes(2), tag: "home_data");
+            var categoryCounts = await activeAdsQuery
+                .GroupBy(p => p.DeviceModel.CategoryId)
+                .Select(g => new { CategoryId = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(k => k.CategoryId, v => v.Count);
 
-                return Ok(cachedIndex);
-            }
-
-            var result = await ExecuteIndexAsync(
-                searchString, categoryId, brandId, modelId, partTypeId, qualityTypeId,
-                minPrice, maxPrice, sellerId, inStockOnly, sortOrder, pageNumber, pageSize);
-
-            return Ok(result);
-        }
-
-        private async Task<object> ExecuteIndexAsync(
-            string? searchString,
-            int? categoryId,
-            int? brandId,
-            int? modelId,
-            int? partTypeId,
-            int? qualityTypeId,
-            decimal? minPrice,
-            decimal? maxPrice,
-            int? sellerId,
-            bool inStockOnly,
-            string sortOrder,
-            int pageNumber,
-            int pageSize)
-        {
-            // Sidebar üçün ümumi statistika (filtrsiz) - cached for 3 mins
-            var stats = await _cacheService.GetOrCreateAsync($"home_stats_{inStockOnly}", async () =>
-            {
-                var activeAdsQuery = _context.SpareParts
-                    .AsNoTracking()
-                    .Where(p => p.ModerationStatus == ApprovalStatus.Approved && !p.IsDeleted && p.IsActive);
-                if (inStockOnly) activeAdsQuery = activeAdsQuery.Where(p => p.StockQuantity > 0);
-
-                var categoryCounts = await activeAdsQuery
-                    .GroupBy(p => p.DeviceModel.CategoryId)
-                    .Select(g => new { CategoryId = g.Key, Count = g.Count() })
-                    .ToDictionaryAsync(k => k.CategoryId, v => v.Count);
-
-                var totalParts = await activeAdsQuery.CountAsync();
-                var totalSellers = await _context.SellerProfiles.AsNoTracking().CountAsync();
-
-                return new HomeStatsDto(categoryCounts, totalParts, totalSellers);
-            }, absoluteExpiration: TimeSpan.FromMinutes(3), tag: "home_data");
+            var totalParts = await activeAdsQuery.CountAsync();
+            var totalSellers = await _context.SellerProfiles.CountAsync();
 
             // ── QueryBuilder ilə dynamic search ────────────────────────────────
             var filter = new SparePartSearchQuery
@@ -138,7 +82,6 @@ namespace EHisse.WebApi.Controllers
             };
 
             var partsQuery = _context.SpareParts
-                .AsNoTracking()
                 .Include(p => p.DeviceModel).ThenInclude(m => m.Brand)
                 .Include(p => p.DeviceModel).ThenInclude(m => m.Category)
                 .Include(p => p.PartType)
@@ -160,16 +103,16 @@ namespace EHisse.WebApi.Controllers
                 .Where(url => !string.IsNullOrEmpty(url))
                 .Distinct());
 
-            return new
+            return Ok(new
             {
-                items = parts.Select(p => MapPart(p, urlMap)).ToList(),
+                items = parts.Select(p => MapPart(p, urlMap)),
                 pageNumber,
                 totalPages = (int)Math.Ceiling(totalItems / (double)pageSize),
                 totalItems,
-                totalParts = stats.TotalParts,
-                totalSellers = stats.TotalSellers,
-                categoryCounts = stats.CategoryCounts
-            };
+                totalParts,
+                totalSellers,
+                categoryCounts
+            });
         }
 
         // GET api/Home/Saticilar
@@ -180,7 +123,6 @@ namespace EHisse.WebApi.Controllers
             string? searchType)
         {
             var query = _context.SellerProfiles
-                .AsNoTracking()
                 .Include(s => s.User)
                 .Where(s => !s.User.IsBlocked && s.User.ApprovalStatus == ApprovalStatus.Approved);
 
@@ -264,7 +206,6 @@ namespace EHisse.WebApi.Controllers
             // - Total: İndiyədək yerləşdirdiyi bütün elanların sayı
             // - Active: Hazırda aktiv, təsdiqlənmiş və stokda olan elan sayı
             var adStats = await _context.SpareParts
-                .AsNoTracking()
                 .Where(p => sellerIds.Contains(p.SellerId))
                 .GroupBy(p => p.SellerId)
                 .Select(g => new
@@ -349,38 +290,21 @@ namespace EHisse.WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> Categories()
         {
-            var cached = await _cacheService.GetOrCreateAsync("home_categories", async () =>
+            var counts = await _context.SpareParts
+                .Where(p => p.ModerationStatus == ApprovalStatus.Approved && !p.IsDeleted && p.IsActive && p.StockQuantity > 0)
+                .GroupBy(p => p.DeviceModel.CategoryId)
+                .Select(g => new { CategoryId = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(k => k.CategoryId, v => v.Count);
+
+            var categories = await _context.Categories.OrderBy(c => c.DisplayOrder).ToListAsync();
+            return Ok(categories.Select(c => new
             {
-                var counts = await _context.SpareParts
-                    .AsNoTracking()
-                    .Where(p => p.ModerationStatus == ApprovalStatus.Approved && !p.IsDeleted && p.IsActive && p.StockQuantity > 0)
-                    .GroupBy(p => p.DeviceModel.CategoryId)
-                    .Select(g => new { CategoryId = g.Key, Count = g.Count() })
-                    .ToDictionaryAsync(k => k.CategoryId, v => v.Count);
-
-                var categories = await _context.Categories
-                    .AsNoTracking()
-                    .OrderBy(c => c.DisplayOrder)
-                    .Select(c => new
-                    {
-                        id = c.Id,
-                        name = c.Name,
-                        displayOrder = c.DisplayOrder,
-                        isActive = c.IsActive
-                    })
-                    .ToListAsync();
-
-                return categories.Select(c => new
-                {
-                    c.id,
-                    c.name,
-                    c.displayOrder,
-                    c.isActive,
-                    count = counts.TryGetValue(c.id, out var n) ? n : 0
-                }).ToList();
-            }, slidingExpiration: TimeSpan.FromMinutes(45), tag: "categories");
-
-            return Ok(cached);
+                id = c.Id,
+                name = c.Name,
+                displayOrder = c.DisplayOrder,
+                isActive = c.IsActive,
+                count = counts.TryGetValue(c.Id, out var n) ? n : 0
+            }));
         }
 
         // GET api/Home/Details/5
@@ -388,7 +312,6 @@ namespace EHisse.WebApi.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var part = await _context.SpareParts
-                .AsNoTracking()
                 .Include(p => p.DeviceModel).ThenInclude(m => m.Brand)
                 .Include(p => p.DeviceModel).ThenInclude(m => m.Category)
                 .Include(p => p.PartType)
@@ -400,11 +323,8 @@ namespace EHisse.WebApi.Controllers
             if (part == null)
                 return NotFound(new { message = "Məhsul tapılmadı." });
 
-            // Atomic view count update without change tracking overhead
-            await _context.SpareParts
-                .Where(p => p.Id == id)
-                .ExecuteUpdateAsync(s => s.SetProperty(p => p.ViewCount, p => p.ViewCount + 1));
             part.ViewCount++;
+            await _context.SaveChangesAsync();
 
             var urlMap = _blobService.GetBulkUrls(part.Images.Select(i => i.ImageUrl).Where(u => !string.IsNullOrEmpty(u)));
 
@@ -413,7 +333,7 @@ namespace EHisse.WebApi.Controllers
             if (User.Identity?.IsAuthenticated == true &&
                 int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out int userId))
             {
-                isOwner = await _context.SellerProfiles.AsNoTracking().AnyAsync(s => s.UserId == userId && s.Id == part.SellerId);
+                isOwner = await _context.SellerProfiles.AnyAsync(s => s.UserId == userId && s.Id == part.SellerId);
             }
 
             var seller = part.Seller;

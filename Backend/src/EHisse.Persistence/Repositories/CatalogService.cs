@@ -22,7 +22,6 @@ namespace EHisse.Persistence.Repositories
         public async Task<object> GetCategoriesAsync()
         {
             var categories = await _context.Categories
-                .AsNoTracking()
                 .Where(c => c.IsActive)
                 .OrderBy(c => c.DisplayOrder)
                 .Select(c => new { id = c.Id, name = c.Name, displayOrder = c.DisplayOrder })
@@ -34,7 +33,6 @@ namespace EHisse.Persistence.Repositories
         public async Task<object> GetProductsAsync(string? search, int? categoryId, int? partTypeId)
         {
             var query = _context.SpareParts
-                .AsNoTracking()
                 .Include(p => p.DeviceModel).ThenInclude(m => m.Brand)
                 .Include(p => p.PartType)
                 .Include(p => p.QualityType)
