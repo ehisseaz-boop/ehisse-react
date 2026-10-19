@@ -48,6 +48,19 @@ function PartForm() {
             longitude: p.longitude ?? '',
           });
           setImages(p.images || []);
+        } else {
+          // Yeni elan yaradarkən ustanın / anbardarın kabinetindəki ünvan və koordinatları avtomatik doldururuq
+          try {
+            const s = await Api.warehouse.settings();
+            if (s) {
+              setForm(f => ({
+                ...f,
+                locationAddress: s.address || '',
+                latitude: s.latitude ?? '',
+                longitude: s.longitude ?? ''
+              }));
+            }
+          } catch { }
         }
       } catch (e) { setLoadError(e.message); }
     })();

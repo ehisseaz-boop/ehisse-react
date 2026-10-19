@@ -97,11 +97,104 @@ function WarehouseIndex() {
     },
   ];
 
+  const seller = data.seller || {};
+  const mapAddress = seller.address || '';
+  const hasCoords = seller.latitude && seller.longitude;
+  const mapEmbedUrl = hasCoords
+    ? `https://maps.google.com/maps?q=${seller.latitude},${seller.longitude}&t=&z=15&ie=UTF8&iwloc=&output=embed`
+    : mapAddress
+    ? `https://maps.google.com/maps?q=${encodeURIComponent(mapAddress)}&t=&z=14&ie=UTF8&iwloc=&output=embed`
+    : null;
+
   return (
     <>
+      {/* Mağaza / Usta / Anbardar Profil Başlığı və Xəritə */}
+      <div className="product-card mb-4 p-3 p-md-4" style={{ borderRadius: '14px', background: 'var(--bg-surface)' }}>
+        <div className="row g-3 align-items-center">
+          <div className="col-12 col-md-7 d-flex align-items-center gap-3">
+            <div
+              style={{
+                width: '68px',
+                height: '68px',
+                borderRadius: '14px',
+                border: '2px solid var(--accent)',
+                overflow: 'hidden',
+                backgroundColor: 'var(--bg-surface-hover)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+              }}
+            >
+              {seller.shopPhotoUrl ? (
+                <img
+                  src={seller.shopPhotoUrl}
+                  alt={seller.companyName}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              ) : (
+                <i className="bi bi-shop text-muted fs-2"></i>
+              )}
+            </div>
+            <div>
+              <div className="d-flex align-items-center gap-2">
+                <h4 className="fw-bold m-0 text-main" style={{ fontSize: '1.25rem' }}>{seller.companyName}</h4>
+                <Link to="/warehouse/settings" className="badge bg-secondary text-decoration-none" title="Tənzimləmələrə keç">
+                  <i className="bi bi-pencil-square me-1"></i>Redaktə
+                </Link>
+              </div>
+              <div className="text-muted small mt-1 d-flex align-items-center gap-1">
+                <i className="bi bi-geo-alt-fill text-accent"></i>
+                <span>{seller.address || 'Ünvan qeyd edilməyib'}</span>
+              </div>
+              <div className="text-muted small mt-1">
+                Cəmi <strong>{parts.length}</strong> elan · Aktiv: <strong className="text-success">{parts.filter(p => p.isActive).length}</strong>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-12 col-md-5">
+            {mapEmbedUrl ? (
+              <div style={{ borderRadius: '10px', overflow: 'hidden', border: '1px solid var(--border-color)', position: 'relative' }}>
+                <iframe
+                  title="Kabinet Xəritə"
+                  width="100%"
+                  height="130"
+                  frameBorder="0"
+                  style={{ border: 0, display: 'block' }}
+                  src={mapEmbedUrl}
+                  allowFullScreen
+                />
+                <a
+                  href={
+                    hasCoords
+                      ? `https://www.google.com/maps?q=${seller.latitude},${seller.longitude}`
+                      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapAddress)}`
+                  }
+                  target="_blank"
+                  rel="noreferrer"
+                  className="position-absolute bottom-0 end-0 m-1 badge bg-dark bg-opacity-75 text-accent text-decoration-none"
+                  style={{ fontSize: '11px', padding: '4px 8px' }}
+                >
+                  Google Maps <i className="bi bi-box-arrow-up-right ms-1"></i>
+                </a>
+              </div>
+            ) : (
+              <div className="p-3 text-center rounded border border-dashed small text-muted">
+                <i className="bi bi-pin-map text-accent fs-5 d-block mb-1"></i>
+                <span>Xəritədə mağaza yerinizi göstərmək üçün </span>
+                <Link to="/warehouse/settings" className="text-accent fw-bold text-decoration-none">
+                  profil ünvanınızı qeyd edin
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div>
-          <strong>{data.seller.companyName}</strong> · {parts.length} elan · Aktiv: {parts.filter(p => p.isActive).length}
+          <h5 className="m-0 fw-bold">Elanlarım</h5>
         </div>
         <div className="d-flex gap-2">
           <Link to="/warehouse/deleted" className="btn-outline text-decoration-none">

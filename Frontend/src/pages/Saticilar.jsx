@@ -257,21 +257,47 @@ function Saticilar() {
                     </div>
                   </div>
 
-                  {/* Servis / Mağaza / Şirkət adı */}
-                  <h3 className="product-title mb-1" style={{ fontSize: '1.25rem' }}>
-                    <i className="bi bi-shop text-accent me-2"></i>
-                    {s.companyName}
-                  </h3>
-
-                  {/* Usta / Anbardar / Məsul şəxsin adı */}
-                  <div className="mb-3 text-muted small">
-                    {isUsta ? (
-                      <div><i className="bi bi-person-fill text-accent me-1"></i> Usta: <strong className="text-main">{s.contactPerson || `${s.firstName || ''} ${s.lastName || ''}`.trim()}</strong></div>
-                    ) : isAnbardar ? (
-                      <div><i className="bi bi-person-fill text-accent me-1"></i> Anbardar: <strong className="text-main">{s.contactPerson || `${s.firstName || ''} ${s.lastName || ''}`.trim()}</strong></div>
-                    ) : (
-                      <div><i className="bi bi-person-fill text-accent me-1"></i> Məsul şəxs: <strong className="text-main">{s.contactPerson}</strong></div>
-                    )}
+                  {/* Servis / Mağaza / Şirkət adı və Loqosu */}
+                  <div className="d-flex align-items-center gap-3 mb-2">
+                    <div
+                      style={{
+                        width: '48px',
+                        height: '48px',
+                        borderRadius: '10px',
+                        border: '1.5px solid var(--accent)',
+                        overflow: 'hidden',
+                        backgroundColor: 'var(--bg-surface-hover)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0
+                      }}
+                    >
+                      {s.shopPhotoUrl ? (
+                        <img
+                          src={s.shopPhotoUrl}
+                          alt={s.companyName}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                      ) : (
+                        <i className="bi bi-shop text-muted fs-4"></i>
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="product-title m-0" style={{ fontSize: '1.15rem' }}>
+                        {s.companyName}
+                      </h3>
+                      {/* Usta / Anbardar / Məsul şəxsin adı */}
+                      <div className="text-muted small mt-1">
+                        {isUsta ? (
+                          <span><i className="bi bi-person-fill text-accent me-1"></i> Usta: <strong className="text-main">{s.contactPerson || `${s.firstName || ''} ${s.lastName || ''}`.trim()}</strong></span>
+                        ) : isAnbardar ? (
+                          <span><i className="bi bi-person-fill text-accent me-1"></i> Anbardar: <strong className="text-main">{s.contactPerson || `${s.firstName || ''} ${s.lastName || ''}`.trim()}</strong></span>
+                        ) : (
+                          <span><i className="bi bi-person-fill text-accent me-1"></i> Məsul şəxs: <strong className="text-main">{s.contactPerson}</strong></span>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
                   {/* Elan Statistikası Qutusu (Aktiv elan sayı və İndiyədək yerləşdiyi elan sayı) */}
@@ -300,9 +326,25 @@ function Saticilar() {
                   {/* Əlaqə məlumatları */}
                   <div className="d-flex flex-column gap-1 mb-3 small text-muted">
                     {s.address && (
-                      <div>
-                        <i className="bi bi-geo-alt me-1 text-accent"></i>
-                        <span>{s.address}</span>
+                      <div className="d-flex justify-content-between align-items-center">
+                        <div className="text-truncate">
+                          <i className="bi bi-geo-alt me-1 text-accent"></i>
+                          <span>{s.address}</span>
+                        </div>
+                        <a
+                          href={
+                            s.latitude && s.longitude
+                              ? `https://www.google.com/maps?q=${s.latitude},${s.longitude}`
+                              : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.address)}`
+                          }
+                          target="_blank"
+                          rel="noreferrer"
+                          className="ms-2 text-accent text-decoration-none fw-semibold flex-shrink-0"
+                          style={{ fontSize: '11px' }}
+                          title="Xəritədə bax"
+                        >
+                          Xəritə <i className="bi bi-box-arrow-up-right"></i>
+                        </a>
                       </div>
                     )}
                     {s.phone && (

@@ -33,6 +33,15 @@ public static class DatabaseSeeder
                     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Users' AND column_name='IdCardImageUrl') THEN
                         ALTER TABLE ""Users"" ADD COLUMN ""IdCardImageUrl"" text NULL;
                     END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='SellerProfiles' AND column_name='ShopPhotoUrl') THEN
+                        ALTER TABLE ""SellerProfiles"" ADD COLUMN ""ShopPhotoUrl"" text NULL;
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='SellerProfiles' AND column_name='Latitude') THEN
+                        ALTER TABLE ""SellerProfiles"" ADD COLUMN ""Latitude"" double precision NULL;
+                    END IF;
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='SellerProfiles' AND column_name='Longitude') THEN
+                        ALTER TABLE ""SellerProfiles"" ADD COLUMN ""Longitude"" double precision NULL;
+                    END IF;
                 END $$;
             ");
         }

@@ -34,10 +34,8 @@ public record PartInput(
     int StockQuantity, int MinOrderQuantity, int WarrantyMonths,
     double? Latitude = null, double? Longitude = null, string? LocationAddress = null);
 
-public record PriceInput(decimal NewPrice);
-public record SettingsInput(string CompanyName, string ContactPerson, string? Phone, string? WhatsAppNumber, string? Address, bool ShowContactInfoInAds);
+public record SettingsInput(string CompanyName, string ContactPerson, string? Phone, string? WhatsAppNumber, string? Address, bool ShowContactInfoInAds, double? Latitude = null, double? Longitude = null, string? ShopPhotoUrl = null);
 
-public record ReasonInput(string? Reason);
 public record CategoryInput(string Name, int DisplayOrder = 0, bool IsActive = true);
 public record BrandInput(string Name, bool IsActive = true);
 public record AssignBrandInput(int CategoryId, int BrandId);

@@ -32,6 +32,9 @@ public class SellerProfile : BaseEntity
     public string? Phone { get; set; }
     public string? WhatsAppNumber { get; set; }
     public string? Address { get; set; }
+    public double? Latitude { get; set; }
+    public double? Longitude { get; set; }
+    public string? ShopPhotoUrl { get; set; }
     public decimal Rating { get; set; }
     public bool ShowContactInfoInAds { get; set; } = true;
     public bool IsPhoneVerified { get; set; } = true;

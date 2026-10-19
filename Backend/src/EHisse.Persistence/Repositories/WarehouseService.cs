@@ -291,6 +291,12 @@ namespace EHisse.Persistence.Repositories
             if (!string.IsNullOrWhiteSpace(updatedProfile.CompanyName)) user.SellerProfile.CompanyName = updatedProfile.CompanyName.Trim();
             if (!string.IsNullOrWhiteSpace(updatedProfile.ContactPerson)) user.SellerProfile.ContactPerson = updatedProfile.ContactPerson.Trim();
             user.SellerProfile.Address = updatedProfile.Address;
+            user.SellerProfile.Latitude = updatedProfile.Latitude;
+            user.SellerProfile.Longitude = updatedProfile.Longitude;
+            if (updatedProfile.ShopPhotoUrl != null)
+            {
+                user.SellerProfile.ShopPhotoUrl = updatedProfile.ShopPhotoUrl;
+            }
             
             if (user.SellerProfile.Phone != updatedProfile.Phone)
             {

@@ -25,7 +25,7 @@ namespace EHisse.WebApi.Controllers
 
     public record PriceInput(decimal NewPrice);
 
-    public record SettingsInput(string CompanyName, string ContactPerson, string? Phone, string? WhatsAppNumber, string? Address, bool ShowContactInfoInAds);
+    public record SettingsInput(string CompanyName, string ContactPerson, string? Phone, string? WhatsAppNumber, string? Address, bool ShowContactInfoInAds, double? Latitude = null, double? Longitude = null, string? ShopPhotoUrl = null);
 
     [Authorize(Roles = "Usta,Anbardar,Admin")]
     [Route("api/[controller]/[action]")]
@@ -104,7 +104,14 @@ namespace EHisse.WebApi.Controllers
 
             return Ok(new
             {
-                seller = new { seller.Id, seller.CompanyName },
+                seller = new { 
+                    seller.Id, 
+                    seller.CompanyName,
+                    seller.Address,
+                    seller.Latitude,
+                    seller.Longitude,
+                    seller.ShopPhotoUrl
+                },
                 parts = parts.Select(p =>
                 {
                     var img = p.Images.FirstOrDefault(i => i.IsMain) ?? p.Images.FirstOrDefault();
@@ -487,6 +494,9 @@ namespace EHisse.WebApi.Controllers
                 phone = s.Phone,
                 whatsAppNumber = s.WhatsAppNumber,
                 address = s.Address,
+                latitude = s.Latitude,
+                longitude = s.Longitude,
+                shopPhotoUrl = s.ShopPhotoUrl,
                 showContactInfoInAds = true,
                 rating = s.Rating
             });
@@ -503,6 +513,9 @@ namespace EHisse.WebApi.Controllers
                 Phone = input.Phone,
                 WhatsAppNumber = input.WhatsAppNumber,
                 Address = input.Address,
+                Latitude = input.Latitude,
+                Longitude = input.Longitude,
+                ShopPhotoUrl = input.ShopPhotoUrl,
                 ShowContactInfoInAds = true
             };
 

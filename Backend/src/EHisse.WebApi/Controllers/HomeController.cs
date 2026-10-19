@@ -239,6 +239,9 @@ namespace EHisse.WebApi.Controllers
                     phone = s.ShowContactInfoInAds ? s.Phone : null,
                     whatsAppNumber = s.ShowContactInfoInAds ? s.WhatsAppNumber : null,
                     address = s.Address,
+                    latitude = s.Latitude,
+                    longitude = s.Longitude,
+                    shopPhotoUrl = s.ShopPhotoUrl,
                     rating = s.Rating,
                     isPhoneVerified = s.IsPhoneVerified,
                     totalAds = adStats.TryGetValue(s.Id, out var st) ? st.Total : 0,
@@ -355,6 +358,9 @@ namespace EHisse.WebApi.Controllers
                     phone = seller.ShowContactInfoInAds ? seller.Phone : null,
                     whatsAppNumber = seller.ShowContactInfoInAds ? seller.WhatsAppNumber : null,
                     address = seller.Address,
+                    latitude = seller.Latitude,
+                    longitude = seller.Longitude,
+                    shopPhotoUrl = seller.ShopPhotoUrl,
                     rating = seller.Rating
                 },
                 isOwner

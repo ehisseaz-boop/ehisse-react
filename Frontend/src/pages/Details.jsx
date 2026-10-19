@@ -109,8 +109,10 @@ function Details() {
   const images = part.images || [];
 
   const getMapSrc = () => {
-    if (part.latitude && part.longitude) {
-      return `https://maps.google.com/maps?q=${part.latitude},${part.longitude}&t=&z=14&ie=UTF8&iwloc=&output=embed`;
+    const lat = part.latitude || seller?.latitude;
+    const lng = part.longitude || seller?.longitude;
+    if (lat && lng) {
+      return `https://maps.google.com/maps?q=${lat},${lng}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
     }
     const address = part.locationAddress || seller?.address;
     if (address) {
@@ -374,9 +376,33 @@ function Details() {
                 className="p-3 mb-3 rounded"
                 style={{ background: 'var(--bg-main, #141414)', border: '1px solid var(--border-color)' }}
               >
-                <div className="d-flex justify-content-between align-items-start mb-2">
-                  <div>
-                    <h5 className="m-0 text-main fw-bold">{sellerCompany}</h5>
+                <div className="d-flex align-items-center gap-3 mb-2">
+                  <div
+                    style={{
+                      width: '46px',
+                      height: '46px',
+                      borderRadius: '10px',
+                      border: '1.5px solid var(--accent)',
+                      overflow: 'hidden',
+                      backgroundColor: 'var(--bg-surface-hover)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}
+                  >
+                    {seller.shopPhotoUrl ? (
+                      <img
+                        src={seller.shopPhotoUrl}
+                        alt={sellerCompany}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <i className="bi bi-shop text-muted fs-4"></i>
+                    )}
+                  </div>
+                  <div className="flex-grow-1">
+                    <h5 className="m-0 text-main fw-bold" style={{ fontSize: '1.05rem' }}>{sellerCompany}</h5>
                     <span className="text-muted small">{sellerContact || 'Satıcı'}</span>
                   </div>
                   <span className="badge bg-secondary">
@@ -402,15 +428,17 @@ function Details() {
                   </span>
                   <a
                     href={
-                      part.latitude && part.longitude
+                      (part.latitude && part.longitude)
                         ? `https://www.google.com/maps?q=${part.latitude},${part.longitude}`
+                        : (seller?.latitude && seller?.longitude)
+                        ? `https://www.google.com/maps?q=${seller.latitude},${seller.longitude}`
                         : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(sellerAddress || '')}`
                     }
                     target="_blank"
                     rel="noreferrer"
-                    className="small text-accent text-decoration-none"
+                    className="small text-accent text-decoration-none fw-semibold"
                   >
-                    Böyüt <i className="bi bi-box-arrow-up-right"></i>
+                    Google Maps-də aç <i className="bi bi-box-arrow-up-right ms-1"></i>
                   </a>
                 </div>
                 <div style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>

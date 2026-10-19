@@ -48,14 +48,20 @@ namespace EHisse.WebApi.Controllers
             if (User.Identity?.IsAuthenticated != true)
                 return Ok(new { isAuthenticated = false });
 
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            int.TryParse(userIdStr, out int userId);
+            var seller = userId > 0 ? _context.SellerProfiles.FirstOrDefault(s => s.UserId == userId) : null;
+
             return Ok(new
             {
                 isAuthenticated = true,
-                id = User.FindFirstValue(ClaimTypes.NameIdentifier),
+                id = userIdStr,
                 username = User.FindFirstValue(ClaimTypes.Name),
                 fullName = User.FindFirstValue(ClaimTypes.GivenName),
                 role = User.FindFirstValue(ClaimTypes.Role),
-                email = User.FindFirstValue(ClaimTypes.Email)
+                email = User.FindFirstValue(ClaimTypes.Email),
+                companyName = seller?.CompanyName,
+                shopPhotoUrl = seller?.ShopPhotoUrl
             });
         }
 

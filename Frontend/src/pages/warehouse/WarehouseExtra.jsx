@@ -83,6 +83,8 @@ export function Settings() {
 
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value });
 
+  const [uploadingShopPhoto, setUploadingShopPhoto] = useState(false);
+
   // Profil & Əlaqə məlumatlarının yadda saxlanması
   const submitProfile = async (e) => {
     e.preventDefault();
@@ -93,13 +95,56 @@ export function Settings() {
       // Əlaqə məlumatları elanda qeyd olunması məcburidir, həmişə true göndərilir
       const r = await Api.warehouse.saveSettings({
         ...form,
+        latitude: form.latitude === '' || form.latitude == null ? null : Number(form.latitude),
+        longitude: form.longitude === '' || form.longitude == null ? null : Number(form.longitude),
         showContactInfoInAds: true
       });
       setMsg(r.message || 'Məlumatlar uğurla yadda saxlanıldı.');
+      // Əgər istifadəçi avatar və ya adını dəyişibsə, localStorage və ya yenilənməni dəstəkləyək
+      try {
+        const saved = localStorage.getItem('ehisse_user');
+        if (saved) {
+          const u = JSON.parse(saved);
+          u.companyName = form.companyName;
+          if (form.shopPhotoUrl) u.shopPhotoUrl = form.shopPhotoUrl;
+          localStorage.setItem('ehisse_user', JSON.stringify(u));
+        }
+      } catch { }
     } catch (err) {
       setError(err.message);
     } finally {
       setBusy(false);
+    }
+  };
+
+  const handleShopPhotoChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      setError('Şəkil ölçüsü 10 MB-dan çox ola bilməz.');
+      return;
+    }
+
+    setUploadingShopPhoto(true);
+    setError('');
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch('/api/FileUpload/upload', {
+        method: 'POST',
+        body: fd
+      });
+      const data = await res.json().catch(() => null);
+      if (res.ok && data?.url) {
+        setForm(prev => ({ ...prev, shopPhotoUrl: data.url }));
+      } else {
+        setError(data?.message || 'Şəkil yüklənərkən xəta baş verdi.');
+      }
+    } catch {
+      setError('Şəkil yüklənərkən şəbəkə xətası baş verdi.');
+    } finally {
+      setUploadingShopPhoto(false);
     }
   };
 
@@ -310,16 +355,163 @@ export function Settings() {
           </div>
         </div>
 
-        <div className="mb-3">
+        {/* Mağaza / Profil Şəkli */}
+        <div className="mb-4">
           <label className="form-label small fw-semibold">
-            <i className="bi bi-geo-alt me-1"></i> Mağaza / Anbar ünvanı
+            <i className="bi bi-camera me-1"></i> Mağaza / Profil Şəkli
           </label>
-          <input
-            className="form-control"
-            value={form.address || ''}
-            onChange={set('address')}
-            placeholder="Şəhər, rayon, küçə"
-          />
+          <div className="d-flex align-items-center gap-3">
+            <div
+              style={{
+                width: '72px',
+                height: '72px',
+                borderRadius: '12px',
+                border: '2px solid var(--accent)',
+                overflow: 'hidden',
+                backgroundColor: 'var(--bg-surface-hover)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+              }}
+            >
+              {form.shopPhotoUrl ? (
+                <img
+                  src={form.shopPhotoUrl}
+                  alt="Mağaza şəkli"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              ) : (
+                <i className="bi bi-shop text-muted fs-3"></i>
+              )}
+            </div>
+            <div className="flex-grow-1">
+              <input
+                type="file"
+                className="form-control form-control-sm mb-1"
+                accept="image/*"
+                onChange={handleShopPhotoChange}
+                disabled={uploadingShopPhoto}
+              />
+              <div className="text-muted" style={{ fontSize: '12px' }}>
+                {uploadingShopPhoto ? (
+                  <span className="text-info"><span className="spinner-border spinner-border-sm me-1"></span>Şəkil yüklənir...</span>
+                ) : (
+                  'Mağazanızın loqosunu və ya vitrin şəklini yükləyin (JPG, PNG, WEBP).'
+                )}
+              </div>
+            </div>
+            {form.shopPhotoUrl && (
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-danger"
+                onClick={() => setForm(f => ({ ...f, shopPhotoUrl: '' }))}
+                title="Şəkli sil"
+              >
+                <i className="bi bi-trash"></i>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* ── MAĞAZA ÜNVANI VƏ BİRBAŞA GOOGLE MAPS XƏRİTƏSİ ── */}
+        <div className="mb-3">
+          <div className="d-flex justify-content-between align-items-center mb-1">
+            <label className="form-label small fw-semibold m-0">
+              <i className="bi bi-geo-alt me-1"></i> Mağaza / Anbar ünvanı
+            </label>
+            <button
+              type="button"
+              className="btn btn-sm btn-outline d-flex align-items-center gap-1"
+              style={{ borderRadius: '20px', fontSize: '0.78rem', borderColor: 'var(--accent)', color: 'var(--accent)', padding: '2px 8px' }}
+              onClick={() => {
+                if (navigator.geolocation) {
+                  navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                      const lat = pos.coords.latitude.toFixed(6);
+                      const lng = pos.coords.longitude.toFixed(6);
+                      setForm(f => ({
+                        ...f,
+                        latitude: lat,
+                        longitude: lng,
+                        address: f.address || `Koordinat: ${lat}, ${lng}`
+                      }));
+                    },
+                    () => alert('Cari yerinizi təyin etmək mümkün olmadı.')
+                  );
+                } else {
+                  alert('Brauzeriniz geolokasiyanı dəstəkləmir.');
+                }
+              }}
+            >
+              <i className="bi bi-crosshair"></i> Cari yerimi təyin et
+            </button>
+          </div>
+
+          <div className="input-group mb-2">
+            <input
+              className="form-control"
+              value={form.address || ''}
+              onChange={set('address')}
+              placeholder="Şəhər, rayon, küçə"
+            />
+            {form.address && (
+              <a
+                href={
+                  form.latitude && form.longitude
+                    ? `https://www.google.com/maps?q=${form.latitude},${form.longitude}`
+                    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(form.address)}`
+                }
+                target="_blank"
+                rel="noreferrer"
+                className="btn btn-outline"
+                title="Google Maps-də aç"
+              >
+                <i className="bi bi-box-arrow-up-right"></i>
+              </a>
+            )}
+          </div>
+
+          {/* DƏRHAL ÜNVANIN ALTINDAKI CANLI GOOGLE MAPS XƏRİTƏSİ */}
+          <div style={{ borderRadius: '10px', overflow: 'hidden', border: '1px solid var(--border-color)', marginTop: '6px' }}>
+            <iframe
+              key={`${form.latitude}-${form.longitude}-${form.address}`}
+              title="Google Map Mağaza Ünvanı"
+              width="100%"
+              height="230"
+              frameBorder="0"
+              style={{ border: 0, display: 'block' }}
+              src={
+                form.latitude && form.longitude
+                  ? `https://maps.google.com/maps?q=${form.latitude},${form.longitude}&t=&z=15&ie=UTF8&iwloc=&output=embed`
+                  : `https://maps.google.com/maps?q=${encodeURIComponent(form.address?.trim() || 'Baku, Azerbaijan')}&t=&z=14&ie=UTF8&iwloc=&output=embed`
+              }
+              allowFullScreen
+            />
+          </div>
+
+          <div className="d-flex justify-content-between align-items-center mt-2 px-1">
+            <span className="text-muted small" style={{ fontSize: '12px' }}>
+              {form.latitude && form.longitude ? (
+                <span><i className="bi bi-pin-map text-accent me-1"></i> Koordinat: <strong>{form.latitude}, {form.longitude}</strong></span>
+              ) : (
+                <span><i className="bi bi-info-circle me-1"></i> Ünvanı qeyd etdikcə Google Maps xəritəsi avtomatik yenilənir.</span>
+              )}
+            </span>
+            <a
+              href={
+                form.latitude && form.longitude
+                  ? `https://www.google.com/maps?q=${form.latitude},${form.longitude}`
+                  : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(form.address?.trim() || 'Baku')}`
+              }
+              target="_blank"
+              rel="noreferrer"
+              className="small text-accent text-decoration-none fw-semibold"
+              style={{ fontSize: '12px' }}
+            >
+              Google Maps-də aç <i className="bi bi-box-arrow-up-right ms-1"></i>
+            </a>
+          </div>
         </div>
 
         <div className="alert alert-info py-2 px-3 small mb-3 d-flex align-items-center gap-2">

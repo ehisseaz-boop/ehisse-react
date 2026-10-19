@@ -219,9 +219,18 @@ function App() {
                   fontSize: '0.95rem',
                   boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
                   border: '2px solid rgba(255,255,255,0.2)',
+                  overflow: 'hidden',
                   flexShrink: 0
                 }}>
-                  {(user.fullName || user.email || user.username || 'U')[0].toUpperCase()}
+                  {user.shopPhotoUrl ? (
+                    <img
+                      src={user.shopPhotoUrl}
+                      alt="Profil"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  ) : (
+                    (user.fullName || user.email || user.username || 'U')[0].toUpperCase()
+                  )}
                 </div>
                 <div className="d-none d-lg-flex flex-column text-start" style={{ lineHeight: '1.2' }}>
                   <span className="user-name" style={{ color: 'var(--text-main)', fontWeight: 600, fontSize: '0.85rem' }}>
