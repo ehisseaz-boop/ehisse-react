@@ -26,7 +26,7 @@ export function PanelLayout({ title, links }) {
     <div className="container">
       <section className="panel-section">
         <h2 className="section-title mb-3">{title}</h2>
-        <div className="panel-nav d-flex gap-2 flex-wrap mb-4">
+        <div className="panel-nav mb-4">
           {links.map(l => (
             <NavLink key={l.to} to={l.to} end={l.end}
               className={({ isActive }) => `panel-nav-link ${isActive ? 'active' : ''}`}>
