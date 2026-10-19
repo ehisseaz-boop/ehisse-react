@@ -158,6 +158,7 @@ function Register({ onRegister }) {
     try {
       // 1. Əvvəlcə istifadəçinin daxil etdiyi email ünvanına 4 rəqəmli OTP kod göndəririk
       await Api.sendRegisterOtp({ email: form.email.trim() });
+      setModalError('');
       setShowOtp(true);
     } catch (err) {
       setError(err.message || 'Təsdiq kodu göndərilərkən xəta baş verdi.');
@@ -166,13 +167,15 @@ function Register({ onRegister }) {
     }
   };
 
+  const [modalError, setModalError] = useState('');
+
   const verifyOtp = async (e) => {
     e.preventDefault();
     if (otp.length !== 4 || !/^\d{4}$/.test(otp)) {
-      setError('Təsdiq kodu 4 rəqəmli olmalıdır.');
+      setModalError('Təsdiq kodu 4 rəqəmli olmalıdır.');
       return;
     }
-    setError('');
+    setModalError('');
     setBusy(true);
     try {
       const cleanPhone = form.phone.replace(/\D/g, '');
@@ -205,7 +208,7 @@ function Register({ onRegister }) {
         }
       });
     } catch (err) {
-      setError(err.message || 'Təsdiq kodu yanlışdır və ya xəta baş verdi.');
+      setModalError(err.message || 'Təsdiq kodu yanlışdır və ya xəta baş verdi.');
     } finally {
       setBusy(false);
     }
@@ -336,6 +339,7 @@ function Register({ onRegister }) {
 
       <Modal open={showOtp} title="E-poçt OTP Təsdiqi" onClose={() => setShowOtp(false)}>
         <form onSubmit={verifyOtp}>
+          {modalError && <div className="alert alert-danger" style={{ fontSize: '13px' }}>{modalError}</div>}
           <div className="alert alert-info" style={{ fontSize: '13px' }}>
             Təsdiq kodu <b>{form.email}</b> poçt ünvanınıza göndərildi. Zəhmət olmasa emailinizi yoxlayın.
           </div>
