@@ -46,6 +46,9 @@ namespace EHisse.WebApi.Controllers
             if (string.IsNullOrEmpty(path))
                 return NotFound();
 
+            // Brauzer və CDN kəşləməsi (şəkillərin hər dəfə təkrar yüklənməməsi və dərhal açılması üçün)
+            Response.Headers.Append("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
+
             // Əgər fayl wwwroot daxilində fiziki olaraq varsa (legacy şəkillər və ya uploads/...)
             var cleanPath = path.TrimStart('/').Replace('\\', '/');
             if (!cleanPath.Contains(".."))

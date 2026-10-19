@@ -306,8 +306,19 @@ function Home() {
   };
 
   useEffect(() => {
+    // 1. Kateqoriyaları dərhal sessionStorage-dən götür (ekranda donma və gecikmə olmasın)
+    const cachedCats = sessionStorage.getItem('ehisse_cached_categories');
+    if (cachedCats) {
+      try { setCategories(JSON.parse(cachedCats)); } catch {}
+    }
+
     Api.categories()
-      .then(data => setCategories(data || []))
+      .then(data => {
+        if (data && data.length) {
+          setCategories(data);
+          sessionStorage.setItem('ehisse_cached_categories', JSON.stringify(data));
+        }
+      })
       .catch(err => console.error("Error fetching categories:", err));
 
     Api.qualityTypes()
