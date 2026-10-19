@@ -755,23 +755,27 @@ footer {
 
 .sticky-cta-item.sticky-cta-add {
     position: relative;
-    top: -12px;
+    top: -14px;
 }
 
 .sticky-add-btn {
     width: 48px;
     height: 48px;
+    min-width: 48px;
+    min-height: 48px;
     border-radius: 50%;
-    background-color: #ff5722;
-    background: linear-gradient(135deg, #ff6b3d, #e64a19);
-    color: #ffffff;
+    background-color: var(--accent);
+    color: var(--accent-text);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
-    box-shadow: 0 4px 10px rgba(230, 74, 25, 0.4);
+    font-size: 1.4rem;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    border: 3px solid var(--bg-surface);
     transition: transform 0.2s, box-shadow 0.2s;
     margin-bottom: 2px;
+    box-sizing: border-box;
+    flex-shrink: 0;
 }
 
 .sticky-cta-item.sticky-cta-add:active .sticky-add-btn {
