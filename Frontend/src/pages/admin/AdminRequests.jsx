@@ -235,9 +235,10 @@ export default function AdminRequests() {
   const regularUpdateAds = updateAds.filter(a => !(a.stockQuantity > 0 && !a.isActive));
 
   const tabsConfig = [
-    { key: 'registration', label: 'Qeydiyyat Sorğuları', count: pendingUsers.length },
-    { key: 'newAds', label: 'Yeni Elanlar', count: newAds.length },
-    { key: 'updateAds', label: 'Redaktə Yoxlamaları', count: regularUpdateAds.length },
+    { key: 'registration', label: '1. Yeni Qeydiyyat Sorğuları', count: pendingUsers.length },
+    { key: 'newAds', label: '2. Yeni Elan Sorğuları', count: newAds.length },
+    { key: 'updateAds', label: '3. Elan Redaktə Sorğuları', count: regularUpdateAds.length },
+    { key: 'userEditAds', label: '4. İstifadəçi Redaktə Sorğuları', count: 0 },
     { key: 'restockAds', label: 'Stok Bərpası Sorğuları', count: restockAds.length },
   ];
 
@@ -274,6 +275,14 @@ export default function AdminRequests() {
 
             {activeTab === 'updateAds' && (
               <Table columns={adColumns} rows={regularUpdateAds} empty="Redaktə yoxlamasında olan elan yoxdur." />
+            )}
+
+            {activeTab === 'userEditAds' && (
+              <div className="card p-4 text-center text-muted" style={{ background: 'var(--surface-color)', border: '1px dashed var(--border-color)', borderRadius: '10px' }}>
+                <i className="bi bi-person-check fs-2 mb-2 text-accent"></i>
+                <h6 className="fw-bold mb-1">İstifadəçi Redaktə Sorğuları</h6>
+                <p className="small mb-0">Hazırda təsdiq gözləyən istifadəçi profil redaktə sorğusu yoxdur.</p>
+              </div>
             )}
 
             {activeTab === 'restockAds' && (

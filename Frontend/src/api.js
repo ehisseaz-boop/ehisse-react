@@ -138,6 +138,9 @@ export const Api = {
   forgotPassword: (body) => api('/api/Auth/ForgotPassword', { method: 'POST', body }),
   verifyResetOtp: (body) => api('/api/Auth/VerifyResetOtp', { method: 'POST', body }),
   resetPassword: (body) => api('/api/Auth/ResetPassword', { method: 'POST', body }),
+  changePassword: (body) => api('/api/Auth/ChangePassword', { method: 'POST', body }),
+  sendEmailOtp: (body) => api('/api/Auth/SendEmailOtp', { method: 'POST', body }),
+  verifyEmailOtp: (body) => api('/api/Auth/VerifyEmailOtp', { method: 'POST', body }),
 
   // AjaxController (asılı seçimlər + axtarış)
   lookupCategories: () => api('/api/Ajax/GetCategories'),

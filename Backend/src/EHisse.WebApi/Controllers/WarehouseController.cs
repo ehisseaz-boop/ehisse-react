@@ -467,12 +467,18 @@ namespace EHisse.WebApi.Controllers
             var s = user.SellerProfile;
             return Ok(new
             {
+                firstName = user.FirstName,
+                lastName = user.LastName,
+                fullName = $"{user.FirstName} {user.LastName}".Trim(),
+                pin = user.Pin,
+                idCardImageUrl = user.IdCardImageUrl,
+                email = user.Email,
                 companyName = s.CompanyName,
                 contactPerson = s.ContactPerson,
                 phone = s.Phone,
                 whatsAppNumber = s.WhatsAppNumber,
                 address = s.Address,
-                showContactInfoInAds = s.ShowContactInfoInAds,
+                showContactInfoInAds = true,
                 rating = s.Rating
             });
         }
@@ -488,7 +494,7 @@ namespace EHisse.WebApi.Controllers
                 Phone = input.Phone,
                 WhatsAppNumber = input.WhatsAppNumber,
                 Address = input.Address,
-                ShowContactInfoInAds = input.ShowContactInfoInAds
+                ShowContactInfoInAds = true
             };
 
             var result = await _warehouseService.UpdateSettingsAsync(CurrentUserId, updated);

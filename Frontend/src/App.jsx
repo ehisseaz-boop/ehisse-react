@@ -41,9 +41,9 @@ import { RequireRole, RequireAuth, PanelLayout } from './components/Panel';
 
 const adminLinks = [
   { to: '/admin', end: true, icon: 'bi-speedometer2', label: 'İdarə paneli' },
-  { to: '/admin/requests', icon: 'bi-inbox', label: 'Müraciətlər' },
-  { to: '/admin/users', icon: 'bi-people', label: 'İstifadəçilər' },
-  { to: '/admin/ads', icon: 'bi-megaphone', label: 'Elanlar' },
+  { to: '/admin/requests', icon: 'bi-inbox', label: 'Müraciətlər və Sorğular' },
+  { to: '/admin/users', icon: 'bi-people', label: '5. Ümumi istifadəçilər' },
+  { to: '/admin/ads', icon: 'bi-megaphone', label: 'Bütün Elanlar' },
   { to: '/admin/catalog', icon: 'bi-diagram-3', label: 'Kataloq' },
   { to: '/admin/logs', icon: 'bi-journal-text', label: 'Jurnal' },
 ];
