@@ -208,7 +208,7 @@ export function Settings() {
         <div className="row g-3">
           <div className="col-12 col-sm-6">
             <label className="form-label small fw-semibold text-muted">
-              <i className="bi bi-person me-1"></i> Ad və Soyad
+              <i className="bi bi-person me-1"></i> Ad və Soyad (Əlaqə şəxsi)
             </label>
             <input
               className="form-control"
@@ -281,19 +281,6 @@ export function Settings() {
             onChange={set('companyName')}
             required
             placeholder="Məs: Mobil Hissələr Mərkəzi"
-          />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label small fw-semibold">
-            <i className="bi bi-person-circle me-1"></i> Əlaqə şəxsi *
-          </label>
-          <input
-            className="form-control"
-            value={form.contactPerson || ''}
-            onChange={set('contactPerson')}
-            required
-            placeholder="Ad və soyadınız"
           />
         </div>
 
