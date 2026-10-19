@@ -91,13 +91,33 @@ public class FileUploadController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Fayl yüklənərkən xəta baş verdi: {FileName}", file.FileName);
-            return StatusCode(StatusCodes.Status500InternalServerError, new
+            _logger.LogWarning(ex, "Fayl yaddaşa yazılarkən xəta: {FileName}. DataURL formatında saxlanılır.", file.FileName);
+            try
             {
-                success = false,
-                message = "Fayl yüklənməsi zamanı server xətası baş verdi.",
-                details = ex.Message
-            });
+                using var ms = new MemoryStream();
+                await file.CopyToAsync(ms, cancellationToken);
+                var base64 = Convert.ToBase64String(ms.ToArray());
+                var mime = string.IsNullOrWhiteSpace(file.ContentType) ? "image/jpeg" : file.ContentType;
+                var dataUri = $"data:{mime};base64,{base64}";
+                return Ok(new
+                {
+                    success = true,
+                    url = dataUri,
+                    fileName = file.FileName,
+                    size = file.Length,
+                    contentType = file.ContentType
+                });
+            }
+            catch (Exception fallbackEx)
+            {
+                _logger.LogError(fallbackEx, "DataURI fallback də uğursuz oldu: {FileName}", file.FileName);
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    success = false,
+                    message = "Fayl yüklənməsi zamanı server xətası baş verdi.",
+                    details = ex.Message
+                });
+            }
         }
     }
 
