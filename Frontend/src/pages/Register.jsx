@@ -205,19 +205,38 @@ function Register({ onRegister }) {
         <input className="form-control mb-2" type="email" placeholder="Email" value={form.email} onChange={set('email')} autoComplete="off" required />
 
         {/* FİN kod */}
-        <div className="mb-2">
-          <input 
-            className="form-control" 
-            placeholder="FİN kod (7 simvol, məs: 7ABC123)" 
-            value={form.pin} 
-            onChange={handlePinChange} 
-            maxLength={7}
-            autoComplete="off"
-            style={{ textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 'bold' }}
-            required 
-          />
-          <div className="text-muted small mt-1" style={{ fontSize: '11px' }}>
-            Şəxsiyyət vəsiqənizin sağ aşağı küncündəki 7 simvollu kod.
+        <div className="mb-3 text-start">
+          <div className="d-flex justify-content-between align-items-center mb-1">
+            <label className="form-label small fw-semibold text-main m-0">
+              FİN kod <span className="text-danger">*</span>
+            </label>
+            <span className="badge" style={{ backgroundColor: 'var(--bg-surface-hover)', color: form.pin?.length === 7 ? 'var(--accent)' : 'var(--text-muted)', border: '1px solid var(--border-color)', fontSize: '0.7rem' }}>
+              {form.pin?.length || 0}/7 simvol
+            </span>
+          </div>
+          <div className="input-group">
+            <span className="input-group-text" style={{ backgroundColor: 'var(--input-bg)', borderColor: 'var(--input-border)', color: 'var(--accent)' }}>
+              <i className="bi bi-person-vcard"></i>
+            </span>
+            <input 
+              className="form-control" 
+              placeholder="Məs: 7ABC123" 
+              value={form.pin} 
+              onChange={handlePinChange} 
+              maxLength={7}
+              autoComplete="off"
+              style={{ 
+                textTransform: 'uppercase', 
+                letterSpacing: form.pin ? '2px' : 'normal', 
+                fontWeight: form.pin ? '700' : '400',
+                fontSize: '0.95rem'
+              }}
+              required 
+            />
+          </div>
+          <div className="text-muted mt-1" style={{ fontSize: '11px', lineHeight: '1.3' }}>
+            <i className="bi bi-info-circle me-1"></i>
+            Şəxsiyyət vəsiqəsinin sağ aşağı küncündəki 7 simvollu kod
           </div>
         </div>
 
