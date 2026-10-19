@@ -22,12 +22,13 @@ namespace EHisse.Persistence.Repositories
 
         public async Task<SellerProfile?> GetSellerProfileAsync(int userId)
         {
-            return await _context.SellerProfiles.FirstOrDefaultAsync(s => s.UserId == userId);
+            return await _context.SellerProfiles.AsNoTracking().FirstOrDefaultAsync(s => s.UserId == userId);
         }
 
         public async Task<List<SparePart>> GetMyPartsAsync(int sellerId)
         {
             return await _context.SpareParts
+                .AsNoTracking()
                 .Include(p => p.DeviceModel)
                 .Include(p => p.PartType)
                 .Include(p => p.QualityType)
@@ -38,17 +39,17 @@ namespace EHisse.Persistence.Repositories
 
         public async Task<List<Category>> GetCategoriesAsync()
         {
-            return await _context.Categories.ToListAsync();
+            return await _context.Categories.AsNoTracking().ToListAsync();
         }
 
         public async Task<List<QualityType>> GetQualityTypesAsync()
         {
-            return await _context.QualityTypes.ToListAsync();
+            return await _context.QualityTypes.AsNoTracking().ToListAsync();
         }
 
         public async Task<bool> SkuExistsAsync(string sku, int sellerId)
         {
-            return await _context.SpareParts.AnyAsync(p => p.SKU == sku && p.SellerId == sellerId && !p.IsDeleted);
+            return await _context.SpareParts.AsNoTracking().AnyAsync(p => p.SKU == sku && p.SellerId == sellerId && !p.IsDeleted);
         }
 
         public async Task<SparePart> AddPartAsync(SparePart part, int userId, int sellerId)
@@ -88,7 +89,7 @@ namespace EHisse.Persistence.Repositories
 
         public async Task<DeviceModel?> GetDeviceModelAsync(int deviceModelId)
         {
-            return await _context.DeviceModels.FirstOrDefaultAsync(m => m.Id == deviceModelId);
+            return await _context.DeviceModels.AsNoTracking().FirstOrDefaultAsync(m => m.Id == deviceModelId);
         }
 
         public async Task<(bool Success, string ErrorMessage, bool ConcurrencyError)> EditPartAsync(int id, SparePart updatedPart, int userId, int sellerId)
@@ -262,6 +263,7 @@ namespace EHisse.Persistence.Repositories
         public async Task<User?> GetUserWithSellerProfileAsync(int userId)
         {
             return await _context.Users
+                .AsNoTracking()
                 .Include(u => u.SellerProfile)
                 .FirstOrDefaultAsync(u => u.Id == userId);
         }

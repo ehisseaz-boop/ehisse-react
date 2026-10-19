@@ -105,3 +105,14 @@ public interface IAdminService
     Task<List<ActivityLog>> GetActivityLogsAsync(int count);
     Task<List<SparePartSaleAudit>> GetSaleAuditsAsync(int count);
 }
+
+public interface ICacheService
+{
+    Task<T> GetOrCreateAsync<T>(string key, Func<Task<T>> factory, TimeSpan? absoluteExpiration = null, TimeSpan? slidingExpiration = null, string? tag = null);
+    T? Get<T>(string key);
+    void Set<T>(string key, T value, TimeSpan? absoluteExpiration = null, TimeSpan? slidingExpiration = null, string? tag = null);
+    void Remove(string key);
+    void RemoveByTag(string tag);
+    void RemoveByTags(params string[] tags);
+}
+

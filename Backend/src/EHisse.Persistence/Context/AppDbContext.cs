@@ -35,6 +35,49 @@ namespace EHisse.Persistence.Context
             modelBuilder.Entity<CategoryPartType>()
                 .HasKey(cp => new { cp.CategoryId, cp.PartTypeId });
 
+            // Database Indexes for Performance Optimization
+            modelBuilder.Entity<SparePart>(entity =>
+            {
+                // Active approved ads lookup
+                entity.HasIndex(p => new { p.ModerationStatus, p.IsActive, p.IsDeleted, p.StockQuantity })
+                    .HasDatabaseName("IX_SpareParts_ModerationStatus_IsActive_IsDeleted_StockQuantity");
+
+                // Model & PartType filtering with price
+                entity.HasIndex(p => new { p.DeviceModelId, p.PartTypeId, p.Price })
+                    .HasDatabaseName("IX_SpareParts_DeviceModelId_PartTypeId_Price");
+
+                // Seller ads lookup
+                entity.HasIndex(p => new { p.SellerId, p.IsDeleted })
+                    .HasDatabaseName("IX_SpareParts_SellerId_IsDeleted");
+
+                // Sorting by created date and view count
+                entity.HasIndex(p => new { p.CreatedDate, p.ViewCount })
+                    .IsDescending(true, true)
+                    .HasDatabaseName("IX_SpareParts_CreatedDate_ViewCount");
+            });
+
+            modelBuilder.Entity<DeviceModel>(entity =>
+            {
+                entity.HasIndex(m => new { m.CategoryId, m.BrandId })
+                    .HasDatabaseName("IX_DeviceModels_CategoryId_BrandId");
+            });
+
+            modelBuilder.Entity<CategoryBrand>(entity =>
+            {
+                entity.HasIndex(cb => new { cb.CategoryId, cb.BrandId })
+                    .HasDatabaseName("IX_CategoryBrands_CategoryId_BrandId");
+                entity.HasIndex(cb => new { cb.BrandId, cb.CategoryId })
+                    .HasDatabaseName("IX_CategoryBrands_BrandId_CategoryId");
+            });
+
+            modelBuilder.Entity<CategoryPartType>(entity =>
+            {
+                entity.HasIndex(cp => new { cp.CategoryId, cp.PartTypeId })
+                    .HasDatabaseName("IX_CategoryPartTypes_CategoryId_PartTypeId");
+                entity.HasIndex(cp => new { cp.PartTypeId, cp.CategoryId })
+                    .HasDatabaseName("IX_CategoryPartTypes_PartTypeId_CategoryId");
+            });
+
             Seed(modelBuilder);
         }
 

@@ -27,10 +27,12 @@ namespace EHisse.WebApi.Controllers
     public class AdminController : ControllerBase
     {
         private readonly IAdminService _adminService;
+        private readonly ICacheService _cacheService;
 
-        public AdminController(IAdminService adminService)
+        public AdminController(IAdminService adminService, ICacheService cacheService)
         {
             _adminService = adminService;
+            _cacheService = cacheService;
         }
 
         private int AdminId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -147,15 +149,21 @@ namespace EHisse.WebApi.Controllers
 
         [HttpPost("{adId:int}")]
         public async Task<IActionResult> ApproveAd(int adId)
-            => await _adminService.ApproveAdAsync(adId, AdminId) 
-                ? Ok(new { success = true, message = "Elan təsdiqləndi." }) 
-                : NotFound(new { message = "Elan tapılmadı." });
+        {
+            var success = await _adminService.ApproveAdAsync(adId, AdminId);
+            if (!success) return NotFound(new { message = "Elan tapılmadı." });
+            _cacheService.RemoveByTags("home_data", "categories");
+            return Ok(new { success = true, message = "Elan təsdiqləndi." });
+        }
 
         [HttpPost("{adId:int}")]
         public async Task<IActionResult> RejectAd(int adId, [FromBody] ReasonInput input)
-            => await _adminService.RejectAdAsync(adId, input.Reason ?? string.Empty, AdminId) 
-                ? Ok(new { success = true, message = "Elan rədd edildi." }) 
-                : NotFound(new { message = "Elan tapılmadı." });
+        {
+            var success = await _adminService.RejectAdAsync(adId, input.Reason ?? string.Empty, AdminId);
+            if (!success) return NotFound(new { message = "Elan tapılmadı." });
+            _cacheService.RemoveByTags("home_data", "categories");
+            return Ok(new { success = true, message = "Elan rədd edildi." });
+        }
 
         [HttpPost("{adId:int}")]
         public async Task<IActionResult> RestoreAd(int adId)
@@ -163,14 +171,18 @@ namespace EHisse.WebApi.Controllers
             var result = await _adminService.RestoreAdAsync(adId, AdminId);
             if (!result.Success && result.ErrorMessage == "Not Found") return NotFound(new { message = "Elan tapılmadı." });
             if (!result.Success) return BadRequest(new { message = result.ErrorMessage });
+            _cacheService.RemoveByTags("home_data", "categories");
             return Ok(new { success = true, message = "Elan bərpa edildi və aktivləşdirildi." });
         }
 
         [HttpPost("{adId:int}")]
         public async Task<IActionResult> DeactivateAd(int adId, [FromBody] ReasonInput input)
-            => await _adminService.DeactivateAdAsync(adId, AdminId, input.Reason ?? "Admin tərəfindən deaktiv edildi")
-                ? Ok(new { success = true, message = "Elan deaktiv edildi." })
-                : NotFound(new { message = "Elan tapılmadı." });
+        {
+            var success = await _adminService.DeactivateAdAsync(adId, AdminId, input.Reason ?? "Admin tərəfindən deaktiv edildi");
+            if (!success) return NotFound(new { message = "Elan tapılmadı." });
+            _cacheService.RemoveByTags("home_data", "categories");
+            return Ok(new { success = true, message = "Elan deaktiv edildi." });
+        }
 
         [HttpGet]
         public async Task<IActionResult> AllUsers()
@@ -207,6 +219,7 @@ namespace EHisse.WebApi.Controllers
         {
             if (string.IsNullOrWhiteSpace(input.Name)) return BadRequest(new { message = "Ad boş ola bilməz." });
             var cat = await _adminService.CreateCategoryAsync(input.Name, input.DisplayOrder);
+            _cacheService.RemoveByTags("categories", "home_data");
             return Ok(new { success = true, id = cat.Id, message = "Kateqoriya yaradıldı." });
         }
 
@@ -215,14 +228,18 @@ namespace EHisse.WebApi.Controllers
         {
             if (string.IsNullOrWhiteSpace(input.Name)) return BadRequest(new { message = "Ad boş ola bilməz." });
             var success = await _adminService.UpdateCategoryAsync(id, input.Name, input.DisplayOrder, input.IsActive);
-            return success ? Ok(new { success = true, message = "Kateqoriya yeniləndi." }) : NotFound(new { message = "Kateqoriya tapılmadı." });
+            if (!success) return NotFound(new { message = "Kateqoriya tapılmadı." });
+            _cacheService.RemoveByTags("categories", "home_data");
+            return Ok(new { success = true, message = "Kateqoriya yeniləndi." });
         }
 
         [HttpPost("{id:int}")]
         public async Task<IActionResult> ToggleCategory(int id)
         {
             var success = await _adminService.ToggleCategoryAsync(id);
-            return success ? Ok(new { success = true }) : NotFound(new { message = "Kateqoriya tapılmadı." });
+            if (!success) return NotFound(new { message = "Kateqoriya tapılmadı." });
+            _cacheService.RemoveByTags("categories", "home_data");
+            return Ok(new { success = true });
         }
 
         // ============================================
@@ -242,6 +259,7 @@ namespace EHisse.WebApi.Controllers
         {
             if (string.IsNullOrWhiteSpace(input.Name)) return BadRequest(new { message = "Brend adı boş ola bilməz." });
             var brand = await _adminService.CreateBrandAsync(input.Name);
+            _cacheService.RemoveByTags("brands", "models", "home_data");
             return Ok(new { success = true, id = brand.Id, message = "Brend əlavə edildi." });
         }
 
@@ -250,14 +268,18 @@ namespace EHisse.WebApi.Controllers
         {
             if (string.IsNullOrWhiteSpace(input.Name)) return BadRequest(new { message = "Brend adı boş ola bilməz." });
             var success = await _adminService.UpdateBrandAsync(id, input.Name, input.IsActive);
-            return success ? Ok(new { success = true, message = "Brend yeniləndi." }) : NotFound(new { message = "Brend tapılmadı." });
+            if (!success) return NotFound(new { message = "Brend tapılmadı." });
+            _cacheService.RemoveByTags("brands", "models", "home_data");
+            return Ok(new { success = true, message = "Brend yeniləndi." });
         }
 
         [HttpPost("{id:int}")]
         public async Task<IActionResult> ToggleBrand(int id)
         {
             var success = await _adminService.ToggleBrandAsync(id);
-            return success ? Ok(new { success = true }) : NotFound(new { message = "Brend tapılmadı." });
+            if (!success) return NotFound(new { message = "Brend tapılmadı." });
+            _cacheService.RemoveByTags("brands", "models", "home_data");
+            return Ok(new { success = true });
         }
 
         [HttpGet]
@@ -268,6 +290,7 @@ namespace EHisse.WebApi.Controllers
         public async Task<IActionResult> AssignBrand([FromBody] AssignBrandInput input)
         {
             var success = await _adminService.AssignBrandToCategoryAsync(input.CategoryId, input.BrandId);
+            if (success) _cacheService.RemoveByTags("brands", "models", "home_data");
             return success ? Ok(new { success = true }) : BadRequest(new { message = "Əlaqələndirmə baş tutmadı." });
         }
 
@@ -275,6 +298,7 @@ namespace EHisse.WebApi.Controllers
         public async Task<IActionResult> RemoveBrand([FromBody] AssignBrandInput input)
         {
             var success = await _adminService.RemoveBrandFromCategoryAsync(input.CategoryId, input.BrandId);
+            if (success) _cacheService.RemoveByTags("brands", "models", "home_data");
             return success ? Ok(new { success = true }) : NotFound(new { message = "Əlaqə tapılmadı." });
         }
 
@@ -301,6 +325,7 @@ namespace EHisse.WebApi.Controllers
         {
             if (string.IsNullOrWhiteSpace(input.Name)) return BadRequest(new { message = "Model adı boş ola bilməz." });
             var model = await _adminService.CreateModelAsync(input.Name, input.ModelCode, input.ReleaseYear, input.CategoryId, input.BrandId);
+            _cacheService.RemoveByTags("models", "home_data");
             return Ok(new { success = true, id = model.Id, message = "Model əlavə edildi." });
         }
 
@@ -309,14 +334,18 @@ namespace EHisse.WebApi.Controllers
         {
             if (string.IsNullOrWhiteSpace(input.Name)) return BadRequest(new { message = "Model adı boş ola bilməz." });
             var success = await _adminService.UpdateModelAsync(id, input.Name, input.ModelCode, input.ReleaseYear, input.CategoryId, input.BrandId, input.IsActive);
-            return success ? Ok(new { success = true, message = "Model yeniləndi." }) : NotFound(new { message = "Model tapılmadı." });
+            if (!success) return NotFound(new { message = "Model tapılmadı." });
+            _cacheService.RemoveByTags("models", "home_data");
+            return Ok(new { success = true, message = "Model yeniləndi." });
         }
 
         [HttpPost("{id:int}")]
         public async Task<IActionResult> ToggleModel(int id)
         {
             var success = await _adminService.ToggleModelAsync(id);
-            return success ? Ok(new { success = true }) : NotFound(new { message = "Model tapılmadı." });
+            if (!success) return NotFound(new { message = "Model tapılmadı." });
+            _cacheService.RemoveByTags("models", "home_data");
+            return Ok(new { success = true });
         }
 
         // ============================================
@@ -338,6 +367,7 @@ namespace EHisse.WebApi.Controllers
         {
             if (string.IsNullOrWhiteSpace(input.Name)) return BadRequest(new { message = "Hissə növü adı boş ola bilməz." });
             var pt = await _adminService.CreatePartTypeAsync(input.Name, input.Key ?? string.Empty);
+            _cacheService.RemoveByTags("parttypes", "home_data");
             return Ok(new { success = true, id = pt.Id, message = "Hissə növü əlavə edildi." });
         }
 
@@ -346,7 +376,9 @@ namespace EHisse.WebApi.Controllers
         {
             if (string.IsNullOrWhiteSpace(input.Name)) return BadRequest(new { message = "Hissə növü adı boş ola bilməz." });
             var success = await _adminService.UpdatePartTypeAsync(id, input.Name, input.Key ?? string.Empty, input.IsAccessory, input.IsPortable);
-            return success ? Ok(new { success = true, message = "Hissə növü yeniləndi." }) : NotFound(new { message = "Hissə növü tapılmadı." });
+            if (!success) return NotFound(new { message = "Hissə növü tapılmadı." });
+            _cacheService.RemoveByTags("parttypes", "home_data");
+            return Ok(new { success = true, message = "Hissə növü yeniləndi." });
         }
 
         [HttpGet]
@@ -357,6 +389,7 @@ namespace EHisse.WebApi.Controllers
         public async Task<IActionResult> AssignPartType([FromBody] AssignPartTypeInput input)
         {
             var success = await _adminService.AssignPartTypeToCategoryAsync(input.CategoryId, input.PartTypeId);
+            if (success) _cacheService.RemoveByTags("parttypes", "home_data");
             return success ? Ok(new { success = true }) : BadRequest(new { message = "Əlaqələndirmə baş tutmadı." });
         }
 
@@ -364,6 +397,7 @@ namespace EHisse.WebApi.Controllers
         public async Task<IActionResult> RemovePartType([FromBody] AssignPartTypeInput input)
         {
             var success = await _adminService.RemovePartTypeFromCategoryAsync(input.CategoryId, input.PartTypeId);
+            if (success) _cacheService.RemoveByTags("parttypes", "home_data");
             return success ? Ok(new { success = true }) : NotFound(new { message = "Əlaqə tapılmadı." });
         }
 

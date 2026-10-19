@@ -19,20 +19,26 @@ namespace EHisse.WebApi.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IBlobStorageService _blobService;
+        private readonly ICacheService _cacheService;
 
-        public AjaxController(AppDbContext context, IBlobStorageService blobService)
+        public AjaxController(AppDbContext context, IBlobStorageService blobService, ICacheService cacheService)
         {
             _context = context;
             _blobService = blobService;
+            _cacheService = cacheService;
         }
 
         [HttpGet("[action]")]
         public async Task<IActionResult> GetBrandsByCategory(int categoryId)
         {
-            var realBrands = await _context.DeviceBrands
-                .Where(b => _context.CategoryBrands.Any(cb => cb.BrandId == b.Id && cb.CategoryId == categoryId))
-                .Select(b => new { id = b.Id, name = b.Name })
-                .ToListAsync();
+            var realBrands = await _cacheService.GetOrCreateAsync($"ajax_brands_{categoryId}", async () =>
+            {
+                return await _context.DeviceBrands
+                    .AsNoTracking()
+                    .Where(b => _context.CategoryBrands.Any(cb => cb.BrandId == b.Id && cb.CategoryId == categoryId))
+                    .Select(b => new LookupItemDto(b.Id, b.Name))
+                    .ToListAsync();
+            }, slidingExpiration: TimeSpan.FromMinutes(60), tag: "brands");
 
             return Ok(realBrands);
         }
@@ -40,10 +46,14 @@ namespace EHisse.WebApi.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> GetModelsByBrand(int categoryId, int brandId)
         {
-            var models = await _context.DeviceModels
-                .Where(m => m.CategoryId == categoryId && m.BrandId == brandId)
-                .Select(m => new { id = m.Id, name = m.Name })
-                .ToListAsync();
+            var models = await _cacheService.GetOrCreateAsync($"ajax_models_{categoryId}_{brandId}", async () =>
+            {
+                return await _context.DeviceModels
+                    .AsNoTracking()
+                    .Where(m => m.CategoryId == categoryId && m.BrandId == brandId)
+                    .Select(m => new LookupItemDto(m.Id, m.Name))
+                    .ToListAsync();
+            }, slidingExpiration: TimeSpan.FromMinutes(60), tag: "models");
 
             return Ok(models);
         }
@@ -51,10 +61,14 @@ namespace EHisse.WebApi.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> GetPartTypesByCategory(int categoryId)
         {
-            var partTypes = await _context.SparePartTypes
-                .Where(pt => _context.CategoryPartTypes.Any(cpt => cpt.PartTypeId == pt.Id && cpt.CategoryId == categoryId))
-                .Select(pt => new { id = pt.Id, name = pt.Name })
-                .ToListAsync();
+            var partTypes = await _cacheService.GetOrCreateAsync($"ajax_parttypes_{categoryId}", async () =>
+            {
+                return await _context.SparePartTypes
+                    .AsNoTracking()
+                    .Where(pt => _context.CategoryPartTypes.Any(cpt => cpt.PartTypeId == pt.Id && cpt.CategoryId == categoryId))
+                    .Select(pt => new LookupItemDto(pt.Id, pt.Name))
+                    .ToListAsync();
+            }, slidingExpiration: TimeSpan.FromMinutes(60), tag: "parttypes");
 
             return Ok(partTypes);
         }
@@ -62,10 +76,14 @@ namespace EHisse.WebApi.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> GetQualityTypes()
         {
-            var qualities = await _context.QualityTypes
-                .OrderBy(q => q.Name)
-                .Select(q => new { id = q.Id, name = q.Name })
-                .ToListAsync();
+            var qualities = await _cacheService.GetOrCreateAsync("ajax_qualitytypes", async () =>
+            {
+                return await _context.QualityTypes
+                    .AsNoTracking()
+                    .OrderBy(q => q.Name)
+                    .Select(q => new LookupItemDto(q.Id, q.Name))
+                    .ToListAsync();
+            }, slidingExpiration: TimeSpan.FromMinutes(60), tag: "qualities");
 
             return Ok(qualities);
         }
@@ -73,10 +91,14 @@ namespace EHisse.WebApi.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> GetCategories()
         {
-            var categories = await _context.Categories
-                .OrderBy(c => c.Name)
-                .Select(c => new { id = c.Id, name = c.Name })
-                .ToListAsync();
+            var categories = await _cacheService.GetOrCreateAsync("ajax_categories", async () =>
+            {
+                return await _context.Categories
+                    .AsNoTracking()
+                    .OrderBy(c => c.Name)
+                    .Select(c => new LookupItemDto(c.Id, c.Name))
+                    .ToListAsync();
+            }, slidingExpiration: TimeSpan.FromMinutes(60), tag: "categories");
 
             return Ok(categories);
         }
@@ -94,6 +116,7 @@ namespace EHisse.WebApi.Controllers
 
             // ── QueryBuilder ilə dynamic text search ───────────────────────────
             var rawResults = await _context.SpareParts
+                .AsNoTracking()
                 .Include(p => p.DeviceModel).ThenInclude(m => m.Brand)
                 .Include(p => p.PartType)
                 .Include(p => p.Images)

@@ -54,3 +54,8 @@ public record AdminDashboardStats(
     int PendingUpdateAds,
     int PendingRestockAds
 );
+
+public record LookupItemDto(int Id, string Name);
+public record CategoryWithCountDto(int Id, string Name, int DisplayOrder, bool IsActive, int Count);
+public record HomeStatsDto(Dictionary<int, int> CategoryCounts, int TotalParts, int TotalSellers);
+

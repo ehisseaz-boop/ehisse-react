@@ -38,6 +38,40 @@ public static class DatabaseSeeder
         }
         catch { }
 
+        // Performance Optimization: Create Composite Indexes if not already existing
+        try
+        {
+            context.Database.ExecuteSqlRaw(@"
+                CREATE INDEX IF NOT EXISTS ""IX_SpareParts_ModerationStatus_IsActive_IsDeleted_StockQuantity""
+                ON ""SpareParts"" (""ModerationStatus"", ""IsActive"", ""IsDeleted"", ""StockQuantity"");
+
+                CREATE INDEX IF NOT EXISTS ""IX_SpareParts_DeviceModelId_PartTypeId_Price""
+                ON ""SpareParts"" (""DeviceModelId"", ""PartTypeId"", ""Price"");
+
+                CREATE INDEX IF NOT EXISTS ""IX_SpareParts_SellerId_IsDeleted""
+                ON ""SpareParts"" (""SellerId"", ""IsDeleted"");
+
+                CREATE INDEX IF NOT EXISTS ""IX_SpareParts_CreatedDate_ViewCount""
+                ON ""SpareParts"" (""CreatedDate"" DESC, ""ViewCount"" DESC);
+
+                CREATE INDEX IF NOT EXISTS ""IX_DeviceModels_CategoryId_BrandId""
+                ON ""DeviceModels"" (""CategoryId"", ""BrandId"");
+
+                CREATE INDEX IF NOT EXISTS ""IX_CategoryBrands_CategoryId_BrandId""
+                ON ""CategoryBrands"" (""CategoryId"", ""BrandId"");
+
+                CREATE INDEX IF NOT EXISTS ""IX_CategoryBrands_BrandId_CategoryId""
+                ON ""CategoryBrands"" (""BrandId"", ""CategoryId"");
+
+                CREATE INDEX IF NOT EXISTS ""IX_CategoryPartTypes_CategoryId_PartTypeId""
+                ON ""CategoryPartTypes"" (""CategoryId"", ""PartTypeId"");
+
+                CREATE INDEX IF NOT EXISTS ""IX_CategoryPartTypes_PartTypeId_CategoryId""
+                ON ""CategoryPartTypes"" (""PartTypeId"", ""CategoryId"");
+            ");
+        }
+        catch { }
+
         // Fix any null SKUs in legacy data
         var nullSkus = context.SpareParts.Where(s => s.SKU == null || s.SKU == "").ToList();
         if (nullSkus.Any())
