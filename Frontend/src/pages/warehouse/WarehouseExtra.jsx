@@ -57,10 +57,23 @@ export function Settings() {
   const [emailBusy, setEmailBusy] = useState(false);
 
   useEffect(() => {
+    let cachedEmail = '';
+    let cachedName = '';
+    try {
+      const saved = localStorage.getItem('ehisse_user');
+      if (saved) {
+        const u = JSON.parse(saved);
+        cachedEmail = u?.email || '';
+        cachedName = u?.fullName || u?.username || '';
+      }
+    } catch { }
+
     Api.warehouse.settings()
       .then(data => {
-        setForm(data);
-        if (data.email) setNewEmail(data.email);
+        const email = data.email || cachedEmail;
+        const fullName = data.fullName || cachedName;
+        setForm({ ...data, email, fullName });
+        if (email) setNewEmail(email);
       })
       .catch(e => setError(e.message));
   }, []);

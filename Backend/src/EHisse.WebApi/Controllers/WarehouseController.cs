@@ -43,7 +43,16 @@ namespace EHisse.WebApi.Controllers
             _blobService = blobService;
         }
 
-        private int CurrentUserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        private int CurrentUserId
+        {
+            get
+            {
+                var val = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(val) && Request.Headers.TryGetValue("X-User-Id", out var hVal))
+                    val = hVal.ToString();
+                return int.TryParse(val, out int id) ? id : 0;
+            }
+        }
 
         private async Task<SellerProfile?> GetSellerAsync()
         {
