@@ -54,7 +54,44 @@ function Register({ onRegister }) {
     }
 
     setIdCardFile(file);
-    setIdCardPreview(URL.createObjectURL(file));
+    const localPreview = URL.createObjectURL(file);
+    setIdCardPreview(localPreview);
+
+    // Köməkçi: Şəkili client tərəfdə sıxıb DataURL əldə edirik (server problemi olarsa etibarlı fallback üçün)
+    const compressToBase64 = (imgFile) => {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 1200;
+            const MAX_HEIGHT = 1200;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+              if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width;
+                width = MAX_WIDTH;
+              }
+            } else {
+              if (height > MAX_HEIGHT) {
+                width *= MAX_HEIGHT / height;
+                height = MAX_HEIGHT;
+              }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', 0.82));
+          };
+          img.src = event.target.result;
+        };
+        reader.readAsDataURL(imgFile);
+      });
+    };
 
     // Dərhal serverə yükləyirik və URL əldə edirik
     setUploadingImage(true);
@@ -66,13 +103,22 @@ function Register({ onRegister }) {
         method: 'POST',
         body: fd
       });
-      const data = await res.json();
-      if (!res.ok || !data.url) {
-        throw new Error(data.message || 'Şəkil yüklənərkən xəta baş verdi.');
+      const data = await res.json().catch(() => null);
+      if (res.ok && data?.url) {
+        setForm(prev => ({ ...prev, idCardImageUrl: data.url }));
+      } else {
+        // Əgər server yükləməsi müvəqqəti xəta verərsə, şəkil Base64 dataURL formatında saxlanılır ki istifadəçi bloklanmasın
+        const base64Url = await compressToBase64(file);
+        setForm(prev => ({ ...prev, idCardImageUrl: base64Url }));
       }
-      setForm(prev => ({ ...prev, idCardImageUrl: data.url }));
-    } catch (err) {
-      setError('Vəsiqə şəkli yüklənərkən xəta: ' + err.message);
+    } catch {
+      // Şəbəkə və ya server xətası halında fallback base64
+      try {
+        const base64Url = await compressToBase64(file);
+        setForm(prev => ({ ...prev, idCardImageUrl: base64Url }));
+      } catch {
+        setError('Şəkil formatı oxuna bilmədi. Zəhmət olmasa başqa şəkil seçin.');
+      }
     } finally {
       setUploadingImage(false);
     }
