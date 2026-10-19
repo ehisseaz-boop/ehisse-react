@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Routes, Route, Link, NavLink, useNavigate, Navigate } from 'react-router-dom';
+import { Routes, Route, Link, NavLink, useNavigate, Navigate, useLocation, useNavigationType } from 'react-router-dom';
 import './index.css';
 import { Api } from './api';
 import Home from './pages/Home';
@@ -67,6 +67,15 @@ function App() {
     }
   });
   const navigate = useNavigate();
+  const location = useLocation();
+  const navType = useNavigationType();
+
+  // Bütün səhifələrə keçid zamanı (PUSH və ya REPLACE) ən yuxarı scroll etsin, yalnız "geri" (POP) düyməsi basıldıqda mövqeyi saxlasın
+  useEffect(() => {
+    if (navType !== 'POP') {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+  }, [location.pathname, navType]);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
