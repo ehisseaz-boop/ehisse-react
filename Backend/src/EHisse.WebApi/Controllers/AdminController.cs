@@ -141,6 +141,13 @@ namespace EHisse.WebApi.Controllers
                 ? Ok(new { success = true, message = "İstifadəçi blokdan çıxarıldı." }) 
                 : NotFound(new { message = "İstifadəçi tapılmadı." });
 
+        [HttpPost("{userId:int}")]
+        [HttpDelete("{userId:int}")]
+        public async Task<IActionResult> DeleteUser(int userId)
+            => await _adminService.DeleteUserAsync(userId, AdminId) 
+                ? Ok(new { success = true, message = "İstifadəçi sistemdən tamamilə silindi." }) 
+                : BadRequest(new { message = "İstifadəçi silinə bilmədi və ya admin hesabıdır." });
+
         // GET api/Admin/PendingAds
         [HttpGet]
         public async Task<IActionResult> PendingAds()

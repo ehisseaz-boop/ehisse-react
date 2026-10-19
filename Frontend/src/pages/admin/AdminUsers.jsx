@@ -89,6 +89,18 @@ export default function AdminUsers() {
     }
   }
 
+  async function handleDeleteUser(user) {
+    const confirmText = `${user.fullName || user.username} adlı istifadəçini sistemdən tamamilə silmək istədiyinizə əminsiniz?\n\nQEYD: İstifadəçi silindikdən sonra onun məlumatları və elanları təmizlənəcək və o yenidən sıfırdan qeydiyyatdan keçə biləcək.`;
+    if (!window.confirm(confirmText)) return;
+    try {
+      const res = await apiFetch(`/api/Admin/DeleteUser/${user.id}`, { method: 'POST' });
+      notify(res.message || 'İstifadəçi sistemdən silindi.');
+      loadUsers();
+    } catch (err) {
+      notify('Xəta: ' + err.message, 'danger');
+    }
+  }
+
   const filteredUsers = users.filter(u => {
     if (roleFilter && u.role !== roleFilter) return false;
     if (statusFilter && u.approvalStatus !== statusFilter) return false;
@@ -192,6 +204,16 @@ export default function AdminUsers() {
                 <i className="bi bi-slash-circle"></i>
               </button>
             )
+          )}
+
+          {u.role !== 'Admin' && (
+            <button 
+              onClick={() => handleDeleteUser(u)} 
+              className="btn btn-sm btn-outline-danger py-0 px-2" 
+              title="İstifadəçini tam sil (Yenidən qeydiyyat üçün)"
+            >
+              <i className="bi bi-trash"></i>
+            </button>
           )}
         </div>
       )

@@ -188,6 +188,59 @@ namespace EHisse.Persistence.Repositories
             return true;
         }
 
+        public async Task<bool> DeleteUserAsync(int userId, int adminId)
+        {
+            var user = await _context.Users
+                .Include(u => u.SellerProfile)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null || user.Role == UserRole.Admin) return false;
+
+            var username = user.Username;
+
+            // Əlaqəli elanları və şəkilləri təmizləyirik
+            if (user.SellerProfile != null)
+            {
+                var parts = await _context.SpareParts
+                    .Include(p => p.Images)
+                    .Include(p => p.Reviews)
+                    .Where(p => p.SellerId == user.SellerProfile.Id)
+                    .ToListAsync();
+
+                foreach (var part in parts)
+                {
+                    if (part.Images.Any()) _context.SparePartImages.RemoveRange(part.Images);
+                    if (part.Reviews.Any()) _context.SparePartReviews.RemoveRange(part.Reviews);
+                }
+                if (parts.Any()) _context.SpareParts.RemoveRange(parts);
+
+                var sales = await _context.SparePartSaleAudits
+                    .Where(s => s.SellerId == user.SellerProfile.Id)
+                    .ToListAsync();
+                if (sales.Any()) _context.SparePartSaleAudits.RemoveRange(sales);
+
+                _context.SellerProfiles.Remove(user.SellerProfile);
+            }
+
+            // Təsdiq tarixçəsini təmizləyirik
+            var histories = await _context.ApprovalHistories.Where(h => h.TargetUserId == user.Id).ToListAsync();
+            if (histories.Any()) _context.ApprovalHistories.RemoveRange(histories);
+
+            _context.Users.Remove(user);
+
+            var log = new ActivityLog
+            {
+                UserId = adminId,
+                Action = "DeleteUser",
+                EntityName = "User",
+                EntityId = userId,
+                Details = $"{username} adlı istifadəçi admin tərəfindən sistemdən tam silindi."
+            };
+            _context.ActivityLogs.Add(log);
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<bool> ApproveAdAsync(int adId, int adminId)
         {
             var ad = await _context.SpareParts
