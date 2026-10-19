@@ -37,15 +37,35 @@ function WarehouseIndex() {
   const columns = [
     { key: 'image', label: '', render: p => p.image ? <img src={imageSrc(p.image)} alt="" style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 6 }} /> : null },
     { key: 'title', label: 'Elan', render: p => {
-      const cleanTitle = (p.title || '')
+      let rawTitle = (p.title || '')
         .replace(/telefon\s+üçün\s+ekranlar/gi, 'Ekranlar')
         .replace(/telefon\s+üçün\s+batareyalar/gi, 'Batareyalar')
-        .replace(/telefon\s+üçün\s+/gi, '');
+        .replace(/telefon\s+üçün\s+/gi, '')
+        .trim();
+
+      const brand = (p.brandName || '').trim();
+      const model = (p.modelName || '').trim();
       const cleanType = cleanPartTypeName(p.partTypeName);
+
+      // Əgər rawTitle artıq brand və ya model ilə başlayırsa, təkrar əlavə etmirik
+      let displayTitle = rawTitle;
+      if (brand && model) {
+        const fullPrefix = `${brand} ${model}`.toLowerCase();
+        if (displayTitle.toLowerCase().startsWith(fullPrefix)) {
+          // artıq içində var
+        } else if (displayTitle.toLowerCase().startsWith(model.toLowerCase())) {
+          displayTitle = `${brand} ${displayTitle}`;
+        } else {
+          displayTitle = `${brand} ${model} ${displayTitle}`;
+        }
+      } else if (model && !displayTitle.toLowerCase().startsWith(model.toLowerCase())) {
+        displayTitle = `${model} ${displayTitle}`;
+      }
+
       return (
         <>
           <Link to={`/warehouse/part/${p.id}`} className="text-decoration-none fw-semibold">
-            {p.brandName} {p.modelName} {cleanTitle}
+            {displayTitle.trim()}
           </Link>
           <div className="text-muted" style={{ fontSize: '0.8rem' }}>
             {p.sku ? `${p.sku} · ` : ''}{cleanType} · {p.qualityTypeName}
@@ -206,7 +226,201 @@ function WarehouseIndex() {
         </div>
       </div>
       {msg && <div className="alert alert-info">{msg}</div>}
-      <Table columns={columns} rows={parts} empty="Hələ elanınız yoxdur." />
+      {/* Desktop üçün Cədvəl Görünüşü (Geniş ekranlar) */}
+      <div className="d-none d-md-block">
+        <Table columns={columns} rows={parts} empty="Hələ elanınız yoxdur." />
+      </div>
+
+      {/* Mobil üçün Səliqəli Kart Görünüşü (Heç bir horizontal scroll olmadan) */}
+      <div className="d-block d-md-none">
+        {(!parts || parts.length === 0) ? (
+          <div className="empty-state text-center p-4 rounded" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}>
+            <i className="bi bi-inbox fs-2 text-muted"></i>
+            <p className="mt-2 text-muted">Hələ elanınız yoxdur.</p>
+          </div>
+        ) : (
+          <div className="d-flex flex-column gap-3 mb-4">
+            {parts.map(p => {
+              let rawTitle = (p.title || '')
+                .replace(/telefon\s+üçün\s+ekranlar/gi, 'Ekranlar')
+                .replace(/telefon\s+üçün\s+batareyalar/gi, 'Batareyalar')
+                .replace(/telefon\s+üçün\s+/gi, '')
+                .trim();
+              const brand = (p.brandName || '').trim();
+              const model = (p.modelName || '').trim();
+              const cleanType = cleanPartTypeName(p.partTypeName);
+
+              let displayTitle = rawTitle;
+              if (brand && model) {
+                const fullPrefix = `${brand} ${model}`.toLowerCase();
+                if (displayTitle.toLowerCase().startsWith(fullPrefix)) {
+                  // ok
+                } else if (displayTitle.toLowerCase().startsWith(model.toLowerCase())) {
+                  displayTitle = `${brand} ${displayTitle}`;
+                } else {
+                  displayTitle = `${brand} ${model} ${displayTitle}`;
+                }
+              } else if (model && !displayTitle.toLowerCase().startsWith(model.toLowerCase())) {
+                displayTitle = `${model} ${displayTitle}`;
+              }
+
+              return (
+                <div
+                  key={p.id}
+                  className="product-card p-3 shadow-sm"
+                  style={{
+                    borderRadius: '12px',
+                    border: '1px solid var(--border-color)',
+                    background: 'var(--bg-surface)'
+                  }}
+                >
+                  <div className="d-flex gap-3 align-items-start mb-2">
+                    {p.image ? (
+                      <img
+                        src={imageSrc(p.image)}
+                        alt=""
+                        style={{
+                          width: '64px',
+                          height: '64px',
+                          objectFit: 'cover',
+                          borderRadius: '8px',
+                          border: '1px solid var(--border-color)',
+                          flexShrink: 0
+                        }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          width: '64px',
+                          height: '64px',
+                          borderRadius: '8px',
+                          background: 'var(--bg-surface-hover)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                          color: 'var(--text-muted)'
+                        }}
+                      >
+                        <i className="bi bi-image fs-4"></i>
+                      </div>
+                    )}
+
+                    <div className="flex-grow-1 min-w-0">
+                      <Link
+                        to={`/warehouse/part/${p.id}`}
+                        className="text-decoration-none fw-bold text-main d-block mb-1 text-truncate"
+                        style={{ fontSize: '0.98rem' }}
+                      >
+                        {displayTitle.trim()}
+                      </Link>
+                      <div className="text-muted small mb-1" style={{ fontSize: '0.78rem' }}>
+                        {p.sku ? <span>{p.sku} · </span> : null}
+                        <span>{cleanType}</span>
+                        {p.qualityTypeName && <span> · {p.qualityTypeName}</span>}
+                      </div>
+                      <div className="d-flex align-items-center gap-2 flex-wrap">
+                        {statusBadge(p.moderationStatus)}
+                        <span className={`badge ${p.isActive ? 'bg-success-subtle text-success border border-success' : 'bg-secondary-subtle text-muted'}`} style={{ fontSize: '0.7rem' }}>
+                          {p.isActive ? 'Aktiv' : 'Deaktiv'}
+                        </span>
+                        <span className="text-muted small" style={{ fontSize: '0.75rem' }}>
+                          <i className="bi bi-eye me-1"></i>{p.viewCount} baxış
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Qiymət və Stok xülasəsi */}
+                  <div
+                    className="d-flex justify-content-between align-items-center p-2 rounded mb-3"
+                    style={{ background: 'var(--input-bg)', border: '1px solid var(--border-color)' }}
+                  >
+                    <div>
+                      <span className="text-muted small d-block" style={{ fontSize: '0.75rem' }}>Qiymət:</span>
+                      <a
+                        href="#"
+                        onClick={e => { e.preventDefault(); changePrice(p); }}
+                        className="fw-bold text-accent text-decoration-none"
+                        style={{ fontSize: '1.1rem' }}
+                        title="Qiyməti dəyiş"
+                      >
+                        {p.price} AZN <i className="bi bi-pencil-fill ms-1" style={{ fontSize: '0.75rem' }}></i>
+                      </a>
+                    </div>
+                    <div className="text-end">
+                      <span className="text-muted small d-block" style={{ fontSize: '0.75rem' }}>Stok sayı:</span>
+                      <strong className={p.stockQuantity <= 0 ? 'text-danger' : 'text-main'} style={{ fontSize: '1rem' }}>
+                        {p.stockQuantity} ədəd
+                      </strong>
+                    </div>
+                  </div>
+
+                  {/* Əməliyyat Düymələri (Səliqəli tam enli düymələr sırası) */}
+                  <div className="d-flex gap-2">
+                    <Link
+                      to={`/warehouse/part/${p.id}`}
+                      className="btn btn-sm btn-outline flex-fill text-center d-flex align-items-center justify-content-center gap-1"
+                      title="Bax"
+                    >
+                      <i className="bi bi-eye"></i> Bax
+                    </Link>
+                    <button
+                      className="btn btn-sm btn-outline-success flex-fill d-flex align-items-center justify-content-center gap-1 fw-semibold"
+                      title="Satış qeyd et"
+                      disabled={p.stockQuantity <= 0}
+                      onClick={async () => {
+                        if (p.stockQuantity <= 0) return;
+                        const msg = p.stockQuantity === 1 
+                          ? 'Bu elan üzrə son məhsul satıldı. Satışı təsdiqləyirsinizmi?' 
+                          : 'Bir ədəd satıldığı kimi qeydə alınacaq və elanın stok sayı bir vahid azalacaq. Təsdiq edirsinizmi?';
+                        if (window.Swal) {
+                          const res = await window.Swal.fire({
+                            title: p.stockQuantity === 1 ? 'Son məhsul satışı' : 'Satış qeydi',
+                            text: msg,
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonText: 'Təsdiq edirəm',
+                            cancelButtonText: 'Ləğv et',
+                            confirmButtonColor: '#00d26a'
+                          });
+                          if (!res.isConfirmed) return;
+                        } else {
+                          if (!window.confirm(msg)) return;
+                        }
+                        run(() => Api.warehouse.recordSale(p.id), p.stockQuantity === 1 ? 'Son məhsul satıldı və elan deaktiv edildi.' : 'Satış qeydə alındı.');
+                      }}
+                    >
+                      <i className="bi bi-cart-check"></i> Satıldı
+                    </button>
+                    <Link
+                      to={`/warehouse/edit-part/${p.id}`}
+                      className="btn btn-sm btn-outline flex-fill text-center d-flex align-items-center justify-content-center gap-1"
+                      title="Redaktə et"
+                    >
+                      <i className="bi bi-pencil"></i>
+                    </Link>
+                    <button
+                      className="btn btn-sm btn-outline"
+                      title={p.isActive ? 'Deaktiv et' : 'Aktiv et'}
+                      onClick={() => run(() => Api.warehouse.toggleActive(p.id))}
+                    >
+                      <i className={`bi bi-${p.isActive ? 'eye-slash' : 'eye'}`}></i>
+                    </button>
+                    <button
+                      className="btn btn-sm btn-outline-danger"
+                      title="Sil"
+                      onClick={() => window.confirm('Elanı silmək istədiyinizə əminsiniz?') && run(() => Api.warehouse.remove(p.id), 'Elan silindi.')}
+                    >
+                      <i className="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </>
   );
 }
