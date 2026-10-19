@@ -153,6 +153,10 @@ function Register({ onRegister }) {
       setError(valError);
       return;
     }
+    if (uploadingImage) {
+      setError('Vəsiqə şəklinin yüklənməsi tamamlanmayıb, zəhmət olmasa bir neçə saniyə gözləyin.');
+      return;
+    }
     setError('');
     setBusy(true);
     try {
