@@ -38,6 +38,37 @@ public static class DatabaseSeeder
         }
         catch { }
 
+        // Ensure Admin user credentials match updated configuration
+        try
+        {
+            var adminUser = context.Users.FirstOrDefault(u => u.Role == UserRole.Admin || u.Username == "admin" || u.Username == "admin_user");
+            if (adminUser != null)
+            {
+                adminUser.Username = "admin_user";
+                adminUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin_panel2026#");
+                adminUser.ApprovalStatus = ApprovalStatus.Approved;
+                adminUser.IsBlocked = false;
+                context.SaveChanges();
+            }
+            else
+            {
+                context.Users.Add(new User
+                {
+                    Username = "admin_user",
+                    Email = "admin@example.com",
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin_panel2026#"),
+                    Role = UserRole.Admin,
+                    FirstName = "Baş",
+                    LastName = "Administrator",
+                    Phone = "+994000000000",
+                    ApprovalStatus = ApprovalStatus.Approved,
+                    IsBlocked = false
+                });
+                context.SaveChanges();
+            }
+        }
+        catch { }
+
         // Fix any null SKUs in legacy data
         var nullSkus = context.SpareParts.Where(s => s.SKU == null || s.SKU == "").ToList();
         if (nullSkus.Any())
