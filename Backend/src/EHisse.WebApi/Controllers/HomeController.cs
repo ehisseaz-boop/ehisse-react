@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 
 namespace EHisse.WebApi.Controllers
 {
+    public record AddSellerReviewInput(int SellerId, int? SparePartId, int Rating, string Comment);
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class HomeController : ControllerBase
@@ -412,5 +413,98 @@ namespace EHisse.WebApi.Controllers
                 url = urlMap.TryGetValue(i.ImageUrl, out var url) ? url : i.ImageUrl
             }).ToList()
         };
-    }
+
+        // GET api/Home/GetSellerReviews?sellerId=1
+        [HttpGet]
+        public async Task<IActionResult> GetSellerReviews(int sellerId)
+        {
+            var reviews = await _context.SellerReviews
+                .Include(r => r.User)
+                .Include(r => r.SparePart)
+                .Where(r => r.SellerId == sellerId)
+                .OrderByDescending(r => r.CreatedDate)
+                .Select(r => new
+                {
+                    id = r.Id,
+                    sellerId = r.SellerId,
+                    userId = r.UserId,
+                    userName = $"{r.User.FirstName} {r.User.LastName}".Trim(),
+                    userRole = r.User.Role.ToString(),
+                    sparePartId = r.SparePartId,
+                    sparePartTitle = r.SparePart != null ? r.SparePart.Title : null,
+                    rating = r.Rating,
+                    comment = r.Comment,
+                    createdDate = r.CreatedDate
+                })
+                .ToListAsync();
+
+            var avgRating = reviews.Any() ? Math.Round(reviews.Average(r => (decimal)r.rating), 1) : 5.0m;
+
+            return Ok(new
+            {
+                sellerId,
+                averageRating = avgRating,
+                totalReviews = reviews.Count,
+                reviews
+            });
+        }
+
+        // POST api/Home/AddSellerReview
+        [HttpPost]
+        public async Task<IActionResult> AddSellerReview([FromBody] AddSellerReviewInput input)
+        {
+            if (User.Identity?.IsAuthenticated != true)
+                return Unauthorized(new { message = "Rəy bildirmək üçün daxil olmalısınız." });
+
+            if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out int currentUserId))
+                return Unauthorized();
+
+            if (input.Rating < 1 || input.Rating > 5)
+                return BadRequest(new { message = "Reytinq 1 ilə 5 ulduz arasında olmalıdır." });
+
+            if (string.IsNullOrWhiteSpace(input.Comment) || input.Comment.Trim().Length < 3)
+                return BadRequest(new { message = "Zəhmət olmasa rəyinizi ətraflı qeyd edin (minimum 3 simvol)." });
+
+            var seller = await _context.SellerProfiles.FirstOrDefaultAsync(s => s.Id == input.SellerId);
+            if (seller == null)
+                return NotFound(new { message = "Mağaza / Satıcı tapılmadı." });
+
+            // Satıcı öz mağazasına rəy yaza bilməz
+            if (seller.UserId == currentUserId)
+                return BadRequest(new { message = "Öz mağazanıza rəy və reytinq bildirə bilməzsiniz." });
+
+            var review = new SellerReview
+            {
+                SellerId = input.SellerId,
+                UserId = currentUserId,
+                SparePartId = input.SparePartId,
+                Rating = input.Rating,
+                Comment = input.Comment.Trim(),
+                CreatedDate = DateTime.UtcNow
+            };
+
+            _context.SellerReviews.Add(review);
+            await _context.SaveChangesAsync();
+
+            // Satıcının ümumi reytinqini yenidən hesabla və bazada yenilə
+            var allRatings = await _context.SellerReviews
+                .Where(r => r.SellerId == input.SellerId)
+                .Select(r => r.Rating)
+                .ToListAsync();
+
+            if (allRatings.Any())
+            {
+                seller.Rating = Math.Round((decimal)allRatings.Average(), 1);
+                await _context.SaveChangesAsync();
+            }
+
+            return Ok(new
+            {
+                success = true,
+                message = "Rəyiniz və qiymətləndirməniz uğurla əlavə edildi!",
+                newRating = seller.Rating
+            });
+        }
+
 }
+    }

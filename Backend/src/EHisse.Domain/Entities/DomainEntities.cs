@@ -198,3 +198,18 @@ public class ActivityLog : BaseEntity
     public string? Details { get; set; }
     public DateTime Date { get; set; } = DateTime.UtcNow;
 }
+
+
+public class SellerReview : BaseEntity
+{
+    public int SellerId { get; set; }
+    public int UserId { get; set; }
+    public int? SparePartId { get; set; }
+    public int Rating { get; set; } // 1 to 5
+    public string Comment { get; set; } = null!;
+    public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+
+    public SellerProfile Seller { get; set; } = null!;
+    public User User { get; set; } = null!;
+    public SparePart? SparePart { get; set; }
+}

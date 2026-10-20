@@ -265,7 +265,7 @@ function App() {
           <Routes>
             <Route path="/" element={<RequireAuth user={user}><Home user={user} /></RequireAuth>} />
             <Route path="/categories" element={<Categories />} />
-            <Route path="/saticilar" element={<Saticilar />} />
+            <Route path="/saticilar" element={<Saticilar user={user} />} />
             <Route path="/yardim" element={<Yardim />} />
             <Route path="/elaqe" element={<Elaqe />} />
             <Route path="/favorites" element={<Favorites />} />

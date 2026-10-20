@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Api, imageSrc } from '../api';
 import { Loading, ErrorBox } from './Categories';
+import { Modal } from '../components/Panel';
 import { usePageSeo } from '../utils/seo';
 import { toggleFavorite, isFavorite } from '../utils/favorites';
 
@@ -74,13 +75,22 @@ const getCleanTitle = (part) => {
     return cleanText(res.replace(/\s+/g, ' ').trim());
 };
 
-function Details() {
+function Details({ user }) {
   const { id } = useParams();
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
   const [activeImg, setActiveImg] = useState(0);
   const [showPhone, setShowPhone] = useState(false);
   const [, setFavSync] = useState(0);
+
+  // Mağaza rəyləri və qiymətləndirmə state-ləri
+  const [reviewsData, setReviewsData] = useState(null);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [ratingInput, setRatingInput] = useState(5);
+  const [commentInput, setCommentInput] = useState('');
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewMsg, setReviewMsg] = useState({ text: '', type: '' });
 
   useEffect(() => {
     const handleFav = () => setFavSync(v => v + 1);
@@ -92,6 +102,67 @@ function Details() {
     setData(null); setError(''); setActiveImg(0); setShowPhone(false);
     Api.details(id).then(setData).catch(e => setError(e.message));
   }, [id]);
+
+  const loadSellerReviews = async (sellerId) => {
+    if (!sellerId) return;
+    setReviewsLoading(true);
+    try {
+      const res = await Api.getSellerReviews(sellerId);
+      setReviewsData(res);
+    } catch (e) {
+      console.error('Rəyləri yükləmək mümkün olmadı:', e);
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (data?.seller?.id) {
+      loadSellerReviews(data.seller.id);
+    }
+  }, [data?.seller?.id]);
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    if (!user) {
+      alert('Rəy yazmaq üçün zəhmət olmasa daxil olun.');
+      return;
+    }
+    if (!commentInput.trim()) {
+      setReviewMsg({ text: 'Zəhmət olmasa rəyinizi qeyd edin.', type: 'danger' });
+      return;
+    }
+    setReviewSubmitting(true);
+    setReviewMsg({ text: '', type: '' });
+    try {
+      const res = await Api.addSellerReview({
+        sellerId: data.seller.id,
+        sparePartId: data.part?.id,
+        rating: Number(ratingInput),
+        comment: commentInput.trim()
+      });
+      setReviewMsg({ text: res.message || 'Rəyiniz uğurla əlavə edildi!', type: 'success' });
+      setCommentInput('');
+      setRatingInput(5);
+      // Satıcının cari reytinqini də yeniləyək
+      if (res.newRating !== undefined) {
+        setData(prev => prev ? {
+          ...prev,
+          seller: { ...prev.seller, rating: res.newRating }
+        } : prev);
+      }
+      loadSellerReviews(data.seller.id);
+      setTimeout(() => {
+        setShowReviewModal(false);
+        setReviewMsg({ text: '', type: '' });
+      }, 1500);
+    } catch (err) {
+      setReviewMsg({ text: err.message || 'Xəta baş verdi.', type: 'danger' });
+    } finally {
+      setReviewSubmitting(false);
+    }
+  };
+
 
   const displayTitle = data?.part ? getCleanTitle(data.part) : '';
   const sellerCompany = cleanText(data?.seller?.companyName);
@@ -267,6 +338,118 @@ function Details() {
               </div>
               {isToday(part.createdDate) && (
                 <span className="badge bg-success">Bu gün yenilənib</span>
+              )}
+            </div>
+
+            <hr style={{ borderColor: 'var(--border-color)', margin: '2rem 0 1.5rem 0' }} />
+
+            {/* MAĞAZA REYTİNQİ VƏ MÜŞTƏRİ YORUMLARI */}
+            <div className="seller-reviews-section">
+              <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div>
+                  <h4 className="fw-bold text-main m-0" style={{ fontSize: '1.2rem' }}>
+                    <i className="bi bi-star-fill text-warning me-2"></i>
+                    Mağaza Dəyərləndirməsi və Rəylər ({reviewsData?.totalReviews ?? 0})
+                  </h4>
+                  <span className="text-muted small">
+                    {sellerCompany || 'Satıcı'} haqqında alıcı və ustaların rəyləri
+                  </span>
+                </div>
+                {user ? (
+                  !data.isOwner && (
+                    <button
+                      type="button"
+                      className="btn btn-outline"
+                      style={{ borderColor: 'var(--accent)', color: 'var(--accent)' }}
+                      onClick={() => setShowReviewModal(true)}
+                    >
+                      <i className="bi bi-pencil-square me-1"></i> Rəy və Qiymət Yaz
+                    </button>
+                  )
+                ) : (
+                  <Link to="/login" className="btn btn-sm btn-outline text-muted">
+                    Rəy yazmaq üçün daxil olun
+                  </Link>
+                )}
+              </div>
+
+              {/* Reytinq xülasəsi */}
+              <div className="p-3 rounded mb-4 d-flex align-items-center gap-4 flex-wrap" style={{ background: 'var(--bg-main, #141414)', border: '1px solid var(--border-color)' }}>
+                <div className="text-center px-3 border-end" style={{ borderColor: 'var(--border-color)' }}>
+                  <div className="fw-bold text-warning" style={{ fontSize: '2.5rem', lineHeight: 1 }}>
+                    {reviewsData ? reviewsData.averageRating.toFixed(1) : (seller.rating ? Number(seller.rating).toFixed(1) : '5.0')}
+                  </div>
+                  <div className="d-flex justify-content-center text-warning my-1 small">
+                    {[1, 2, 3, 4, 5].map(star => (
+                      <i
+                        key={star}
+                        className={`bi ${star <= Math.round(reviewsData?.averageRating || seller.rating || 5) ? 'bi-star-fill' : 'bi-star'}`}
+                      ></i>
+                    ))}
+                  </div>
+                  <span className="text-muted small">{reviewsData?.totalReviews || 0} qiymətləndirmə</span>
+                </div>
+
+                <div className="flex-grow-1">
+                  <p className="m-0 text-muted small" style={{ lineHeight: 1.5 }}>
+                    Bu mağazadan ehtiyat hissəsi aldıqda və ya xidmətindən istifadə etdikdə siz də öz rəyinizi bildirərək digər alıcı və ustalara kömək edə bilərsiniz. Hər bir rəy satıcının 5 ulduzluq ümumi reytinqinə birbaşa təsir edir.
+                  </p>
+                </div>
+              </div>
+
+              {/* Rəylər siyahısı */}
+              {reviewsLoading ? (
+                <div className="text-center py-3 text-muted">Rəylər yüklənir...</div>
+              ) : reviewsData && reviewsData.reviews?.length > 0 ? (
+                <div className="d-flex flex-column gap-3">
+                  {reviewsData.reviews.map(rev => (
+                    <div
+                      key={rev.id}
+                      className="p-3 rounded"
+                      style={{ background: 'var(--bg-main, #141414)', border: '1px solid var(--border-color)' }}
+                    >
+                      <div className="d-flex justify-content-between align-items-center mb-2">
+                        <div className="d-flex align-items-center gap-2">
+                          <div
+                            className="rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                            style={{ width: '36px', height: '36px', backgroundColor: 'var(--bg-surface-hover)', color: 'var(--accent)', border: '1px solid var(--border-color)' }}
+                          >
+                            {(rev.userName || 'A').charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <span className="fw-semibold text-main d-block">{rev.userName || 'İstifadəçi'}</span>
+                            <span className="badge bg-secondary" style={{ fontSize: '0.7rem' }}>{rev.userRole}</span>
+                          </div>
+                        </div>
+                        <div className="text-end">
+                          <div className="text-warning small mb-1">
+                            {[1, 2, 3, 4, 5].map(s => (
+                              <i key={s} className={`bi ${s <= rev.rating ? 'bi-star-fill' : 'bi-star'}`}></i>
+                            ))}
+                          </div>
+                          <span className="text-muted" style={{ fontSize: '0.75rem' }}>
+                            {formatDate(rev.createdDate)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <p className="m-0 text-main" style={{ fontSize: '0.92rem', whiteSpace: 'pre-line' }}>
+                        {rev.comment}
+                      </p>
+
+                      {rev.sparePartTitle && (
+                        <div className="mt-2 text-muted small" style={{ fontSize: '0.78rem' }}>
+                          <i className="bi bi-tag me-1"></i> Məhsul: {rev.sparePartTitle}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-4 text-muted border rounded" style={{ borderColor: 'var(--border-color)', borderStyle: 'dashed' }}>
+                  <i className="bi bi-chat-square-text fs-3 mb-2 d-block"></i>
+                  <span>Bu mağaza üçün hələ rəy yazılmayıb. İlk dəyərləndirməni siz edin!</span>
+                </div>
               )}
             </div>
           </div>
@@ -457,6 +640,73 @@ function Details() {
           </div>
         </div>
       </div>
+
+      {/* RƏY VƏ REYTİNQ YAZMA MODALI */}
+      <Modal
+        open={showReviewModal}
+        title="Mağazanı Dəyərləndir və Rəy Yaz"
+        onClose={() => setShowReviewModal(false)}
+      >
+        <form onSubmit={handleReviewSubmit}>
+          {reviewMsg.text && (
+            <div className={`alert alert-${reviewMsg.type} mb-3 py-2 small`}>
+              {reviewMsg.text}
+            </div>
+          )}
+
+          <div className="mb-3 text-center">
+            <label className="form-label d-block text-muted small mb-2">Reytinq (1 - 5 ulduz)</label>
+            <div className="d-flex justify-content-center gap-2">
+              {[1, 2, 3, 4, 5].map(star => (
+                <button
+                  key={star}
+                  type="button"
+                  className="btn p-0 border-0 bg-transparent"
+                  onClick={() => setRatingInput(star)}
+                  style={{ fontSize: '2rem', color: star <= ratingInput ? '#ffc107' : '#555', cursor: 'pointer', transition: 'transform 0.1s' }}
+                >
+                  <i className={`bi ${star <= ratingInput ? 'bi-star-fill' : 'bi-star'}`}></i>
+                </button>
+              ))}
+            </div>
+            <span className="badge bg-warning bg-opacity-10 text-warning border border-warning mt-2 px-3 py-1">
+              {ratingInput} / 5 ulduz
+            </span>
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label text-muted small">Rəyiniz / Yorumunuz</label>
+            <textarea
+              className="form-control"
+              rows="4"
+              placeholder="Ehtiyat hissəsinin keyfiyyəti, satıcının xidməti və çatdırılması barədə fikirlərinizi bölüşün..."
+              value={commentInput}
+              onChange={e => setCommentInput(e.target.value)}
+              required
+              minLength={3}
+            ></textarea>
+          </div>
+
+          <div className="d-flex justify-content-end gap-2">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => setShowReviewModal(false)}
+              disabled={reviewSubmitting}
+            >
+              Ləğv et
+            </button>
+            <button
+              type="submit"
+              className="btn"
+              style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-text)' }}
+              disabled={reviewSubmitting}
+            >
+              {reviewSubmitting ? 'Göndərilir...' : 'Rəyi Göndər'}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }
