@@ -40,6 +40,7 @@ const Terms = lazy(() => import('./pages/Terms'));
 const ThankYou = lazy(() => import('./pages/ThankYou'));
 import CookieBanner from './components/CookieBanner';
 import MobileStickyBar from './components/MobileStickyBar';
+import NotificationBell from './components/NotificationBell';
 
 import { RequireRole, RequireAuth, PanelLayout } from './components/Panel';
 
@@ -183,6 +184,9 @@ function App() {
               </span>
             )}
           </Link>
+
+          {/* Bildirişlər Mərkəzi */}
+          <NotificationBell user={user} />
 
           <button 
             onClick={toggleTheme} 

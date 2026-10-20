@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Api } from '../api';
 import { parseExcelFile, downloadExcelTemplate } from '../utils/excelHelper';
 import { alertModal } from '../utils/confirmModal';
+import { addNotification } from '../utils/notifications';
 
 export default function ExcelImportModal({ isOpen, onClose, onSuccess }) {
   const [file, setFile] = useState(null);
@@ -188,6 +189,23 @@ export default function ExcelImportModal({ isOpen, onClose, onSuccess }) {
     setUploading(true);
     try {
       const res = await Api.warehouse.bulkImport(matchedItems);
+      
+      // Bildirişlər mərkəzinə uğurlu əlavə olunma bildirişi atırıq
+      try {
+        const u = JSON.parse(localStorage.getItem('ehisse_user') || '{}');
+        if (u?.id) {
+          addNotification(u.id, {
+            title: 'Kütləvi yükləmə tamamlandı',
+            message: `${res.addedCount || matchedItems.length} yeni elan əlavə edildi / yeniləndi.`,
+            icon: 'bi-file-earmark-check',
+            type: 'success',
+            link: '/warehouse'
+          });
+        }
+      } catch (e) {
+        console.error(e);
+      }
+
       await alertModal(res.message || 'Məhsullar uğurla yükləndi!', 'Uğurlu əməliyyat', 'success');
       onSuccess?.();
       onClose();
