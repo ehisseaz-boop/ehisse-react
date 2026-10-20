@@ -233,6 +233,18 @@ namespace EHisse.WebApi.Controllers
             return success ? Ok(new { success = true }) : NotFound(new { message = "Kateqoriya tapılmadı." });
         }
 
+        [HttpPost("{id:int}")]
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteCategory(int id)
+        {
+            var (success, error) = await _adminService.DeleteCategoryAsync(id);
+            if (!success)
+            {
+                return BadRequest(new { message = error });
+            }
+            return Ok(new { success = true, message = "Kateqoriya uğurla silindi." });
+        }
+
         // ============================================
         // KATALOQ: BRENDLƏR
         // ============================================
@@ -266,6 +278,18 @@ namespace EHisse.WebApi.Controllers
         {
             var success = await _adminService.ToggleBrandAsync(id);
             return success ? Ok(new { success = true }) : NotFound(new { message = "Brend tapılmadı." });
+        }
+
+        [HttpPost("{id:int}")]
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteBrand(int id)
+        {
+            var (success, error) = await _adminService.DeleteBrandAsync(id);
+            if (!success)
+            {
+                return BadRequest(new { message = error });
+            }
+            return Ok(new { success = true, message = "Brend uğurla silindi." });
         }
 
         [HttpGet]
@@ -327,6 +351,18 @@ namespace EHisse.WebApi.Controllers
             return success ? Ok(new { success = true }) : NotFound(new { message = "Model tapılmadı." });
         }
 
+        [HttpPost("{id:int}")]
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteModel(int id)
+        {
+            var (success, error) = await _adminService.DeleteModelAsync(id);
+            if (!success)
+            {
+                return BadRequest(new { message = error });
+            }
+            return Ok(new { success = true, message = "Model uğurla silindi." });
+        }
+
         // ============================================
         // KATALOQ: HİSSƏ NÖVLƏRİ VƏ MATRİS
         // ============================================
@@ -355,6 +391,18 @@ namespace EHisse.WebApi.Controllers
             if (string.IsNullOrWhiteSpace(input.Name)) return BadRequest(new { message = "Hissə növü adı boş ola bilməz." });
             var success = await _adminService.UpdatePartTypeAsync(id, input.Name, input.Key ?? string.Empty, input.IsAccessory, input.IsPortable);
             return success ? Ok(new { success = true, message = "Hissə növü yeniləndi." }) : NotFound(new { message = "Hissə növü tapılmadı." });
+        }
+
+        [HttpPost("{id:int}")]
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeletePartType(int id)
+        {
+            var (success, error) = await _adminService.DeletePartTypeAsync(id);
+            if (!success)
+            {
+                return BadRequest(new { message = error });
+            }
+            return Ok(new { success = true, message = "Hissə növü uğurla silindi." });
         }
 
         [HttpGet]

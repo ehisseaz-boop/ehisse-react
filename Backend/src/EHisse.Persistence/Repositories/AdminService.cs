@@ -449,6 +449,43 @@ namespace EHisse.Persistence.Repositories
             return true;
         }
 
+        public async Task<(bool Success, string ErrorMessage)> DeleteCategoryAsync(int id)
+        {
+            var category = await _context.Categories.FindAsync(id);
+            if (category == null)
+                return (false, "Kateqoriya tapılmadı.");
+
+            var relatedAdsCount = await _context.SpareParts
+                .CountAsync(p => p.DeviceModel != null && p.DeviceModel.CategoryId == id && !p.IsDeleted);
+
+            if (relatedAdsCount > 0)
+            {
+                return (false, $"Bu kateqoriyaya aid {relatedAdsCount} ədəd ehtiyat hissəsi (məhsul) mövcuddur! Məhsulu olan kateqoriya silinə bilməz.");
+            }
+
+            var relatedModels = await _context.DeviceModels.Where(m => m.CategoryId == id).ToListAsync();
+            if (relatedModels.Any())
+            {
+                var modelIds = relatedModels.Select(m => m.Id).ToList();
+                var partsWithModels = await _context.SpareParts.CountAsync(p => modelIds.Contains(p.DeviceModelId));
+                if (partsWithModels > 0)
+                {
+                    return (false, $"Bu kateqoriyanın modellərinə aid {partsWithModels} ədəd ehtiyat hissəsi (məhsul) mövcuddur! Silinə bilməz.");
+                }
+                _context.DeviceModels.RemoveRange(relatedModels);
+            }
+
+            var categoryBrands = await _context.CategoryBrands.Where(cb => cb.CategoryId == id).ToListAsync();
+            _context.CategoryBrands.RemoveRange(categoryBrands);
+
+            var categoryPartTypes = await _context.CategoryPartTypes.Where(cp => cp.CategoryId == id).ToListAsync();
+            _context.CategoryPartTypes.RemoveRange(categoryPartTypes);
+
+            _context.Categories.Remove(category);
+            await _context.SaveChangesAsync();
+            return (true, string.Empty);
+        }
+
         // ============================================
         // KATALOQ: BRENDLƏR
         // ============================================
@@ -490,6 +527,40 @@ namespace EHisse.Persistence.Repositories
             brand.IsActive = !brand.IsActive;
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<(bool Success, string ErrorMessage)> DeleteBrandAsync(int id)
+        {
+            var brand = await _context.DeviceBrands.FindAsync(id);
+            if (brand == null)
+                return (false, "Brend tapılmadı.");
+
+            var relatedAdsCount = await _context.SpareParts
+                .CountAsync(p => p.DeviceModel != null && p.DeviceModel.BrandId == id && !p.IsDeleted);
+
+            if (relatedAdsCount > 0)
+            {
+                return (false, $"Bu brendə aid {relatedAdsCount} ədəd ehtiyat hissəsi (məhsul) mövcuddur! Məhsulu olan brend silinə bilməz.");
+            }
+
+            var relatedModels = await _context.DeviceModels.Where(m => m.BrandId == id).ToListAsync();
+            if (relatedModels.Any())
+            {
+                var modelIds = relatedModels.Select(m => m.Id).ToList();
+                var partsWithModels = await _context.SpareParts.CountAsync(p => modelIds.Contains(p.DeviceModelId));
+                if (partsWithModels > 0)
+                {
+                    return (false, $"Bu brendin modellərinə aid {partsWithModels} ədəd ehtiyat hissəsi (məhsul) mövcuddur! Silinə bilməz.");
+                }
+                _context.DeviceModels.RemoveRange(relatedModels);
+            }
+
+            var categoryBrands = await _context.CategoryBrands.Where(cb => cb.BrandId == id).ToListAsync();
+            _context.CategoryBrands.RemoveRange(categoryBrands);
+
+            _context.DeviceBrands.Remove(brand);
+            await _context.SaveChangesAsync();
+            return (true, string.Empty);
         }
 
         public async Task<List<CategoryBrand>> GetCategoryBrandsAsync()
@@ -570,6 +641,25 @@ namespace EHisse.Persistence.Repositories
             return true;
         }
 
+        public async Task<(bool Success, string ErrorMessage)> DeleteModelAsync(int id)
+        {
+            var model = await _context.DeviceModels.FindAsync(id);
+            if (model == null)
+                return (false, "Model tapılmadı.");
+
+            var relatedAdsCount = await _context.SpareParts
+                .CountAsync(p => p.DeviceModelId == id && !p.IsDeleted);
+
+            if (relatedAdsCount > 0)
+            {
+                return (false, $"Bu modelə aid {relatedAdsCount} ədəd ehtiyat hissəsi (məhsul) mövcuddur! Məhsulu olan model silinə bilməz.");
+            }
+
+            _context.DeviceModels.Remove(model);
+            await _context.SaveChangesAsync();
+            return (true, string.Empty);
+        }
+
         // ============================================
         // KATALOQ: HİSSƏ NÖVLƏRİ VƏ MATRİS
         // ============================================
@@ -630,6 +720,28 @@ namespace EHisse.Persistence.Repositories
             _context.CategoryPartTypes.Remove(item);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<(bool Success, string ErrorMessage)> DeletePartTypeAsync(int id)
+        {
+            var pt = await _context.SparePartTypes.FindAsync(id);
+            if (pt == null)
+                return (false, "Hissə növü tapılmadı.");
+
+            var relatedAdsCount = await _context.SpareParts
+                .CountAsync(p => p.PartTypeId == id && !p.IsDeleted);
+
+            if (relatedAdsCount > 0)
+            {
+                return (false, $"Bu hissə növünə aid {relatedAdsCount} ədəd ehtiyat hissəsi (məhsul) mövcuddur! Məhsulu olan hissə növü silinə bilməz.");
+            }
+
+            var categoryPartTypes = await _context.CategoryPartTypes.Where(cp => cp.PartTypeId == id).ToListAsync();
+            _context.CategoryPartTypes.RemoveRange(categoryPartTypes);
+
+            _context.SparePartTypes.Remove(pt);
+            await _context.SaveChangesAsync();
+            return (true, string.Empty);
         }
 
         // ============================================

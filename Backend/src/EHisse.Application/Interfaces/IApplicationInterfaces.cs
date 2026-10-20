@@ -75,12 +75,14 @@ public interface IAdminService
     Task<Category> CreateCategoryAsync(string name, int displayOrder);
     Task<bool> UpdateCategoryAsync(int id, string name, int displayOrder, bool isActive);
     Task<bool> ToggleCategoryAsync(int id);
+    Task<(bool Success, string ErrorMessage)> DeleteCategoryAsync(int id);
 
     // Kataloq - Brendlər
     Task<List<DeviceBrand>> GetBrandsAsync();
     Task<DeviceBrand> CreateBrandAsync(string name);
     Task<bool> UpdateBrandAsync(int id, string name, bool isActive);
     Task<bool> ToggleBrandAsync(int id);
+    Task<(bool Success, string ErrorMessage)> DeleteBrandAsync(int id);
     Task<List<CategoryBrand>> GetCategoryBrandsAsync();
     Task<bool> AssignBrandToCategoryAsync(int categoryId, int brandId);
     Task<bool> RemoveBrandFromCategoryAsync(int categoryId, int brandId);
@@ -90,11 +92,13 @@ public interface IAdminService
     Task<DeviceModel> CreateModelAsync(string name, string? modelCode, int releaseYear, int categoryId, int brandId);
     Task<bool> UpdateModelAsync(int id, string name, string? modelCode, int releaseYear, int categoryId, int brandId, bool isActive);
     Task<bool> ToggleModelAsync(int id);
+    Task<(bool Success, string ErrorMessage)> DeleteModelAsync(int id);
 
     // Kataloq - Hissə Növləri və Matris
     Task<List<SparePartType>> GetPartTypesAsync();
     Task<SparePartType> CreatePartTypeAsync(string name, string key);
     Task<bool> UpdatePartTypeAsync(int id, string name, string key, bool isAccessory, bool isPortable);
+    Task<(bool Success, string ErrorMessage)> DeletePartTypeAsync(int id);
     Task<List<CategoryPartType>> GetCategoryPartTypesAsync();
     Task<bool> AssignPartTypeToCategoryAsync(int categoryId, int partTypeId);
     Task<bool> RemovePartTypeFromCategoryAsync(int categoryId, int partTypeId);
