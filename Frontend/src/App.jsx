@@ -264,13 +264,13 @@ function App() {
         }>
           <Routes>
             <Route path="/" element={<RequireAuth user={user}><Home user={user} /></RequireAuth>} />
-            <Route path="/categories" element={<Categories />} />
-            <Route path="/saticilar" element={<Saticilar user={user} />} />
+            <Route path="/categories" element={<RequireAuth user={user}><Categories /></RequireAuth>} />
+            <Route path="/saticilar" element={<RequireAuth user={user}><Saticilar user={user} /></RequireAuth>} />
             <Route path="/yardim" element={<Yardim />} />
             <Route path="/elaqe" element={<Elaqe />} />
-            <Route path="/favorites" element={<Favorites />} />
-            <Route path="/details/:id" element={<Details user={user} />} />
-            <Route path="/elan/:id" element={<ElanRedirect user={user} />} />
+            <Route path="/favorites" element={<RequireAuth user={user}><Favorites /></RequireAuth>} />
+            <Route path="/details/:id" element={<RequireAuth user={user}><Details user={user} /></RequireAuth>} />
+            <Route path="/elan/:id" element={<RequireAuth user={user}><ElanRedirect user={user} /></RequireAuth>} />
             <Route path="/elan-yerlesdir" element={<Navigate to="/warehouse/add-part" replace />} />
             <Route path="/elan-elave-et" element={<Navigate to="/warehouse/add-part" replace />} />
             <Route path="/yeni-elan" element={<Navigate to="/warehouse/add-part" replace />} />

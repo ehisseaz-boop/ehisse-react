@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using EHisse.Persistence.Repositories;
 using EHisse.Domain.Entities;
 using EHisse.Domain.Enums;
@@ -17,6 +18,7 @@ using System.Threading.Tasks;
 namespace EHisse.WebApi.Controllers
 {
     public record AddSellerReviewInput(int SellerId, int? SparePartId, int Rating, string Comment);
+    [Authorize]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class HomeController : ControllerBase
@@ -252,6 +254,7 @@ namespace EHisse.WebApi.Controllers
         }
 
         // GET api/Home/Yardim
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult Yardim()
         {
@@ -276,6 +279,7 @@ namespace EHisse.WebApi.Controllers
         }
 
         // GET api/Home/Elaqe
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult Elaqe()
         {
