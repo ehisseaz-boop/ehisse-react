@@ -126,6 +126,8 @@ export const Api = {
   help: () => api('/api/Home/Yardim'),
   contact: () => api('/api/Home/Elaqe'),
   details: (id) => api(`/api/Home/Details/${id}`),
+  getSellerReviews: (sellerId) => api('/api/Home/GetSellerReviews', { params: { sellerId } }),
+  addSellerReview: (body) => api('/api/Home/AddSellerReview', { method: 'POST', body }),
   // AuthController
   me: () => api('/api/Auth/Me'),
   login: (body) => api('/api/Auth/Login', { method: 'POST', body }),
