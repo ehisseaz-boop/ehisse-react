@@ -10,7 +10,7 @@ import Swal from 'sweetalert2';
 export const confirmModal = async (optionsOrMessage) => {
   let title = 'Təsdiqləmə';
   let text = '';
-  let confirmText = 'Təsdiq edirəm';
+  let confirmButtonText = 'Təsdiq edirəm';
   let cancelButtonText = 'Ləğv et';
   let isDanger = false;
   let icon = 'question';
@@ -21,14 +21,14 @@ export const confirmModal = async (optionsOrMessage) => {
     if (lower.includes('sil') || lower.includes('blok') || lower.includes('ayır')) {
       isDanger = true;
       icon = 'warning';
-      confirmText = lower.includes('sil') ? 'Bəli, silinsin' : 'Təsdiq edirəm';
+      confirmButtonText = lower.includes('sil') ? 'Bəli, silinsin' : 'Təsdiq edirəm';
     }
   } else if (typeof optionsOrMessage === 'object' && optionsOrMessage !== null) {
     text = optionsOrMessage.text || optionsOrMessage.message || '';
     title = optionsOrMessage.title || title;
     const lower = text.toLowerCase();
     isDanger = optionsOrMessage.isDanger ?? (lower.includes('sil') || lower.includes('blok') || lower.includes('ayır'));
-    confirmText = optionsOrMessage.confirmButtonText || optionsOrMessage.confirmText || (isDanger && lower.includes('sil') ? 'Bəli, silinsin' : 'Təsdiq edirəm');
+    confirmButtonText = optionsOrMessage.confirmButtonText || optionsOrMessage.confirmText || (isDanger && lower.includes('sil') ? 'Bəli, silinsin' : 'Təsdiq edirəm');
     cancelButtonText = optionsOrMessage.cancelButtonText || optionsOrMessage.cancelText || 'Ləğv et';
     icon = optionsOrMessage.icon || (isDanger ? 'warning' : 'question');
   }
