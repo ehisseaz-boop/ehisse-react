@@ -525,5 +525,75 @@ namespace EHisse.WebApi.Controllers
 
             return Ok(new { success = true, message = "Tənzimləmələr uğurla yadda saxlanıldı." });
         }
+
+        // POST api/Warehouse/BulkImportParts
+        [HttpPost]
+        public async Task<IActionResult> BulkImportParts([FromBody] List<PartInput> items)
+        {
+            var seller = await GetSellerAsync();
+            if (seller == null) return NoSeller();
+            if (items == null || !items.Any()) return BadRequest(new { message = "Yükləmək üçün heç bir məhsul tapılmadı." });
+
+            int addedCount = 0;
+            int updatedCount = 0;
+            var errors = new List<string>();
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                var rowNum = i + 2; // Excel başlıq sətrini nəzərə alaraq
+                var item = items[i];
+                try
+                {
+                    item = await EnsureTitleAsync(item);
+
+                    // Əgər SKU qeyd olunubsa və bu satıcının həmin SKU ilə mövcud elanı varsa, qiymət və stokunu YENİLƏYİRİK
+                    if (!string.IsNullOrWhiteSpace(item.SKU))
+                    {
+                        var existingPart = await _context.SpareParts.FirstOrDefaultAsync(p => p.SellerId == seller.Id && p.SKU == item.SKU && !p.IsDeleted);
+                        if (existingPart != null)
+                        {
+                            existingPart.Price = item.Price > 0 ? item.Price : existingPart.Price;
+                            existingPart.StockQuantity = item.StockQuantity >= 0 ? item.StockQuantity : existingPart.StockQuantity;
+                            if (item.WarrantyMonths > 0) existingPart.WarrantyMonths = item.WarrantyMonths;
+                            if (!string.IsNullOrWhiteSpace(item.Description)) existingPart.Description = item.Description;
+                            updatedCount++;
+                            continue;
+                        }
+                    }
+
+                    var rowErrors = await ValidateAsync(item, seller.Id, null);
+                    if (rowErrors.Any())
+                    {
+                        errors.Add($"Sətir {rowNum} ({item.Title}): {string.Join(", ", rowErrors)}");
+                        continue;
+                    }
+
+                    var entity = ToEntity(item);
+                    entity.SellerId = seller.Id;
+                    entity.CreatedDate = DateTime.UtcNow;
+                    entity.ModerationStatus = ApprovalStatus.Approved;
+                    entity.IsActive = true;
+
+                    _context.SpareParts.Add(entity);
+                    addedCount++;
+                }
+                catch (Exception ex)
+                {
+                    errors.Add($"Sətir {rowNum}: {ex.Message}");
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                success = true,
+                addedCount,
+                updatedCount,
+                totalProcessed = items.Count,
+                errors,
+                message = $"{addedCount} yeni elan əlavə edildi, {updatedCount} elanın qiymət və stoku yeniləndi." + (errors.Any() ? $" ({errors.Count} sətirdə xəta oldu)" : "")
+            });
+        }
     }
 }

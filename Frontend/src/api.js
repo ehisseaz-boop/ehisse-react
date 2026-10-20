@@ -165,6 +165,7 @@ export const Api = {
     toggleActive: (id) => api(`/api/Warehouse/ToggleActive/${id}`, { method: 'POST' }),
     remove: (id) => api(`/api/Warehouse/DeletePart/${id}`, { method: 'DELETE' }),
     deletedAds: () => api('/api/Warehouse/DeletedAds'),
+    bulkImport: (items) => api('/api/Warehouse/BulkImportParts', { method: 'POST', body: items }),
     restorePart: (id) => api(`/api/Warehouse/RestorePart/${id}`, { method: 'POST' }),
     recordSale: (id, expectedStock) => api(`/api/Warehouse/RecordSale/${id}`, { method: 'POST', body: { expectedStock } }),
     salesHistory: () => api('/api/Warehouse/SalesHistory'),

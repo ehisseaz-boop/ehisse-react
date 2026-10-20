@@ -5,11 +5,14 @@ import { Loading, ErrorBox } from '../Categories';
 import { Table, statusBadge } from '../../components/Panel';
 import { cleanPartTypeName } from '../Home';
 import { confirmModal, promptModal } from '../../utils/confirmModal';
+import { exportWarehouseToExcel } from '../../utils/excelHelper';
+import ExcelImportModal from '../../components/ExcelImportModal';
 
 function WarehouseIndex() {
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
   const [msg, setMsg] = useState('');
+  const [importModalOpen, setImportModalOpen] = useState(false);
 
   const load = useCallback(() => {
     Api.warehouse.list().then(setData).catch(e => setError(e.message));
@@ -222,11 +225,28 @@ function WarehouseIndex() {
         </div>
       </div>
 
-      <div className="d-flex justify-content-between align-items-center mb-3">
+      <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
         <div>
           <h5 className="m-0 fw-bold">Elanlarım</h5>
         </div>
-        <div className="d-flex gap-2">
+        <div className="d-flex gap-2 flex-wrap">
+          <button 
+            type="button" 
+            className="btn-outline" 
+            title="Bütün elanları Excel faylı kimi endir"
+            onClick={() => exportWarehouseToExcel(parts, seller.companyName)}
+            disabled={!parts || parts.length === 0}
+          >
+            <i className="bi bi-file-earmark-arrow-down text-accent"></i> Excel-ə Çıxar
+          </button>
+          <button 
+            type="button" 
+            className="btn-outline" 
+            title="Excel və ya CSV faylı ilə kütləvi elan əlavə et"
+            onClick={() => setImportModalOpen(true)}
+          >
+            <i className="bi bi-file-earmark-arrow-up text-accent"></i> Excel-dən Yüklə
+          </button>
           <Link to="/warehouse/deleted" className="btn-outline text-decoration-none">
             <i className="bi bi-trash3 me-1"></i> Silinən elanlar
           </Link>
@@ -428,6 +448,12 @@ function WarehouseIndex() {
           </div>
         )}
       </div>
+
+      <ExcelImportModal
+        isOpen={importModalOpen}
+        onClose={() => setImportModalOpen(false)}
+        onSuccess={load}
+      />
     </>
   );
 }
