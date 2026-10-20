@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api as apiFetch } from '../../api';
 import { Table } from '../../components/Panel';
+import { confirmModal, alertModal } from '../../utils/confirmModal';
 
 export default function AdminCategories() {
   const [categories, setCategories] = useState([]);
@@ -35,17 +36,17 @@ export default function AdminCategories() {
       setIcon('');
       loadCategories();
     } catch (err) {
-      alert('Xəta: ' + err.message);
+      alertModal('Xəta: ' + err.message, 'Xəta', 'error');
     }
   }
 
   async function handleDelete(id) {
-    if (!confirm('Silmək istədiyinizə əminsiniz?')) return;
+    if (!await confirmModal('Silmək istədiyinizə əminsiniz?')) return;
     try {
       await apiFetch(`/api/Admin/DeleteCategory/${id}`, { method: 'POST' });
       loadCategories();
     } catch (err) {
-      alert('Xəta: ' + err.message);
+      alertModal('Xəta: ' + err.message, 'Xəta', 'error');
     }
   }
 

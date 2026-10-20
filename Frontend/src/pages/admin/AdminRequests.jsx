@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api as apiFetch, imageSrc } from '../../api';
 import { Table, statusBadge, Tabs, Modal, fmtDate } from '../../components/Panel';
+import { confirmModal, alertModal } from '../../utils/confirmModal';
 
 export default function AdminRequests() {
   const [activeTab, setActiveTab] = useState('registration');
@@ -47,7 +48,12 @@ export default function AdminRequests() {
   // İSTİFADƏÇİ TƏSDİQ / İMTİNA
   // ============================================
   async function handleApproveUser(id) {
-    if (!window.confirm('Bu istifadəçinin qeydiyyatını təsdiqləmək istədiyinizə əminsiniz?')) return;
+    if (!await confirmModal({
+      title: 'İstifadəçini təsdiqlə',
+      text: 'Bu istifadəçinin qeydiyyatını təsdiqləmək istədiyinizə əminsiniz?',
+      confirmText: 'Təsdiqlə',
+      icon: 'question'
+    })) return;
     setActionLoading(true);
     try {
       const res = await apiFetch(`/api/Admin/ApproveUser/${id}`, { method: 'POST' });
@@ -71,7 +77,12 @@ export default function AdminRequests() {
   // ELAN TƏSDİQ / İMTİNA / BƏRPA
   // ============================================
   async function handleApproveAd(id) {
-    if (!window.confirm('Bu elanı təsdiq edib ictimai səhifəyə buraxmaq istədiyinizə əminsiniz?')) return;
+    if (!await confirmModal({
+      title: 'Elanı təsdiqlə',
+      text: 'Bu elanı təsdiq edib ictimai səhifəyə buraxmaq istədiyinizə əminsiniz?',
+      confirmText: 'Təsdiq et',
+      icon: 'question'
+    })) return;
     setActionLoading(true);
     try {
       const res = await apiFetch(`/api/Admin/ApproveAd/${id}`, { method: 'POST' });
@@ -86,7 +97,12 @@ export default function AdminRequests() {
   }
 
   async function handleRestoreAd(id) {
-    if (!window.confirm('Stoku yenilənmiş elanı bərpa edib aktivləşdirmək istədiyinizə əminsiniz?')) return;
+    if (!await confirmModal({
+      title: 'Elanı bərpa et',
+      text: 'Stoku yenilənmiş elanı bərpa edib aktivləşdirmək istədiyinizə əminsiniz?',
+      confirmText: 'Bərpa et',
+      icon: 'question'
+    })) return;
     setActionLoading(true);
     try {
       const res = await apiFetch(`/api/Admin/RestoreAd/${id}`, { method: 'POST' });
@@ -110,7 +126,7 @@ export default function AdminRequests() {
   async function handleRejectSubmit(e) {
     e.preventDefault();
     if (!rejectReason.trim()) {
-      alert('Zəhmət olmasa imtina səbəbini qeyd edin.');
+      alertModal('Zəhmət olmasa imtina səbəbini qeyd edin.', 'Diqqət', 'warning');
       return;
     }
     setActionLoading(true);

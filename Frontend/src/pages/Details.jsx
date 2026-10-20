@@ -5,6 +5,7 @@ import { Loading, ErrorBox } from './Categories';
 import { Modal } from '../components/Panel';
 import { usePageSeo } from '../utils/seo';
 import { toggleFavorite, isFavorite } from '../utils/favorites';
+import { alertModal } from '../utils/confirmModal';
 
 const isToday = (dateString) => {
     if (!dateString) return false;
@@ -125,7 +126,7 @@ function Details({ user }) {
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     if (!user) {
-      alert('Rəy yazmaq üçün zəhmət olmasa daxil olun.');
+      alertModal('Rəy yazmaq üçün zəhmət olmasa daxil olun.', 'Diqqət', 'info');
       return;
     }
     if (!commentInput.trim()) {

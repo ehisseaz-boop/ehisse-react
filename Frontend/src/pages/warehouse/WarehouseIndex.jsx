@@ -4,6 +4,7 @@ import { Api, imageSrc } from '../../api';
 import { Loading, ErrorBox } from '../Categories';
 import { Table, statusBadge } from '../../components/Panel';
 import { cleanPartTypeName } from '../Home';
+import { confirmModal, promptModal } from '../../utils/confirmModal';
 
 function WarehouseIndex() {
   const [data, setData] = useState(null);
@@ -22,9 +23,15 @@ function WarehouseIndex() {
     catch (e) { setMsg(e.message); }
   };
 
-  const changePrice = (p) => {
-    const v = window.prompt('Yeni qiymət (AZN):', p.price);
-    if (v === null) return;
+  const changePrice = async (p) => {
+    const v = await promptModal({
+      title: 'Yeni qiymət daxil edin',
+      inputLabel: 'AZN:',
+      inputValue: p.price,
+      inputType: 'number',
+      confirmText: 'Yenilə'
+    });
+    if (v === null || v === undefined) return;
     const n = Number(String(v).replace(',', '.'));
     if (!(n > 0)) { setMsg('Qiymət sıfırdan böyük olmalıdır.'); return; }
     run(() => Api.warehouse.updatePrice(p.id, n), 'Qiymət yeniləndi.');
@@ -90,20 +97,13 @@ function WarehouseIndex() {
               const msg = p.stockQuantity === 1 
                 ? 'Bu elan üzrə son məhsul satıldı. Satışı təsdiqləyirsinizmi?' 
                 : 'Bir ədəd satıldığı kimi qeydə alınacaq və elanın stok sayı bir vahid azalacaq. Təsdiq edirsinizmi?';
-              if (window.Swal) {
-                const res = await window.Swal.fire({
-                  title: p.stockQuantity === 1 ? 'Son məhsul satışı' : 'Satış qeydi',
-                  text: msg,
-                  icon: 'question',
-                  showCancelButton: true,
-                  confirmButtonText: 'Təsdiq edirəm',
-                  cancelButtonText: 'Ləğv et',
-                  confirmButtonColor: '#00d26a'
-                });
-                if (!res.isConfirmed) return;
-              } else {
-                if (!window.confirm(msg)) return;
-              }
+              const confirmed = await confirmModal({
+                title: p.stockQuantity === 1 ? 'Son məhsul satışı' : 'Satış qeydi',
+                text: msg,
+                icon: 'question',
+                confirmButtonText: 'Təsdiq edirəm'
+              });
+              if (!confirmed) return;
               run(() => Api.warehouse.recordSale(p.id), p.stockQuantity === 1 ? 'Son məhsul satıldı və elan deaktiv edildi.' : 'Satış qeydə alındı.');
             }}
           >
@@ -111,7 +111,17 @@ function WarehouseIndex() {
           </button>
           <Link to={`/warehouse/edit-part/${p.id}`} className="btn-outline" title="Redaktə"><i className="bi bi-pencil"></i></Link>
           <button className="btn-outline" title={p.isActive ? 'Deaktiv et' : 'Aktiv et'} onClick={() => run(() => Api.warehouse.toggleActive(p.id))}><i className={`bi bi-${p.isActive ? 'eye-slash' : 'eye'}`}></i></button>
-          <button className="btn-outline" title="Sil" onClick={() => window.confirm('Elanı silmək istədiyinizə əminsiniz?') && run(() => Api.warehouse.remove(p.id), 'Elan silindi.')}><i className="bi bi-trash"></i></button>
+          <button 
+            className="btn-outline" 
+            title="Sil" 
+            onClick={async () => {
+              if (await confirmModal('Elanı silmək istədiyinizə əminsiniz?')) {
+                run(() => Api.warehouse.remove(p.id), 'Elan silindi.');
+              }
+            }}
+          >
+            <i className="bi bi-trash"></i>
+          </button>
         </div>
       )
     },
@@ -374,20 +384,13 @@ function WarehouseIndex() {
                         const msg = p.stockQuantity === 1 
                           ? 'Bu elan üzrə son məhsul satıldı. Satışı təsdiqləyirsinizmi?' 
                           : 'Bir ədəd satıldığı kimi qeydə alınacaq və elanın stok sayı bir vahid azalacaq. Təsdiq edirsinizmi?';
-                        if (window.Swal) {
-                          const res = await window.Swal.fire({
-                            title: p.stockQuantity === 1 ? 'Son məhsul satışı' : 'Satış qeydi',
-                            text: msg,
-                            icon: 'question',
-                            showCancelButton: true,
-                            confirmButtonText: 'Təsdiq edirəm',
-                            cancelButtonText: 'Ləğv et',
-                            confirmButtonColor: '#00d26a'
-                          });
-                          if (!res.isConfirmed) return;
-                        } else {
-                          if (!window.confirm(msg)) return;
-                        }
+                        const confirmed = await confirmModal({
+                          title: p.stockQuantity === 1 ? 'Son məhsul satışı' : 'Satış qeydi',
+                          text: msg,
+                          icon: 'question',
+                          confirmButtonText: 'Təsdiq edirəm'
+                        });
+                        if (!confirmed) return;
                         run(() => Api.warehouse.recordSale(p.id), p.stockQuantity === 1 ? 'Son məhsul satıldı və elan deaktiv edildi.' : 'Satış qeydə alındı.');
                       }}
                     >
@@ -410,7 +413,11 @@ function WarehouseIndex() {
                     <button
                       className="btn btn-sm btn-outline-danger"
                       title="Sil"
-                      onClick={() => window.confirm('Elanı silmək istədiyinizə əminsiniz?') && run(() => Api.warehouse.remove(p.id), 'Elan silindi.')}
+                      onClick={async () => {
+                        if (await confirmModal('Elanı silmək istədiyinizə əminsiniz?')) {
+                          run(() => Api.warehouse.remove(p.id), 'Elan silindi.');
+                        }
+                      }}
                     >
                       <i className="bi bi-trash"></i>
                     </button>

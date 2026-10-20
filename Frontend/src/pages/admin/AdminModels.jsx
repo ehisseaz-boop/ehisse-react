@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api as apiFetch } from '../../api';
 import { Table } from '../../components/Panel';
+import { confirmModal, alertModal } from '../../utils/confirmModal';
 
 export default function AdminModels() {
   const [brands, setBrands] = useState([]);
@@ -33,17 +34,17 @@ export default function AdminModels() {
       setBrandName('');
       loadBrands();
     } catch (err) {
-      alert('Xəta: ' + err.message);
+      alertModal('Xəta: ' + err.message, 'Xəta', 'error');
     }
   }
 
   async function handleDeleteBrand(id) {
-    if (!confirm('Markanı silmək istədiyinizə əminsiniz?')) return;
+    if (!await confirmModal('Markanı silmək istədiyinizə əminsiniz?')) return;
     try {
       await apiFetch(`/api/Admin/DeleteBrand/${id}`, { method: 'POST' });
       loadBrands();
     } catch (err) {
-      alert('Xəta: ' + err.message);
+      alertModal('Xəta: ' + err.message, 'Xəta', 'error');
     }
   }
 

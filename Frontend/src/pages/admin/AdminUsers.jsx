@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api as apiFetch } from '../../api';
 import { Table, statusBadge, Modal, fmtDate } from '../../components/Panel';
+import { confirmModal, alertModal } from '../../utils/confirmModal';
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
@@ -42,7 +43,12 @@ export default function AdminUsers() {
   }
 
   async function handleApprove(id) {
-    if (!window.confirm('Bu istifadəçini təsdiqləmək istədiyinizə əminsiniz?')) return;
+    if (!await confirmModal({
+      title: 'İstifadəçini təsdiqlə',
+      text: 'Bu istifadəçini təsdiqləmək istədiyinizə əminsiniz?',
+      confirmText: 'Təsdiqlə',
+      icon: 'question'
+    })) return;
     try {
       await apiFetch(`/api/Admin/ApproveUser/${id}`, { method: 'POST' });
       notify('İstifadəçi təsdiqləndi.');
@@ -61,7 +67,7 @@ export default function AdminUsers() {
   async function handleBlockSubmit(e) {
     e.preventDefault();
     if (!blockReason.trim()) {
-      alert('Zəhmət olmasa bloklama səbəbini qeyd edin.');
+      alertModal('Zəhmət olmasa bloklama səbəbini qeyd edin.', 'Diqqət', 'warning');
       return;
     }
     try {
@@ -79,7 +85,12 @@ export default function AdminUsers() {
   }
 
   async function handleUnblock(id) {
-    if (!window.confirm('İstifadəçini blokdan çıxarmaq istədiyinizə əminsiniz?')) return;
+    if (!await confirmModal({
+      title: 'Blokdan çıxar',
+      text: 'İstifadəçini blokdan çıxarmaq istədiyinizə əminsiniz?',
+      confirmText: 'Blokdan çıxar',
+      icon: 'question'
+    })) return;
     try {
       await apiFetch(`/api/Admin/UnblockUser/${id}`, { method: 'POST' });
       notify('İstifadəçi blokdan çıxarıldı.');
@@ -91,7 +102,12 @@ export default function AdminUsers() {
 
   async function handleDeleteUser(user) {
     const confirmText = `${user.fullName || user.username} adlı istifadəçini sistemdən tamamilə silmək istədiyinizə əminsiniz?\n\nQEYD: İstifadəçi silindikdən sonra onun məlumatları və elanları təmizlənəcək və o yenidən sıfırdan qeydiyyatdan keçə biləcək.`;
-    if (!window.confirm(confirmText)) return;
+    if (!await confirmModal({
+      title: 'İstifadəçini sil',
+      text: confirmText,
+      confirmText: 'Bəli, tamamilə sil',
+      isDanger: true
+    })) return;
     try {
       const res = await apiFetch(`/api/Admin/DeleteUser/${user.id}`, { method: 'POST' });
       notify(res.message || 'İstifadəçi sistemdən silindi.');

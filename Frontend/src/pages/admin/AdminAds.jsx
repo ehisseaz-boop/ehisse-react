@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api as apiFetch, imageSrc } from '../../api';
 import { Table, statusBadge, Modal, fmtDate } from '../../components/Panel';
 import { Link } from 'react-router-dom';
+import { confirmModal, alertModal } from '../../utils/confirmModal';
 
 export default function AdminAds() {
   const [ads, setAds] = useState([]);
@@ -46,7 +47,7 @@ export default function AdminAds() {
   async function handleDeactivateSubmit(e) {
     e.preventDefault();
     if (!deactivateReason.trim()) {
-      alert('Zəhmət olmasa səbəb daxil edin.');
+      alertModal('Zəhmət olmasa səbəb daxil edin.', 'Diqqət', 'warning');
       return;
     }
     try {
@@ -64,7 +65,12 @@ export default function AdminAds() {
   }
 
   async function handleRestore(id) {
-    if (!window.confirm('Bu elanı bərpa edib aktivləşdirmək istədiyinizə əminsiniz?')) return;
+    if (!await confirmModal({
+      title: 'Elanı bərpa et',
+      text: 'Bu elanı bərpa edib aktivləşdirmək istədiyinizə əminsiniz?',
+      confirmText: 'Bərpa et',
+      icon: 'question'
+    })) return;
     try {
       const res = await apiFetch(`/api/Admin/RestoreAd/${id}`, { method: 'POST' });
       notify(res.message || 'Elan bərpa edildi.');

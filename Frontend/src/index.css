@@ -1404,4 +1404,174 @@ footer {
     overflow: hidden;
 }
 
+/* ========================================================
+   Custom SweetAlert2 & Confirmation Modal Styling
+   Matches the site's dark/light design system
+   ======================================================== */
+.swal2-container {
+    z-index: 10000 !important;
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+    background: rgba(0, 0, 0, 0.72) !important;
+}
+
+.swal2-popup,
+.site-confirm-popup {
+    background: var(--bg-surface) !important;
+    color: var(--text-main) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 16px !important;
+    padding: 1.75rem 1.5rem !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+    max-width: 440px !important;
+    width: 92% !important;
+    font-family: inherit !important;
+}
+
+.swal2-title,
+.site-confirm-title {
+    color: var(--text-main) !important;
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 0.4rem !important;
+    padding: 0 !important;
+}
+
+.swal2-html-container,
+.site-confirm-text {
+    color: var(--text-muted) !important;
+    font-size: 0.95rem !important;
+    line-height: 1.55 !important;
+    margin: 0.5rem 0 1.25rem 0 !important;
+    padding: 0 !important;
+}
+
+.swal2-actions,
+.site-confirm-actions {
+    display: flex !important;
+    gap: 0.75rem !important;
+    justify-content: flex-end !important;
+    width: 100% !important;
+    margin-top: 1.25rem !important;
+    padding: 0 !important;
+}
+
+/* Site Confirmation Action Buttons */
+.site-confirm-btn {
+    padding: 0.55rem 1.35rem !important;
+    border-radius: 10px !important;
+    font-size: 0.92rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    border: 1px solid transparent !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    outline: none !important;
+    user-select: none !important;
+}
+
+.site-confirm-primary {
+    background-color: var(--accent) !important;
+    color: var(--accent-text) !important;
+    border-color: var(--accent) !important;
+}
+
+.site-confirm-primary:hover {
+    background-color: var(--accent-hover) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(163, 255, 18, 0.25) !important;
+}
+
+.site-confirm-danger {
+    background-color: #dc3545 !important;
+    color: #ffffff !important;
+    border-color: #dc3545 !important;
+}
+
+.site-confirm-danger:hover {
+    background-color: #bb2d3b !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3) !important;
+}
+
+.site-confirm-cancel {
+    background-color: transparent !important;
+    color: var(--text-main) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+.site-confirm-cancel:hover {
+    background-color: var(--bg-surface-hover) !important;
+    border-color: var(--text-muted) !important;
+}
+
+.site-confirm-input {
+    background-color: var(--input-bg) !important;
+    color: var(--text-main) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    padding: 0.65rem 0.85rem !important;
+    margin: 1rem 0 0.5rem 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.site-confirm-input:focus {
+    border-color: var(--accent) !important;
+    outline: none !important;
+}
+
+/* Fallback styling for uncustomized Swal dialogs */
+.swal2-styled.swal2-confirm {
+    background-color: var(--accent) !important;
+    color: var(--accent-text) !important;
+    border-radius: 10px !important;
+    padding: 0.55rem 1.35rem !important;
+    font-size: 0.92rem !important;
+    font-weight: 600 !important;
+    box-shadow: none !important;
+}
+
+.swal2-styled.swal2-cancel {
+    background-color: transparent !important;
+    color: var(--text-main) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 10px !important;
+    padding: 0.55rem 1.35rem !important;
+    font-size: 0.92rem !important;
+    font-weight: 500 !important;
+    box-shadow: none !important;
+}
+
+.swal2-icon.swal2-warning {
+    border-color: #f59e0b !important;
+    color: #f59e0b !important;
+}
+
+.swal2-icon.swal2-question {
+    border-color: var(--accent) !important;
+    color: var(--accent) !important;
+}
+
+.swal2-icon.swal2-error {
+    border-color: #ef4444 !important;
+    color: #ef4444 !important;
+}
+
+.swal2-icon.swal2-success {
+    border-color: var(--accent) !important;
+    color: var(--accent) !important;
+}
+
+.swal2-icon.swal2-success [class^='swal2-success-line'] {
+    background-color: var(--accent) !important;
+}
+
+.swal2-icon.swal2-success .swal2-success-ring {
+    border-color: var(--accent) !important;
+}
+
+
 

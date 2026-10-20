@@ -4,6 +4,7 @@ import { Api } from '../api';
 import { Loading, ErrorBox } from './Categories';
 import { Modal } from '../components/Panel';
 import { usePageSeo } from '../utils/seo';
+import { alertModal } from '../utils/confirmModal';
 
 function Saticilar({ user }) {
   usePageSeo({
@@ -45,7 +46,7 @@ function Saticilar({ user }) {
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     if (!user) {
-      alert('Rəy bildirmək üçün zəhmət olmasa daxil olun.');
+      alertModal('Rəy bildirmək üçün zəhmət olmasa daxil olun.', 'Diqqət', 'info');
       return;
     }
     if (!commentInput.trim()) {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api as apiFetch } from '../../api';
 import { Table, Tabs, Modal } from '../../components/Panel';
+import { confirmModal, alertModal } from '../../utils/confirmModal';
 
 export default function AdminCatalog() {
   const [activeTab, setActiveTab] = useState('categories');
@@ -132,7 +133,12 @@ export default function AdminCatalog() {
   }
 
   async function handleDeleteCategory(id, name) {
-    if (!window.confirm(`"${name}" kateqoriyasını silmək istədiyinizə əminsiniz?`)) return;
+    if (!await confirmModal({
+      title: 'Kateqoriyanı sil',
+      text: `"${name}" kateqoriyasını silmək istədiyinizə əminsiniz?`,
+      confirmText: 'Bəli, silinsin',
+      isDanger: true
+    })) return;
     try {
       const res = await apiFetch(`/api/Admin/DeleteCategory/${id}`, { method: 'POST' });
       notify(res.message || 'Kateqoriya silindi.');
@@ -191,7 +197,12 @@ export default function AdminCatalog() {
   }
 
   async function handleDeleteBrand(id, name) {
-    if (!window.confirm(`"${name}" brendini silmək istədiyinizə əminsiniz?`)) return;
+    if (!await confirmModal({
+      title: 'Brendi sil',
+      text: `"${name}" brendini silmək istədiyinizə əminsiniz?`,
+      confirmText: 'Bəli, silinsin',
+      isDanger: true
+    })) return;
     try {
       const res = await apiFetch(`/api/Admin/DeleteBrand/${id}`, { method: 'POST' });
       notify(res.message || 'Brend silindi.');
@@ -218,7 +229,12 @@ export default function AdminCatalog() {
   }
 
   async function handleRemoveBrand(categoryId, brandId) {
-    if (!window.confirm('Bu brendi kateqoriyadan ayırmaq istədiyinizə əminsiniz?')) return;
+    if (!await confirmModal({
+      title: 'Brendi ayır',
+      text: 'Bu brendi kateqoriyadan ayırmaq istədiyinizə əminsiniz?',
+      confirmText: 'Ayır',
+      isDanger: true
+    })) return;
     try {
       await apiFetch('/api/Admin/RemoveBrand', {
         method: 'POST',
@@ -238,7 +254,7 @@ export default function AdminCatalog() {
   async function handleCreateModel(e) {
     e.preventDefault();
     if (!modelName.trim() || !modelCatId || !modelBrandId) {
-      alert('Zəhmət olmasa kateqoriya, brend və model adını qeyd edin.');
+      alertModal('Zəhmət olmasa kateqoriya, brend və model adını qeyd edin.', 'Diqqət', 'warning');
       return;
     }
     try {
@@ -298,7 +314,12 @@ export default function AdminCatalog() {
   }
 
   async function handleDeleteModel(id, name) {
-    if (!window.confirm(`"${name}" modelini silmək istədiyinizə əminsiniz?`)) return;
+    if (!await confirmModal({
+      title: 'Modeli sil',
+      text: `"${name}" modelini silmək istədiyinizə əminsiniz?`,
+      confirmText: 'Bəli, silinsin',
+      isDanger: true
+    })) return;
     try {
       const res = await apiFetch(`/api/Admin/DeleteModel/${id}`, { method: 'POST' });
       notify(res.message || 'Model silindi.');
@@ -348,7 +369,12 @@ export default function AdminCatalog() {
   }
 
   async function handleDeletePartType(id, name) {
-    if (!window.confirm(`"${name}" hissə növünü silmək istədiyinizə əminsiniz?`)) return;
+    if (!await confirmModal({
+      title: 'Hissə növünü sil',
+      text: `"${name}" hissə növünü silmək istədiyinizə əminsiniz?`,
+      confirmText: 'Bəli, silinsin',
+      isDanger: true
+    })) return;
     try {
       const res = await apiFetch(`/api/Admin/DeletePartType/${id}`, { method: 'POST' });
       notify(res.message || 'Hissə növü silindi.');
@@ -375,7 +401,12 @@ export default function AdminCatalog() {
   }
 
   async function handleRemovePartType(categoryId, partTypeId) {
-    if (!window.confirm('Bu hissə növünü kateqoriyadan ayırmaq istədiyinizə əminsiniz?')) return;
+    if (!await confirmModal({
+      title: 'Hissə növünü ayır',
+      text: 'Bu hissə növünü kateqoriyadan ayırmaq istədiyinizə əminsiniz?',
+      confirmText: 'Ayır',
+      isDanger: true
+    })) return;
     try {
       await apiFetch('/api/Admin/RemovePartType', {
         method: 'POST',

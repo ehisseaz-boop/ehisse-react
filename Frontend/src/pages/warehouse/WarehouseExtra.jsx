@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Api } from '../../api';
 import { Loading, ErrorBox } from '../Categories';
 import { Table, fmtDate } from '../../components/Panel';
+import { alertModal } from '../../utils/confirmModal';
 
 export function SalesHistory() {
   const [rows, setRows] = useState(null);
@@ -437,10 +438,10 @@ export function Settings() {
                         address: f.address || `Koordinat: ${lat}, ${lng}`
                       }));
                     },
-                    () => alert('Cari yerinizi təyin etmək mümkün olmadı.')
+                    () => alertModal('Cari yerinizi təyin etmək mümkün olmadı.', 'Diqqət', 'warning')
                   );
                 } else {
-                  alert('Brauzeriniz geolokasiyanı dəstəkləmir.');
+                  alertModal('Brauzeriniz geolokasiyanı dəstəkləmir.', 'Diqqət', 'warning');
                 }
               }}
             >

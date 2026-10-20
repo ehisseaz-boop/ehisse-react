@@ -4,6 +4,7 @@ import { Api, imageSrc } from '../../api';
 import { Loading, ErrorBox } from '../Categories';
 import { statusBadge } from '../../components/Panel';
 import { cleanPartTypeName } from '../Home';
+import { confirmModal, alertModal } from '../../utils/confirmModal';
 
 const empty = {
   categoryId: '', brandId: '', deviceModelId: '', partTypeId: '', qualityTypeId: '',
@@ -225,7 +226,7 @@ function PartForm() {
   };
 
   const removeImage = async (imageId) => {
-    if (!window.confirm('Şəkli silmək istəyirsiniz?')) return;
+    if (!await confirmModal('Şəkli silmək istəyirsiniz?')) return;
     try {
       await Api.images.remove(imageId);
       const p = await Api.warehouse.get(id);
@@ -418,10 +419,10 @@ function PartForm() {
                       locationAddress: f.locationAddress || `Koordinat: ${lat}, ${lng}`
                     }));
                   },
-                  () => alert('Cari yerinizi təyin etmək mümkün olmadı.')
+                  () => alertModal('Cari yerinizi təyin etmək mümkün olmadı.', 'Diqqət', 'warning')
                 );
               } else {
-                alert('Brauzeriniz geolokasiyanı dəstəkləmir.');
+                alertModal('Brauzeriniz geolokasiyanı dəstəkləmir.', 'Diqqət', 'warning');
               }
             }}
           >

@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Api, imageSrc } from '../../api';
 import { Loading, ErrorBox } from '../Categories';
 import { statusBadge } from '../../components/Panel';
+import { confirmModal, alertModal } from '../../utils/confirmModal';
 
 export default function WarehousePartDetails() {
   const { id } = useParams();
@@ -43,21 +44,13 @@ export default function WarehousePartDetails() {
       confirmMsg = 'Bir ədəd satıldığı kimi qeydə alınacaq və elanın stok sayı bir vahid azalacaq. Təsdiq edirsinizmi?';
     }
 
-    if (window.Swal) {
-      const res = await window.Swal.fire({
-        title: confirmTitle,
-        text: confirmMsg,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Təsdiq edirəm',
-        cancelButtonText: 'Ləğv et',
-        confirmButtonColor: '#00d26a',
-        cancelButtonColor: '#6c757d'
-      });
-      if (!res.isConfirmed) return;
-    } else {
-      if (!window.confirm(confirmMsg)) return;
-    }
+    const confirmed = await confirmModal({
+      title: confirmTitle,
+      text: confirmMsg,
+      icon: 'question',
+      confirmButtonText: 'Təsdiq edirəm'
+    });
+    if (!confirmed) return;
 
     setActionBusy(true);
     try {
@@ -75,15 +68,7 @@ export default function WarehousePartDetails() {
       }
       loadPart();
     } catch (err) {
-      if (window.Swal) {
-        window.Swal.fire({
-          icon: 'error',
-          title: 'Xəta baş verdi',
-          text: err.message || 'Satış qeyd edilə bilmədi.'
-        });
-      } else {
-        alert(err.message || 'Satış qeyd edilə bilmədi.');
-      }
+      await alertModal(err.message || 'Satış qeyd edilə bilmədi.', 'Xəta baş verdi', 'error');
     } finally {
       setActionBusy(false);
     }
