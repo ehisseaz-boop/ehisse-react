@@ -103,7 +103,7 @@ export default function AdminIndex() {
               <i className="bi bi-shield-check text-accent"></i> Moderasiya Qaydaları Xatırlatması
             </h5>
             <ul className="text-muted mb-0 ps-3" style={{ lineHeight: '1.8' }}>
-              <li><strong>İstifadəçilər:</strong> Usta və Anbardar admin təsdiq edənə qədər kabinetə daxil ola bilməz.</li>
+              <li><strong>İstifadəçilər:</strong> Usta və Satıcı admin təsdiq edənə qədər kabinetə daxil ola bilməz.</li>
               <li><strong>Elanlar:</strong> Bütün yeni və redaktə edilmiş elanlar yalnız admin təsdiqindən sonra dərc olunur.</li>
               <li><strong>Stok və Bərpa:</strong> Stok 0 olduqda elan avtomatik deaktiv olur. Satıcı stok artırsa belə, elan yalnız admin bərpa etdikdə yenidən aktivləşir.</li>
               <li><strong>Əlaqə:</strong> Sifarişlər yalnız WhatsApp və zəng vasitəsilə həyata keçirilir.</li>

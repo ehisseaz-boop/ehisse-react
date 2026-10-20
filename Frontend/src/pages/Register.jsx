@@ -8,7 +8,7 @@ import { usePageSeo } from '../utils/seo';
 function Register({ onRegister }) {
   usePageSeo({
     title: 'Qeydiyyat',
-    description: 'e-hisse.az platformasında usta və ya anbardar kimi qeydiyyatdan keçin.'
+    description: 'e-hisse.az platformasında usta və ya satıcı kimi qeydiyyatdan keçin.'
   });
 
   const navigate = useNavigate();
@@ -314,7 +314,7 @@ function Register({ onRegister }) {
         <input className="form-control mb-2" type="password" placeholder="Şifrə (min 6 simvol)" minLength={6} value={form.password} onChange={set('password')} autoComplete="new-password" required />
         <select className="form-select mb-3" value={form.role} onChange={set('role')}>
           <option value={2}>Usta</option>
-          <option value={3}>Anbardar</option>
+          <option value={3}>Satıcı</option>
         </select>
         <button type="submit" className="btn btn-primary bg-accent text-dark fw-bold w-100 d-flex align-items-center justify-content-center gap-2" disabled={busy || uploadingImage}>
           {busy ? (

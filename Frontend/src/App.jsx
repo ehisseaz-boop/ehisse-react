@@ -240,7 +240,7 @@ function App() {
                     {user.fullName || user.username}
                   </span>
                   <span className="user-role" style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>
-                    {user.role === 'Admin' ? 'Administrator' : user.role === 'Anbardar' ? 'Satıcı / Anbardar' : 'Usta / Alıcı'}
+                    {user.role === 'Admin' ? 'Administrator' : user.role === 'Anbardar' ? 'Satıcı' : 'Usta / Alıcı'}
                   </span>
                 </div>
               </Link>

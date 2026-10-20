@@ -162,7 +162,7 @@ export default function AdminUsers() {
       label: 'Rol',
       render: u => (
         <span className={`badge ${u.role === 'Admin' ? 'bg-primary' : u.role === 'Anbardar' ? 'bg-info text-dark' : 'bg-warning text-dark'}`}>
-          {u.role}
+          {u.role === 'Anbardar' ? 'Satıcı' : u.role}
         </span>
       )
     },
@@ -271,7 +271,7 @@ export default function AdminUsers() {
             <option value="">Bütün Rollar</option>
             <option value="Admin">Administrator</option>
             <option value="Usta">Usta</option>
-            <option value="Anbardar">Anbardar</option>
+            <option value="Anbardar">Satıcı</option>
           </select>
         </div>
         <div className="col-6 col-md-2">

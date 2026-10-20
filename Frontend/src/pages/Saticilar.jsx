@@ -118,9 +118,9 @@ function Saticilar({ user }) {
       case 'usta':
         return 'Ustanın adı və ya soyadı ilə axtar (məs: Elçin, Nigar)...';
       case 'anbardar':
-        return 'Anbardarın adı və ya anbar adı ilə axtar (məs: Rəşad, Vüqar)...';
+        return 'Satıcının adı və ya mağaza adı ilə axtar (məs: Rəşad, Vüqar)...';
       default:
-        return 'Servis adı, usta adı və ya anbardar adı ilə axtar...';
+        return 'Servis adı, usta adı və ya satıcı adı ilə axtar...';
     }
   }, [searchType]);
 
@@ -196,7 +196,7 @@ function Saticilar({ user }) {
               className={`btn btn-sm ${activeRole === 'anbardar' ? 'bg-accent text-dark fw-bold' : 'btn-outline text-muted'}`}
               style={{ borderRadius: '20px', padding: '0.4rem 1.2rem' }}
             >
-              <i className="bi bi-box-seam me-1"></i> Anbardarlar və Anbarlar
+              <i className="bi bi-box-seam me-1"></i> Satıcılar və Mağazalar
             </button>
           </div>
 
@@ -219,7 +219,7 @@ function Saticilar({ user }) {
                 <option value="all">Hamısı üzrə axtar</option>
                 <option value="servis">Servisin adına görə</option>
                 <option value="usta">Ustanın adına görə</option>
-                <option value="anbardar">Anbardarın adına görə</option>
+                <option value="anbardar">Satıcının adına görə</option>
               </select>
             </div>
 
@@ -364,7 +364,7 @@ function Saticilar({ user }) {
                         {isUsta ? (
                           <span><i className="bi bi-person-fill text-accent me-1"></i> Usta: <strong className="text-main">{s.contactPerson || `${s.firstName || ''} ${s.lastName || ''}`.trim()}</strong></span>
                         ) : isAnbardar ? (
-                          <span><i className="bi bi-person-fill text-accent me-1"></i> Anbardar: <strong className="text-main">{s.contactPerson || `${s.firstName || ''} ${s.lastName || ''}`.trim()}</strong></span>
+                          <span><i className="bi bi-person-fill text-accent me-1"></i> Satıcı: <strong className="text-main">{s.contactPerson || `${s.firstName || ''} ${s.lastName || ''}`.trim()}</strong></span>
                         ) : (
                           <span><i className="bi bi-person-fill text-accent me-1"></i> Məsul şəxs: <strong className="text-main">{s.contactPerson}</strong></span>
                         )}
