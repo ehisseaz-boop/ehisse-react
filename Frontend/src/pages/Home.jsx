@@ -41,6 +41,11 @@ function formatCleanTitle(part) {
     fullModel = `${brand} ${model}`;
   }
 
+  // Əgər məhsul bütöv telefondursa, sadəcə telefonun modelini göstər
+  if (partType.toLowerCase().includes('bütöv') || partType.toLowerCase().includes('cihaz')) {
+    return fullModel || part.title || 'Telefon';
+  }
+
   // Təmiz ad formalaşdırırıq: məs. "iPhone 16 Pro Max Batareyalar"
   if (fullModel && partType) {
     return `${fullModel} ${partType}`;
