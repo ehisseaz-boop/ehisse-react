@@ -45,6 +45,7 @@ export default function AdminCatalog() {
 
   // Modal / Edit States
   const [editModal, setEditModal] = useState({ open: false, type: null, data: null });
+  const [modalSaving, setModalSaving] = useState(false);
 
   useEffect(() => {
     loadAllCatalogData();
@@ -108,6 +109,7 @@ export default function AdminCatalog() {
     e.preventDefault();
     const { id, name, displayOrder, isActive } = editModal.data;
     if (!name.trim()) return;
+    setModalSaving(true);
     try {
       await apiFetch(`/api/Admin/UpdateCategory/${id}`, {
         method: 'PUT',
@@ -116,9 +118,12 @@ export default function AdminCatalog() {
       });
       setEditModal({ open: false, type: null, data: null });
       notify('Kateqoriya uğurla yeniləndi.');
-      loadAllCatalogData();
+      await loadAllCatalogData();
     } catch (err) {
       notify('Xəta: ' + err.message, 'danger');
+      alertModal('Yeniləmə zamanı xəta baş verdi: ' + err.message, 'Xəta', 'error');
+    } finally {
+      setModalSaving(false);
     }
   }
 
@@ -172,6 +177,7 @@ export default function AdminCatalog() {
     e.preventDefault();
     const { id, name, isActive } = editModal.data;
     if (!name.trim()) return;
+    setModalSaving(true);
     try {
       await apiFetch(`/api/Admin/UpdateBrand/${id}`, {
         method: 'PUT',
@@ -180,9 +186,12 @@ export default function AdminCatalog() {
       });
       setEditModal({ open: false, type: null, data: null });
       notify('Brend uğurla yeniləndi.');
-      loadAllCatalogData();
+      await loadAllCatalogData();
     } catch (err) {
       notify('Xəta: ' + err.message, 'danger');
+      alertModal('Yeniləmə zamanı xəta baş verdi: ' + err.message, 'Xəta', 'error');
+    } finally {
+      setModalSaving(false);
     }
   }
 
@@ -726,7 +735,7 @@ export default function AdminCatalog() {
                     required
                   />
                 </div>
-                <div className="col-12 col-md-2">
+                <div className="col-12 col-md-3">
                   <label className="form-label text-muted small">Model Kodu</label>
                   <input
                     type="text"
@@ -774,8 +783,7 @@ export default function AdminCatalog() {
                 { key: 'brandName', label: 'Brend' },
                 { key: 'categoryName', label: 'Kateqoriya' },
                 { key: 'modelCode', label: 'Kod', render: m => m.modelCode || '—' },
-                { key: 'releaseYear', label: 'İl' },
-                {
+                                {
                   key: 'isActive',
                   label: 'Status',
                   render: m => <span className={`badge ${m.isActive ? 'bg-success' : 'bg-secondary'}`}>{m.isActive ? 'Aktiv' : 'Deaktiv'}</span>
@@ -1087,7 +1095,7 @@ export default function AdminCatalog() {
               />
             </div>
             <div className="row g-2 mb-3">
-              <div className="col-8">
+              <div className="col-12">
                 <label className="form-label">Model Kodu</label>
                 <input
                   type="text"
