@@ -167,6 +167,10 @@ export function Settings() {
     setUploadingShopPhoto(true);
     setError('');
     try {
+      // Dərhal sıxılmış DataURL əldə edirik ki, həm preview anında açılsın, həm də bazada daimi qalsın
+      const base64Url = await compressToBase64(file);
+      setForm(prev => ({ ...prev, shopPhotoUrl: base64Url }));
+
       const fd = new FormData();
       fd.append('file', file);
       fd.append('folder', 'shops');
@@ -176,20 +180,11 @@ export function Settings() {
         credentials: 'include'
       });
       const data = await res.json().catch(() => null);
-      if (res.ok && data?.url) {
+      if (res.ok && data?.url && data.url.startsWith('http')) {
         setForm(prev => ({ ...prev, shopPhotoUrl: data.url }));
-      } else {
-        // Server xəta verdikdə və ya əlçatan olmadıqda dərhal sıxılmış DataURL fallback istifadə edilir
-        const base64Url = await compressToBase64(file);
-        setForm(prev => ({ ...prev, shopPhotoUrl: base64Url }));
       }
     } catch {
-      try {
-        const base64Url = await compressToBase64(file);
-        setForm(prev => ({ ...prev, shopPhotoUrl: base64Url }));
-      } catch {
-        setError('Şəkil formatı oxuna bilmədi. Zəhmət olmasa başqa şəkil seçin.');
-      }
+      // Artıq base64Url uğurla təyin olunub
     } finally {
       setUploadingShopPhoto(false);
     }

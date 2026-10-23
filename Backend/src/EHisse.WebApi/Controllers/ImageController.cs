@@ -74,6 +74,28 @@ namespace EHisse.WebApi.Controllers
             return Redirect(url);
         }
 
+        [HttpGet("/uploads/{**slug}")]
+        public IActionResult GetUpload(string? slug)
+        {
+            if (string.IsNullOrEmpty(slug)) return NotFound();
+
+            Response.Headers.Append("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
+
+            var cleanPath = slug.TrimStart('/').Replace('\\', '/');
+            if (!cleanPath.Contains(".."))
+            {
+                var wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", cleanPath.Replace('/', Path.DirectorySeparatorChar));
+                if (System.IO.File.Exists(wwwrootPath))
+                {
+                    return PhysicalFile(wwwrootPath, GetMimeType(wwwrootPath));
+                }
+            }
+
+            var svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"200\" height=\"200\" viewBox=\"0 0 200 200\"><rect width=\"100%\" height=\"100%\" fill=\"#1e293b\"/><text x=\"50%\" y=\"50%\" dominant-baseline=\"middle\" text-anchor=\"middle\" fill=\"#94a3b8\" font-family=\"sans-serif\" font-size=\"14\">Mağaza Şəkli</text></svg>";
+            return Content(svg, "image/svg+xml");
+        }
+
+
         // ─────────────────────────────────────────────────────────────
         //  Şəkil yükləmə — Blob Storage-a (və ya yerli diskə) yükləyir, DB-a path yazır
         //  POST api/Image/Upload  (multipart/form-data: sparePartId, file, isMain)

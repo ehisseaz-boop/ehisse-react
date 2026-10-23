@@ -162,12 +162,20 @@ function WarehouseIndex() {
               {seller.shopPhotoUrl ? (
                 <img
                   src={seller.shopPhotoUrl}
-                  alt={seller.companyName}
+                  alt={(seller.companyName || "").replace(/\(?Anbardar\)?/gi, "(Satıcı)")}
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    if (e.currentTarget.nextElementSibling) {
+                      e.currentTarget.nextElementSibling.style.display = 'block';
+                    }
+                  }}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
-              ) : (
-                <i className="bi bi-shop text-muted fs-2"></i>
-              )}
+              ) : null}
+              <i
+                className="bi bi-shop text-muted fs-2"
+                style={{ display: seller.shopPhotoUrl ? 'none' : 'block' }}
+              ></i>
             </div>
             <div>
               <div className="d-flex align-items-center gap-2">
