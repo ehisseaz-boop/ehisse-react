@@ -95,6 +95,39 @@ public static class DatabaseSeeder
         }
         catch { }
 
+                // Fix PostgreSQL sequences for all primary keys
+        try
+        {
+            context.Database.ExecuteSqlRaw(@"
+                DO 
+                DECLARE
+                    tbl record;
+                    max_id integer;
+                    seq_name text;
+                BEGIN
+                    FOR tbl IN 
+                        SELECT table_name 
+                        FROM information_schema.tables 
+                        WHERE table_schema = 'public' 
+                          AND table_type = 'BASE TABLE'
+                    LOOP
+                        BEGIN
+                            seq_name := pg_get_serial_sequence('""' || tbl.table_name || '""', 'Id');
+                            IF seq_name IS NOT NULL THEN
+                                EXECUTE format('SELECT COALESCE(MAX(""Id""), 0) FROM ""%I""', tbl.table_name) INTO max_id;
+                                IF max_id > 0 THEN
+                                    EXECUTE format('SELECT setval(%L, %s)', seq_name, max_id);
+                                END IF;
+                            END IF;
+                        EXCEPTION WHEN OTHERS THEN
+                            -- skip tables without integer Id
+                        END;
+                    END LOOP;
+                END ;
+            ");
+        }
+        catch { }
+
         // Ensure Admin user credentials match updated configuration
         try
         {

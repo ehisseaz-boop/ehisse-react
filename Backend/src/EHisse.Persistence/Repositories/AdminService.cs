@@ -422,6 +422,13 @@ namespace EHisse.Persistence.Repositories
                 DisplayOrder = displayOrder,
                 IsActive = true
             };
+            // PostgreSQL sequence sync yoxlaması
+            try
+            {
+                var maxId = await _context.Categories.MaxAsync(c => (int?)c.Id) ?? 0;
+                await _context.Database.ExecuteSqlRawAsync($"SELECT setval(pg_get_serial_sequence('\"Categories\"', 'Id'), {maxId});");
+            }
+            catch { }
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
             return category;

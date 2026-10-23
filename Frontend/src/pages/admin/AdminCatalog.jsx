@@ -291,6 +291,7 @@ export default function AdminCatalog() {
     e.preventDefault();
     const { id, name, modelCode, releaseYear, categoryId, brandId, isActive } = editModal.data;
     if (!name.trim() || !categoryId || !brandId) return;
+    setModalSaving(true);
     try {
       await apiFetch(`/api/Admin/UpdateModel/${id}`, {
         method: 'PUT',
@@ -306,9 +307,12 @@ export default function AdminCatalog() {
       });
       setEditModal({ open: false, type: null, data: null });
       notify('Model uğurla yeniləndi.');
-      loadAllCatalogData();
+      await loadAllCatalogData();
     } catch (err) {
       notify('Xəta: ' + err.message, 'danger');
+      alertModal('Yeniləmə zamanı xəta baş verdi: ' + err.message, 'Xəta', 'error');
+    } finally {
+      setModalSaving(false);
     }
   }
 
@@ -363,6 +367,7 @@ export default function AdminCatalog() {
     e.preventDefault();
     const { id, name, key, isAccessory, isPortable } = editModal.data;
     if (!name.trim()) return;
+    setModalSaving(true);
     try {
       await apiFetch(`/api/Admin/UpdatePartType/${id}`, {
         method: 'PUT',
@@ -371,9 +376,12 @@ export default function AdminCatalog() {
       });
       setEditModal({ open: false, type: null, data: null });
       notify('Hissə növü yeniləndi.');
-      loadAllCatalogData();
+      await loadAllCatalogData();
     } catch (err) {
       notify('Xəta: ' + err.message, 'danger');
+      alertModal('Yeniləmə zamanı xəta baş verdi: ' + err.message, 'Xəta', 'error');
+    } finally {
+      setModalSaving(false);
     }
   }
 
@@ -1005,11 +1013,18 @@ export default function AdminCatalog() {
               <label className="form-check-label" htmlFor="catIsActive">Aktivdir</label>
             </div>
             <div className="d-flex justify-content-end gap-2">
-              <button type="button" className="btn btn-secondary" onClick={() => setEditModal({ open: false, type: null, data: null })}>
+              <button type="button" className="btn btn-secondary" disabled={modalSaving} onClick={() => setEditModal({ open: false, type: null, data: null })}>
                 Ləğv et
               </button>
-              <button type="submit" className="btn btn-primary">
-                Yadda Saxla
+              <button type="submit" className="btn btn-primary" disabled={modalSaving}>
+                {modalSaving ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    Yadda saxlanılır...
+                  </>
+                ) : (
+                  'Yadda Saxla'
+                )}
               </button>
             </div>
           </form>
@@ -1020,7 +1035,7 @@ export default function AdminCatalog() {
         <Modal
           open={true}
           title="Brendi Redaktə Et"
-          onClose={() => setEditModal({ open: false, type: null, data: null })}
+          onClose={() => !modalSaving && setEditModal({ open: false, type: null, data: null })}
         >
           <form onSubmit={handleUpdateBrand}>
             <div className="mb-3">
@@ -1044,11 +1059,18 @@ export default function AdminCatalog() {
               <label className="form-check-label" htmlFor="brandIsActive">Aktivdir</label>
             </div>
             <div className="d-flex justify-content-end gap-2">
-              <button type="button" className="btn btn-secondary" onClick={() => setEditModal({ open: false, type: null, data: null })}>
+              <button type="button" className="btn btn-secondary" disabled={modalSaving} onClick={() => setEditModal({ open: false, type: null, data: null })}>
                 Ləğv et
               </button>
-              <button type="submit" className="btn btn-primary">
-                Yadda Saxla
+              <button type="submit" className="btn btn-primary" disabled={modalSaving}>
+                {modalSaving ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    Yadda saxlanılır...
+                  </>
+                ) : (
+                  'Yadda Saxla'
+                )}
               </button>
             </div>
           </form>
@@ -1059,7 +1081,7 @@ export default function AdminCatalog() {
         <Modal
           open={true}
           title="Modeli Redaktə Et"
-          onClose={() => setEditModal({ open: false, type: null, data: null })}
+          onClose={() => !modalSaving && setEditModal({ open: false, type: null, data: null })}
         >
           <form onSubmit={handleUpdateModel}>
             <div className="mb-3">
@@ -1095,7 +1117,7 @@ export default function AdminCatalog() {
               />
             </div>
             <div className="row g-2 mb-3">
-              <div className="col-12">
+              <div className="col-8">
                 <label className="form-label">Model Kodu</label>
                 <input
                   type="text"
@@ -1125,11 +1147,18 @@ export default function AdminCatalog() {
               <label className="form-check-label" htmlFor="modelIsActive">Aktivdir</label>
             </div>
             <div className="d-flex justify-content-end gap-2">
-              <button type="button" className="btn btn-secondary" onClick={() => setEditModal({ open: false, type: null, data: null })}>
+              <button type="button" className="btn btn-secondary" disabled={modalSaving} onClick={() => setEditModal({ open: false, type: null, data: null })}>
                 Ləğv et
               </button>
-              <button type="submit" className="btn btn-primary">
-                Yadda Saxla
+              <button type="submit" className="btn btn-primary" disabled={modalSaving}>
+                {modalSaving ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    Yadda saxlanılır...
+                  </>
+                ) : (
+                  'Yadda Saxla'
+                )}
               </button>
             </div>
           </form>
@@ -1140,7 +1169,7 @@ export default function AdminCatalog() {
         <Modal
           open={true}
           title="Hissə Növünü Redaktə Et"
-          onClose={() => setEditModal({ open: false, type: null, data: null })}
+          onClose={() => !modalSaving && setEditModal({ open: false, type: null, data: null })}
         >
           <form onSubmit={handleUpdatePartType}>
             <div className="mb-3">
@@ -1183,11 +1212,18 @@ export default function AdminCatalog() {
               <label className="form-check-label" htmlFor="ptIsPort">Daşına biləndir</label>
             </div>
             <div className="d-flex justify-content-end gap-2">
-              <button type="button" className="btn btn-secondary" onClick={() => setEditModal({ open: false, type: null, data: null })}>
+              <button type="button" className="btn btn-secondary" disabled={modalSaving} onClick={() => setEditModal({ open: false, type: null, data: null })}>
                 Ləğv et
               </button>
-              <button type="submit" className="btn btn-primary">
-                Yadda Saxla
+              <button type="submit" className="btn btn-primary" disabled={modalSaving}>
+                {modalSaving ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                    Yadda saxlanılır...
+                  </>
+                ) : (
+                  'Yadda Saxla'
+                )}
               </button>
             </div>
           </form>
