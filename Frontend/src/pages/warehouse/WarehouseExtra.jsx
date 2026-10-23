@@ -118,6 +118,42 @@ export function Settings() {
     }
   };
 
+  // Köməkçi: Şəkili client tərəfdə sıxıb DataURL əldə edirik (server problemi olarsa etibarlı fallback üçün)
+  const compressToBase64 = (imgFile) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 800;
+          const MAX_HEIGHT = 800;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height = Math.round((height * MAX_WIDTH) / width);
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width = Math.round((width * MAX_HEIGHT) / height);
+              height = MAX_HEIGHT;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', 0.8));
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(imgFile);
+    });
+  };
+
   const handleShopPhotoChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -132,18 +168,27 @@ export function Settings() {
     try {
       const fd = new FormData();
       fd.append('file', file);
+      fd.append('folder', 'shops');
       const res = await fetch('/api/FileUpload/upload', {
         method: 'POST',
-        body: fd
+        body: fd,
+        credentials: 'include'
       });
       const data = await res.json().catch(() => null);
       if (res.ok && data?.url) {
         setForm(prev => ({ ...prev, shopPhotoUrl: data.url }));
       } else {
-        setError(data?.message || 'Şəkil yüklənərkən xəta baş verdi.');
+        // Server xəta verdikdə və ya əlçatan olmadıqda dərhal sıxılmış DataURL fallback istifadə edilir
+        const base64Url = await compressToBase64(file);
+        setForm(prev => ({ ...prev, shopPhotoUrl: base64Url }));
       }
     } catch {
-      setError('Şəkil yüklənərkən şəbəkə xətası baş verdi.');
+      try {
+        const base64Url = await compressToBase64(file);
+        setForm(prev => ({ ...prev, shopPhotoUrl: base64Url }));
+      } catch {
+        setError('Şəkil formatı oxuna bilmədi. Zəhmət olmasa başqa şəkil seçin.');
+      }
     } finally {
       setUploadingShopPhoto(false);
     }

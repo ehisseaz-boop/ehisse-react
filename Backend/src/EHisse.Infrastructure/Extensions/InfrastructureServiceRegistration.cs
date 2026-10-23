@@ -14,22 +14,38 @@ public static class InfrastructureServiceRegistration
         // Azure Blob Storage servisi
         services.AddSingleton<IBlobStorageService, BlobStorageService>();
 
-        // Cloudflare R2 (AmazonS3Client)
+        // Cloudflare R2 (AmazonS3Client) - konfiqurasiya yoxdursa null qaytarır, tətbiqi çökdürmür
         services.AddSingleton<IAmazonS3>(sp =>
         {
             var config = sp.GetRequiredService<IConfiguration>();
-            var accountId = config["CloudflareR2:AccountId"] ?? string.Empty;
-            var accessKeyId = config["CloudflareR2:AccessKeyId"] ?? string.Empty;
-            var secretAccessKey = config["CloudflareR2:SecretAccessKey"] ?? string.Empty;
+            var accountId = config["CloudflareR2:AccountId"] ?? Environment.GetEnvironmentVariable("CloudflareR2__AccountId") ?? string.Empty;
+            var accessKeyId = config["CloudflareR2:AccessKeyId"] ?? Environment.GetEnvironmentVariable("CloudflareR2__AccessKeyId") ?? string.Empty;
+            var secretAccessKey = config["CloudflareR2:SecretAccessKey"] ?? Environment.GetEnvironmentVariable("CloudflareR2__SecretAccessKey") ?? string.Empty;
 
-            var credentials = new Amazon.Runtime.BasicAWSCredentials(accessKeyId, secretAccessKey);
-            var s3Config = new AmazonS3Config
+            if (string.IsNullOrWhiteSpace(accountId) ||
+                string.IsNullOrWhiteSpace(accessKeyId) ||
+                string.IsNullOrWhiteSpace(secretAccessKey) ||
+                accountId.Contains("YOUR_") ||
+                accessKeyId.Contains("YOUR_"))
             {
-                ServiceURL = $"https://{accountId}.r2.cloudflarestorage.com",
-                ForcePathStyle = true
-            };
+                return null!;
+            }
 
-            return new AmazonS3Client(credentials, s3Config);
+            try
+            {
+                var credentials = new Amazon.Runtime.BasicAWSCredentials(accessKeyId, secretAccessKey);
+                var s3Config = new AmazonS3Config
+                {
+                    ServiceURL = $"https://{accountId}.r2.cloudflarestorage.com",
+                    ForcePathStyle = true
+                };
+
+                return new AmazonS3Client(credentials, s3Config);
+            }
+            catch
+            {
+                return null!;
+            }
         });
 
         services.AddScoped<IStorageService, R2StorageService>();
