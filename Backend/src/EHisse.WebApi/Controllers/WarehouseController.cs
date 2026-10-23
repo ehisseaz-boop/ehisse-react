@@ -106,7 +106,7 @@ namespace EHisse.WebApi.Controllers
             {
                 seller = new { 
                     seller.Id, 
-                    seller.CompanyName,
+                    CompanyName = seller.CompanyName?.Replace("(Anbardar)", "(Satıcı)").Replace("Anbardar", "Satıcı"),
                     seller.Address,
                     seller.Latitude,
                     seller.Longitude,
@@ -489,7 +489,7 @@ namespace EHisse.WebApi.Controllers
                 pin = user.Pin,
                 idCardImageUrl = user.IdCardImageUrl,
                 email = user.Email,
-                companyName = s.CompanyName,
+                companyName = s.CompanyName?.Replace("(Anbardar)", "(Satıcı)").Replace("Anbardar", "Satıcı"),
                 contactPerson = s.ContactPerson,
                 phone = s.Phone,
                 whatsAppNumber = s.WhatsAppNumber,

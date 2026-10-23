@@ -75,7 +75,8 @@ export function Settings() {
       .then(data => {
         const email = data.email || cachedEmail;
         const fullName = data.fullName || cachedName;
-        setForm({ ...data, email, fullName });
+        const fixedCompanyName = (data.companyName || '').replace(/\(?Anbardar\)?/gi, '(Satıcı)');
+        setForm({ ...data, companyName: fixedCompanyName, email, fullName });
         if (email) setNewEmail(email);
       })
       .catch(e => setError(e.message));
@@ -106,7 +107,7 @@ export function Settings() {
         const saved = localStorage.getItem('ehisse_user');
         if (saved) {
           const u = JSON.parse(saved);
-          u.companyName = form.companyName;
+          u.companyName = form.companyName ? form.companyName.replace(/\(?Anbardar\)?/gi, '(Satıcı)') : form.companyName;
           if (form.shopPhotoUrl) u.shopPhotoUrl = form.shopPhotoUrl;
           localStorage.setItem('ehisse_user', JSON.stringify(u));
         }

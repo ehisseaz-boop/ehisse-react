@@ -171,7 +171,7 @@ function WarehouseIndex() {
             </div>
             <div>
               <div className="d-flex align-items-center gap-2">
-                <h4 className="fw-bold m-0 text-main" style={{ fontSize: '1.25rem' }}>{seller.companyName}</h4>
+                <h4 className="fw-bold m-0 text-main" style={{ fontSize: '1.25rem' }}>{(seller.companyName || "").replace(/\(?Anbardar\)?/gi, "(Satıcı)")}</h4>
                 <Link to="/warehouse/settings" className="badge bg-secondary text-decoration-none" title="Tənzimləmələrə keç">
                   <i className="bi bi-pencil-square me-1"></i>Redaktə
                 </Link>

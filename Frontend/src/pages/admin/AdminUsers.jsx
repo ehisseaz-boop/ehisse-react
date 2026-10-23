@@ -241,7 +241,7 @@ export default function AdminUsers() {
       <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
           <h3 className="section-title mb-1">Bütün İstifadəçilər</h3>
-          <p className="text-muted m-0">Sistemdəki administratorlar, ustalar və anbardarların idarə edilməsi</p>
+          <p className="text-muted m-0">Sistemdəki administratorlar, ustalar və satıcıların idarə edilməsi</p>
         </div>
         <button onClick={loadUsers} className="btn btn-sm btn-outline">
           <i className="bi bi-arrow-clockwise me-1"></i> Yenilə

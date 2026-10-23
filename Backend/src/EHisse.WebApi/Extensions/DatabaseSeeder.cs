@@ -42,6 +42,7 @@ public static class DatabaseSeeder
                     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='SellerProfiles' AND column_name='Longitude') THEN
                         ALTER TABLE ""SellerProfiles"" ADD COLUMN ""Longitude"" double precision NULL;
                     END IF;
+                    UPDATE ""SellerProfiles"" SET ""CompanyName"" = REPLACE(REPLACE(""CompanyName"", '(Anbardar)', '(Satıcı)'), 'Anbardar', 'Satıcı') WHERE ""CompanyName"" LIKE '%Anbardar%';
                 END $$;
 
                                 CREATE TABLE IF NOT EXISTS ""SiteSettings"" (

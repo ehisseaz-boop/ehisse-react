@@ -225,14 +225,14 @@ namespace EHisse.WebApi.Controllers
                 string roleName = role switch
                 {
                     UserRole.Usta => "Usta",
-                    UserRole.Anbardar => "Anbardar",
+                    UserRole.Anbardar => "Satıcı",
                     _ => s.CompanyName.ToLower().Contains("servis") ? "Servis" : "Satıcı / Mağaza"
                 };
 
                 return new
                 {
                     id = s.Id,
-                    companyName = s.CompanyName,
+                    companyName = s.CompanyName?.Replace("(Anbardar)", "(Satıcı)").Replace("Anbardar", "Satıcı"),
                     contactPerson = s.ContactPerson,
                     firstName = s.User?.FirstName,
                     lastName = s.User?.LastName,

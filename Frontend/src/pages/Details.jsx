@@ -166,7 +166,7 @@ function Details({ user }) {
 
 
   const displayTitle = data?.part ? getCleanTitle(data.part) : '';
-  const sellerCompany = cleanText(data?.seller?.companyName);
+  const sellerCompany = cleanText(data?.seller?.companyName)?.replace(/\(?Anbardar\)?/gi, "(Satıcı)");
   const sellerContact = cleanText(data?.seller?.contactPerson);
 
   usePageSeo({

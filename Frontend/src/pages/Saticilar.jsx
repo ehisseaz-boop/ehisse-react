@@ -140,17 +140,17 @@ function Saticilar({ user }) {
         <div className="text-center mb-4">
           <div className="section-label">Təsdiqlənmiş Tərəfdaşlar</div>
           <h1 className="hero-title mb-2" style={{ fontSize: '2.5rem' }}>
-            Satıcılar və <span className="text-accent">Anbarlar</span>
+            Satıcılar və <span className="text-accent">Mağazalar</span>
           </h1>
           <p className="text-muted" style={{ maxWidth: '650px', margin: '0 auto' }}>
-            Platformamızdakı rəsmi servis mərkəzləri, peşəkar ustalar və etibarlı ehtiyat hissə anbarları
+            Platformamızdakı rəsmi servis mərkəzləri, peşəkar ustalar və etibarlı ehtiyat hissə satıcıları
           </p>
 
           {/* Ümumi statistika göstəriciləri */}
           {sellers && (
             <div className="d-flex flex-wrap justify-content-center gap-3 mt-3">
               <span className="badge-accent" style={{ padding: '0.4rem 0.8rem', borderRadius: '20px' }}>
-                <i className="bi bi-people-fill me-1"></i> {stats.totalSellers} Satıcı / Anbar
+                <i className="bi bi-people-fill me-1"></i> {stats.totalSellers} Satıcı / Mağaza
               </span>
               <span className="badge" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid var(--border-color)', color: 'var(--text-main)', padding: '0.4rem 0.8rem', borderRadius: '20px' }}>
                 <i className="bi bi-box-seam me-1 text-accent"></i> {stats.totalActiveAds} Aktiv elan
@@ -284,7 +284,7 @@ function Saticilar({ user }) {
         ) : sellers.length === 0 ? (
           <div className="text-center py-5 p-4 rounded-4" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-color)' }}>
             <i className="bi bi-search text-muted" style={{ fontSize: '3rem' }}></i>
-            <h4 className="mt-3">Uyğun satıcı və ya anbar tapılmadı</h4>
+            <h4 className="mt-3">Uyğun satıcı və ya mağaza tapılmadı</h4>
             <p className="text-muted">Axtarış sözünü dəyişin və ya filtrləri sıfırlayın.</p>
             <button onClick={handleReset} className="btn btn-outline mt-2" style={{ borderRadius: '20px' }}>
               Bütün satıcıları göstər
@@ -309,7 +309,7 @@ function Saticilar({ user }) {
                   {/* Kartın yuxarı hissəsi: Nişanlar və Reytinq */}
                   <div className="d-flex justify-content-between align-items-center mb-3">
                     <span className={roleBadgeClass} style={{ padding: '0.35rem 0.65rem', borderRadius: '12px' }}>
-                      <i className={`bi ${roleIcon} me-1`}></i> {s.roleName}
+                      <i className={`bi ${roleIcon} me-1`}></i> {s.roleName === "Anbardar" ? "Satıcı" : s.roleName}
                     </span>
                     <div className="d-flex align-items-center gap-1">
                       {s.isPhoneVerified && (
@@ -348,7 +348,7 @@ function Saticilar({ user }) {
                       {s.shopPhotoUrl ? (
                         <img
                           src={s.shopPhotoUrl}
-                          alt={s.companyName}
+                          alt={(s.companyName || "").replace(/\(?Anbardar\)?/gi, "(Satıcı)")}
                           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         />
                       ) : (
@@ -357,7 +357,7 @@ function Saticilar({ user }) {
                     </div>
                     <div>
                       <h3 className="product-title m-0" style={{ fontSize: '1.15rem' }}>
-                        {s.companyName}
+                        {(s.companyName || "").replace(/\(?Anbardar\)?/gi, "(Satıcı)")}
                       </h3>
                       {/* Usta / Anbardar / Məsul şəxsin adı */}
                       <div className="text-muted small mt-1">

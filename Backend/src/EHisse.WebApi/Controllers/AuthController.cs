@@ -277,10 +277,11 @@ namespace EHisse.WebApi.Controllers
             // Satıcı profilini yaradırıq (təsdiqləndikdən sonra hazır olsun)
             if (!await _context.SellerProfiles.AnyAsync(s => s.UserId == newUser.Id))
             {
+                var displayRole = newUser.Role == UserRole.Anbardar ? "Satıcı" : newUser.Role.ToString();
                 var sellerProfile = new SellerProfile
                 {
                     UserId = newUser.Id,
-                    CompanyName = $"{newUser.FirstName} {newUser.LastName} ({newUser.Role})",
+                    CompanyName = $"{newUser.FirstName} {newUser.LastName} ({displayRole})",
                     ContactPerson = $"{newUser.FirstName} {newUser.LastName}",
                     Phone = newUser.Phone,
                     WhatsAppNumber = newUser.Phone,
@@ -295,7 +296,7 @@ namespace EHisse.WebApi.Controllers
             // Qeydiyyat məlumatlarını və admin təsdiq bildirişini istifadəçinin poçtuna göndəririk
             if (!string.IsNullOrWhiteSpace(email))
             {
-                var roleName = req.Role == UserRole.Anbardar ? "Anbardar (Satıcı)" : "Usta (Alıcı)";
+                var roleName = req.Role == UserRole.Anbardar ? "Satıcı" : "Usta (Alıcı)";
                 var emailBody = $@"
                     <div style=""font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #ffffff;"">
                         <div style=""text-align: center; margin-bottom: 20px;"">
