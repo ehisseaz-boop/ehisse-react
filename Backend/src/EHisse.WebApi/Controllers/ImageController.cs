@@ -65,7 +65,10 @@ namespace EHisse.WebApi.Controllers
                 var defaultPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "default.png");
                 if (System.IO.File.Exists(defaultPath))
                     return PhysicalFile(defaultPath, "image/png");
-                return NotFound();
+
+                // Şəkil tapılmadıqda konsolu 404 ilə doldurmamaq üçün standart fallback SVG qaytarırıq
+                var svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"200\" height=\"200\" viewBox=\"0 0 200 200\"><rect width=\"100%\" height=\"100%\" fill=\"#1e293b\"/><text x=\"50%\" y=\"50%\" dominant-baseline=\"middle\" text-anchor=\"middle\" fill=\"#94a3b8\" font-family=\"sans-serif\" font-size=\"14\">Şəkil yoxdur</text></svg>";
+                return Content(svg, "image/svg+xml");
             }
 
             return Redirect(url);
