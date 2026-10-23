@@ -1,3 +1,4 @@
+using System;
 using EHisse.Application.Interfaces;
 using EHisse.Persistence.Context;
 using EHisse.Persistence.Repositories;
@@ -13,7 +14,12 @@ public static class PersistenceServiceRegistration
     {
         services.AddDbContext<AppDbContext>(options =>
         {
-            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
+            var connStr = configuration.GetConnectionString("DefaultConnection") 
+                ?? Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection") 
+                ?? Environment.GetEnvironmentVariable("DATABASE_URL") 
+                ?? "Host=aws-0-eu-west-1.pooler.supabase.com;Port=5432;Database=postgres;Username=postgres.xtlimzohxsvcnuclzbxt;Password=EHisseler2026!Secured#Db;SSL Mode=Require;Trust Server Certificate=true";
+
+            options.UseNpgsql(connStr);
             options.ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
         });
 
