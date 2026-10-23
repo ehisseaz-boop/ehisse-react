@@ -26,6 +26,7 @@ const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
 const AdminAds = lazy(() => import('./pages/admin/AdminAds'));
 const AdminCatalog = lazy(() => import('./pages/admin/AdminCatalog'));
 const AdminLogs = lazy(() => import('./pages/admin/AdminLogs'));
+const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'));
 
 // Anbardar / Satıcı modulları
 const WarehouseIndex = lazy(() => import('./pages/warehouse/WarehouseIndex'));
@@ -51,6 +52,7 @@ const adminLinks = [
   { to: '/admin/ads', icon: 'bi-megaphone', label: 'Bütün Elanlar' },
   { to: '/admin/catalog', icon: 'bi-diagram-3', label: 'Kataloq' },
   { to: '/admin/logs', icon: 'bi-journal-text', label: 'Jurnal' },
+  { to: '/admin/settings', icon: 'bi-gear-wide-connected', label: 'Sayt Tənzimləmələri / Haqqında' },
 ];
 
 const warehouseLinks = [
@@ -308,6 +310,7 @@ function App() {
               <Route path="ads" element={<AdminAds />} />
               <Route path="catalog" element={<AdminCatalog />} />
               <Route path="logs" element={<AdminLogs />} />
+              <Route path="settings" element={<AdminSettings />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />

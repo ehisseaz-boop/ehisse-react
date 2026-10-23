@@ -213,3 +213,11 @@ public class SellerReview : BaseEntity
     public User User { get; set; } = null!;
     public SparePart? SparePart { get; set; }
 }
+
+public class SiteSetting : BaseEntity
+{
+    public string Key { get; set; } = null!;
+    public string? Value { get; set; }
+    public string? Description { get; set; }
+    public DateTime LastModifiedDate { get; set; } = DateTime.UtcNow;
+}

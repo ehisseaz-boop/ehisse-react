@@ -510,5 +510,14 @@ namespace EHisse.WebApi.Controllers
             });
         }
 
-}
+
+        // GET api/Home/Settings
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> Settings([FromServices] AppDbContext context)
+        {
+            var settings = await context.SiteSettings.AsNoTracking().ToListAsync();
+            return Ok(settings.ToDictionary(s => s.Key, s => s.Value));
+        }
     }
+}

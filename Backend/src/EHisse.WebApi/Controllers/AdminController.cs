@@ -493,5 +493,44 @@ namespace EHisse.WebApi.Controllers
             await context.SaveChangesAsync();
             return Ok(new { success = true, message = "Admin istifadəçi adı və şifrəsi uğurla yeniləndi!", username = admin.Username });
         }
+
+        // ============================================
+        // CMS: SAYT TƏNZİMLƏMƏLƏRİ VƏ HAQQINDA İDARƏETMƏSİ
+        // ============================================
+        [HttpGet]
+        public async Task<IActionResult> Settings([FromServices] AppDbContext context)
+        {
+            var settings = await context.SiteSettings.AsNoTracking().ToListAsync();
+            return Ok(settings.ToDictionary(s => s.Key, s => new { value = s.Value, description = s.Description, lastModified = s.LastModifiedDate }));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateSettings([FromServices] AppDbContext context, [FromBody] Dictionary<string, string> input)
+        {
+            if (input == null || input.Count == 0)
+                return BadRequest(new { message = "Məlumat boş ola bilməz." });
+
+            foreach (var kvp in input)
+            {
+                var setting = await context.SiteSettings.FirstOrDefaultAsync(s => s.Key == kvp.Key);
+                if (setting != null)
+                {
+                    setting.Value = kvp.Value;
+                    setting.LastModifiedDate = DateTime.UtcNow;
+                }
+                else
+                {
+                    context.SiteSettings.Add(new SiteSetting
+                    {
+                        Key = kvp.Key,
+                        Value = kvp.Value,
+                        LastModifiedDate = DateTime.UtcNow
+                    });
+                }
+            }
+
+            await context.SaveChangesAsync();
+            return Ok(new { success = true, message = "Sayt tənzimləmələri uğurla yadda saxlanıldı!" });
+        }
     }
 }
