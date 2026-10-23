@@ -502,6 +502,7 @@ namespace EHisse.WebApi.Controllers
         // CMS: SAYT TƏNZİMLƏMƏLƏRİ VƏ HAQQINDA İDARƏETMƏSİ
         // ============================================
         [HttpGet]
+        [Route("/api/Admin/Settings")]
         public async Task<IActionResult> Settings([FromServices] AppDbContext context)
         {
             var settings = await context.SiteSettings.AsNoTracking().ToListAsync();
@@ -509,6 +510,7 @@ namespace EHisse.WebApi.Controllers
         }
 
         [HttpPost]
+        [Route("/api/Admin/UpdateSettings")]
         public async Task<IActionResult> UpdateSettings([FromServices] AppDbContext context, [FromBody] Dictionary<string, string> input)
         {
             if (input == null || input.Count == 0)
