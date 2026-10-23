@@ -85,7 +85,7 @@ export async function api(path, { method = 'GET', body, params } = {}) {
     method,
     credentials: 'include',
     headers,
-    body: body instanceof FormData ? body : body ? JSON.stringify(body) : undefined,
+    body: body instanceof FormData ? body : (typeof body === "string" ? body : (body ? JSON.stringify(body) : undefined)),
   });
 
   const text = await res.text();
