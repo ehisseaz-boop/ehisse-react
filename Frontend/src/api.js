@@ -93,7 +93,13 @@ export async function api(path, { method = 'GET', body, params } = {}) {
   try { data = text ? JSON.parse(text) : null; } catch { data = null; }
 
   if (!res.ok) {
-    let message = data?.message || data?.title;
+    let message = '';
+    if (data?.errors && typeof data.errors === 'object') {
+      const errorList = Object.entries(data.errors).map(([k, v]) => k + ': ' + (Array.isArray(v) ? v.join(', ') : v));
+      if (errorList.length > 0) message = errorList.join(' | ');
+    }
+    if (!message) message = data?.message;
+    if (!message && data?.title && data.title !== 'One or more validation errors occurred.') message = data.title;
     if (!message && res.status === 401) message = 'Bu əməliyyat üçün daxil olmalısınız.';
     if (!message && res.status === 403) message = 'Bu əməliyyat üçün icazəniz yoxdur.';
     const err = new Error(sanitizeString(message || `Xəta: ${res.status}`));

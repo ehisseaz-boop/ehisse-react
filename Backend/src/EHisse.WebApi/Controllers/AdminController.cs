@@ -219,6 +219,7 @@ namespace EHisse.WebApi.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [HttpPost("{id:int}")]
         public async Task<IActionResult> UpdateCategory(int id, [FromBody] CategoryInput input)
         {
             if (string.IsNullOrWhiteSpace(input.Name)) return BadRequest(new { message = "Ad boş ola bilməz." });
@@ -266,6 +267,7 @@ namespace EHisse.WebApi.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [HttpPost("{id:int}")]
         public async Task<IActionResult> UpdateBrand(int id, [FromBody] BrandInput input)
         {
             if (string.IsNullOrWhiteSpace(input.Name)) return BadRequest(new { message = "Brend adı boş ola bilməz." });
@@ -337,6 +339,7 @@ namespace EHisse.WebApi.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [HttpPost("{id:int}")]
         public async Task<IActionResult> UpdateModel(int id, [FromBody] ModelInput input)
         {
             if (string.IsNullOrWhiteSpace(input.Name)) return BadRequest(new { message = "Model adı boş ola bilməz." });
@@ -386,6 +389,7 @@ namespace EHisse.WebApi.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [HttpPost("{id:int}")]
         public async Task<IActionResult> UpdatePartType(int id, [FromBody] PartTypeInput input)
         {
             if (string.IsNullOrWhiteSpace(input.Name)) return BadRequest(new { message = "Hissə növü adı boş ola bilməz." });
