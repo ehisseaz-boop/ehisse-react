@@ -50,17 +50,24 @@ function PartForm() {
           });
           setImages(p.images || []);
         } else {
-          // Yeni elan yaradarkən ustanın / anbardarın kabinetindəki ünvan və koordinatları avtomatik doldururuq
+          // Yeni elan yaradarkən ustanın / satıcının kabinetindəki ünvan və koordinatları avtomatik doldururuq
           try {
             const s = await Api.warehouse.settings();
-            if (s) {
-              setForm(f => ({
-                ...f,
-                locationAddress: s.address || '',
-                latitude: s.latitude ?? '',
-                longitude: s.longitude ?? ''
-              }));
+            if (!s?.address || !s.address.trim()) {
+              await alertModal(
+                'Elan yerləşdirmək üçün əvvəlcə profilinizdə (Tənzimləmələr bölməsində) mağaza/anbar ünvanınızı və xəritə yerinizi qeyd etməlisiniz.',
+                'Ünvan məcburidir',
+                'warning'
+              );
+              navigate('/warehouse/settings');
+              return;
             }
+            setForm(f => ({
+              ...f,
+              locationAddress: s.address || '',
+              latitude: s.latitude ?? '',
+              longitude: s.longitude ?? ''
+            }));
           } catch { }
         }
       } catch (e) { setLoadError(e.message); }
@@ -258,6 +265,24 @@ function PartForm() {
         )}
       </div>
       {isEdit && form.moderationStatus && <p className="text-muted">Əsas sahələrin dəyişdirilməsi elanı yenidən moderasiyaya göndərir.</p>}
+      {/* Profil ünvanı və xəritə məlumatı */}
+      <div className="alert alert-info py-2 px-3 small mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div className="d-flex align-items-center gap-2">
+          <i className="bi bi-geo-alt-fill text-accent fs-5"></i>
+          <span>
+            <b>Elanın ünvanı və xəritəsi:</b> Profilinizdəki <strong>{form.locationAddress || 'qeyd edilən'}</strong> ünvanı avtomatik bu elana tətbiq olunur.
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={() => navigate('/warehouse/settings')}
+          className="btn btn-sm btn-outline-info py-0 px-2 text-nowrap"
+          style={{ fontSize: '11px' }}
+        >
+          Ünvanı dəyiş
+        </button>
+      </div>
+
       {error && <div className="alert alert-danger">{error}</div>}
       {msg && <div className="alert alert-success">{msg}</div>}
 

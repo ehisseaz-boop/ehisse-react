@@ -297,6 +297,18 @@ namespace EHisse.Persistence.Repositories
             {
                 user.SellerProfile.ShopPhotoUrl = updatedProfile.ShopPhotoUrl;
             }
+
+            // Profil unvani ve koordinatlari deyisdikde, saticinin butun elanlarini avtomatik sinxronlasdir
+            if (!string.IsNullOrWhiteSpace(updatedProfile.Address))
+            {
+                var sellerParts = await _context.SpareParts.Where(p => p.SellerId == user.SellerProfile.Id && !p.IsDeleted).ToListAsync();
+                foreach (var part in sellerParts)
+                {
+                    part.LocationAddress = updatedProfile.Address;
+                    part.Latitude = updatedProfile.Latitude;
+                    part.Longitude = updatedProfile.Longitude;
+                }
+            }
             
             if (user.SellerProfile.Phone != updatedProfile.Phone)
             {

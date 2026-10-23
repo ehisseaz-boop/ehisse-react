@@ -92,6 +92,14 @@ export function Settings() {
     e.preventDefault();
     setError('');
     setMsg('');
+
+    if (!form.address || !form.address.trim()) {
+      const errText = 'Zəhmət olmasa mağaza və ya anbar ünvanınızı qeyd edin. Bütün elanlarınızda xəritə və ünvanın göstərilməsi üçün məcburidir.';
+      setError(errText);
+      alertModal(errText, 'Ünvan məcburidir', 'warning');
+      return;
+    }
+
     setBusy(true);
     try {
       // Əlaqə məlumatları elanda qeyd olunması məcburidir, həmişə true göndərilir
@@ -462,7 +470,8 @@ export function Settings() {
         <div className="mb-3">
           <div className="d-flex justify-content-between align-items-center mb-1">
             <label className="form-label small fw-semibold m-0">
-              <i className="bi bi-geo-alt me-1"></i> Mağaza / Anbar ünvanı
+              <i className="bi bi-geo-alt me-1"></i> Mağaza / Anbar ünvanı <span className="text-danger">*</span>
+              <span className="badge bg-warning text-dark ms-2" style={{ fontSize: '10px' }}>Məcburidir (Elanlarda görünür)</span>
             </label>
             <button
               type="button"
@@ -497,7 +506,8 @@ export function Settings() {
               className="form-control"
               value={form.address || ''}
               onChange={set('address')}
-              placeholder="Şəhər, rayon, küçə"
+              required
+              placeholder="Məs: Bakı ş., Nizami r., 28 May metrosu yaxınlığı"
             />
             {form.address && (
               <a

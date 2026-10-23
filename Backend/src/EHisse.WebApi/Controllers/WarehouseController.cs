@@ -239,6 +239,22 @@ namespace EHisse.WebApi.Controllers
             var seller = await GetSellerAsync();
             if (seller == null) return NoSeller();
 
+            // Ünvan məcburiyyətini yoxla: satıcının profilində ünvan olmalıdır
+            if (string.IsNullOrWhiteSpace(seller.Address) && string.IsNullOrWhiteSpace(input.LocationAddress))
+            {
+                return BadRequest(new { message = "Ünvan qeyd olunmayıb. Zəhmət olmasa əvvəlcə profil tənzimləmələrindən mağaza/anbar ünvanınızı daxil edin." });
+            }
+
+            // Elana satıcının profilindəki ünvan və xəritə koordinatlarını avtomatik mənimsət
+            if (string.IsNullOrWhiteSpace(input.LocationAddress))
+            {
+                input = input with { 
+                    LocationAddress = seller.Address,
+                    Latitude = input.Latitude ?? seller.Latitude,
+                    Longitude = input.Longitude ?? seller.Longitude
+                };
+            }
+
             input = await EnsureTitleAsync(input);
 
             var errors = await ValidateAsync(input, seller.Id, null);
@@ -300,6 +316,16 @@ namespace EHisse.WebApi.Controllers
         {
             var seller = await GetSellerAsync();
             if (seller == null) return NoSeller();
+
+            // Ünvan və koordinat boşdursa profil ünvanını avtomatik tətbiq et
+            if (string.IsNullOrWhiteSpace(input.LocationAddress) && !string.IsNullOrWhiteSpace(seller.Address))
+            {
+                input = input with { 
+                    LocationAddress = seller.Address,
+                    Latitude = input.Latitude ?? seller.Latitude,
+                    Longitude = input.Longitude ?? seller.Longitude
+                };
+            }
 
             var part = await _warehouseService.GetPartAsync(id, seller.Id);
             if (part == null) return NotFound(new { message = "Elan tapılmadı." });
@@ -506,6 +532,10 @@ namespace EHisse.WebApi.Controllers
         [HttpPut]
         public async Task<IActionResult> Settings([FromBody] SettingsInput input)
         {
+            if (string.IsNullOrWhiteSpace(input.Address))
+            {
+                return BadRequest(new { message = "Mağaza / anbar ünvanı məcburidir. Zəhmət olmasa ünvanı qeyd edin." });
+            }
             var updated = new SellerProfile
             {
                 CompanyName = input.CompanyName,

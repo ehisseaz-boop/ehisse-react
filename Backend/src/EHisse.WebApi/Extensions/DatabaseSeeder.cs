@@ -43,6 +43,16 @@ public static class DatabaseSeeder
                         ALTER TABLE ""SellerProfiles"" ADD COLUMN ""Longitude"" double precision NULL;
                     END IF;
                     UPDATE ""SellerProfiles"" SET ""CompanyName"" = REPLACE(REPLACE(""CompanyName"", '(Anbardar)', '(Satıcı)'), 'Anbardar', 'Satıcı') WHERE ""CompanyName"" LIKE '%Anbardar%';
+                    
+                    -- Movcud elanlarin unvan ve koordinatlarini saticinin profilinden avtomatik doldur
+                    UPDATE ""SpareParts"" p
+                    SET ""LocationAddress"" = COALESCE(NULLIF(p.""LocationAddress"", ''), s.""Address""),
+                        ""Latitude"" = COALESCE(p.""Latitude"", s.""Latitude""),
+                        ""Longitude"" = COALESCE(p.""Longitude"", s.""Longitude"")
+                    FROM ""SellerProfiles"" s
+                    WHERE p.""SellerId"" = s.""Id""
+                      AND (p.""LocationAddress"" IS NULL OR p.""LocationAddress"" = '' OR p.""Latitude"" IS NULL)
+                      AND s.""Address"" IS NOT NULL AND s.""Address"" <> '';
                 END $$;
 
                                 CREATE TABLE IF NOT EXISTS ""SiteSettings"" (
