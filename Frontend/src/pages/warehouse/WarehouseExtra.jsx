@@ -101,7 +101,7 @@ export function Settings() {
         longitude: form.longitude === '' || form.longitude == null ? null : Number(form.longitude),
         showContactInfoInAds: true
       });
-      setMsg(r.message || 'Məlumatlar uğurla yadda saxlanıldı.');
+      setMsg('Məlumatlarınız yadda saxlanıldı');
       // Əgər istifadəçi avatar və ya adını dəyişibsə, localStorage və ya yenilənməni dəstəkləyək
       try {
         const saved = localStorage.getItem('ehisse_user');
@@ -112,8 +112,10 @@ export function Settings() {
           localStorage.setItem('ehisse_user', JSON.stringify(u));
         }
       } catch { }
+      await alertModal('Məlumatlarınız yadda saxlanıldı', 'Uğurlu əməliyyat', 'success');
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Xəta baş verdi.');
+      alertModal(err.message || 'Məlumatları yadda saxlayarkən xəta baş verdi.', 'Xəta', 'error');
     } finally {
       setBusy(false);
     }
@@ -562,6 +564,9 @@ export function Settings() {
             <b>Əlaqə məlumatları elanda məcburidir:</b> Alıcıların sizinlə birbaşa əlaqə qurması üçün mobil və WhatsApp nömrələriniz bütün aktiv elanlarınızda avtomatik göstərilir.
           </span>
         </div>
+
+        {error && <div className="alert alert-danger py-2">{error}</div>}
+        {msg && <div className="alert alert-success py-2 d-flex align-items-center gap-2"><i className="bi bi-check-circle-fill"></i> {msg}</div>}
 
         <button
           type="submit"
