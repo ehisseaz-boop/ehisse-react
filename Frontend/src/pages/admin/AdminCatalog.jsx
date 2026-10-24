@@ -845,15 +845,6 @@ export default function AdminCatalog() {
                     onChange={e => setModelCode(e.target.value)}
                   />
                 </div>
-                <div className="col-12 col-md-1">
-                  <label className="form-label text-muted small">İl</label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    value={modelYear}
-                    onChange={e => setModelYear(e.target.value)}
-                  />
-                </div>
                 <div className="col-12 mt-3">
                   <button type="submit" className="btn" style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-text)' }}>
                     <i className="bi bi-plus-lg me-1"></i> Modeli Brendə Artır
@@ -1208,25 +1199,14 @@ export default function AdminCatalog() {
                 required
               />
             </div>
-            <div className="row g-2 mb-3">
-              <div className="col-8">
-                <label className="form-label">Model Kodu</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={editModal.data.modelCode || ''}
-                  onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, modelCode: e.target.value } })}
-                />
-              </div>
-              <div className="col-4">
-                <label className="form-label">İl</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  value={editModal.data.releaseYear}
-                  onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, releaseYear: e.target.value } })}
-                />
-              </div>
+            <div className="mb-3">
+              <label className="form-label">Model Kodu</label>
+              <input
+                type="text"
+                className="form-control"
+                value={editModal.data.modelCode || ''}
+                onChange={e => setEditModal({ ...editModal, data: { ...editModal.data, modelCode: e.target.value } })}
+              />
             </div>
             <div className="form-check mb-3">
               <input
