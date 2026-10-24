@@ -118,3 +118,55 @@ export async function parseExcelFile(file) {
     reader.readAsArrayBuffer(file);
   });
 }
+
+
+/**
+ * Generates and downloads an Excel template for bulk Brand/Model catalog upload.
+ */
+export function downloadCatalogExcelTemplate() {
+  const sampleData = [
+    {
+      'Category': 'Planşet',
+      'Brand': 'Apple',
+      'Model': 'iPad (10th generation)',
+      'Model Numbers': 'A2696 / A2757 / A2777 / A3162'
+    },
+    {
+      'Category': 'Planşet',
+      'Brand': 'Apple',
+      'Model': 'iPad Air 11-inch (M2)',
+      'Model Numbers': 'A2902 / A2903 / A2904'
+    },
+    {
+      'Category': 'Telefon',
+      'Brand': 'Samsung',
+      'Model': 'Galaxy S24 Ultra',
+      'Model Numbers': 'SM-S928B / SM-S928U'
+    }
+  ];
+
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.json_to_sheet(sampleData);
+  ws['!cols'] = [{ wch: 18 }, { wch: 18 }, { wch: 32 }, { wch: 36 }];
+  XLSX.utils.book_append_sheet(wb, ws, 'Modeller');
+  XLSX.writeFile(wb, 'e-hisse_kataloq_numunesi.xlsx');
+}
+
+/**
+ * Exports all catalog models to Excel.
+ */
+export function exportCatalogModelsToExcel(models = []) {
+  if (!models || models.length === 0) return;
+  const data = models.map(m => ({
+    'Category': m.categoryName || '',
+    'Brand': m.brandName || '',
+    'Model': m.name || '',
+    'Model Numbers': m.modelCode || '',
+    'Status': m.isActive ? 'Aktiv' : 'Deaktiv'
+  }));
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.json_to_sheet(data);
+  ws['!cols'] = [{ wch: 20 }, { wch: 18 }, { wch: 35 }, { wch: 36 }, { wch: 12 }];
+  XLSX.utils.book_append_sheet(wb, ws, 'Modeller');
+  XLSX.writeFile(wb, 'e-hisse_butun_modeller.xlsx');
+}

@@ -305,7 +305,7 @@ export default function VisualSearchModal({
                   </div>
 
                   {models
-                    .filter(m => !searchFilter || m.name.toLowerCase().includes(searchFilter.toLowerCase()))
+                    .filter(m => !searchFilter || m.name.toLowerCase().includes(searchFilter.toLowerCase()) || (m.modelCode && m.modelCode.toLowerCase().includes(searchFilter.toLowerCase())))
                     .map(m => (
                       <div
                         key={m.id}
@@ -317,8 +317,8 @@ export default function VisualSearchModal({
                         </div>
                         <div className="visual-item-content">
                           <div className="visual-item-title">{m.name}</div>
-                          {m.releaseYear > 0 && (
-                            <div className="visual-item-desc">Buraxılış ili: {m.releaseYear}</div>
+                          {m.modelCode && m.modelCode !== 'OTHER' && (
+                            <div className="visual-item-desc">Model kodu: {m.modelCode || m.releaseYear}</div>
                           )}
                         </div>
                         <i className="bi bi-chevron-right visual-item-arrow"></i>

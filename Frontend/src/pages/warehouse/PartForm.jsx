@@ -392,7 +392,7 @@ function PartForm() {
           <label>Model</label>
           <select className="form-select mb-2" value={form.deviceModelId} onChange={set('deviceModelId')} required disabled={!models.length}>
             <option value="">Seçin</option>
-            {models.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+            {models.map(m => <option key={m.id} value={m.id}>{m.name}{m.modelCode && m.modelCode !== 'OTHER' ? ` (${m.modelCode})` : ''}</option>)}
           </select>
         </div>
         <div className="col-md-6">

@@ -138,7 +138,7 @@ export default function ExcelImportModal({ isOpen, onClose, onSuccess }) {
       // Model tapmaq
       const matchedModel = cache.models[matchedBrand.id].find(m => 
         m.name.toLowerCase() === modelName.toLowerCase() ||
-        `${matchedBrand.name} ${m.name}`.toLowerCase() === modelName.toLowerCase()
+        `${matchedBrand.name} ${m.name}`.toLowerCase() === modelName.toLowerCase() || (m.modelCode && m.modelCode.toLowerCase().includes(modelName.toLowerCase()))
       );
       if (!matchedModel) {
         validationErrors.push(`Sətir ${rowNum}: "${modelName}" modeli (${brandName}) tapılmadı.`);

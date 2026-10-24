@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { api as apiFetch } from '../../api';
 import { Table, Tabs, Modal } from '../../components/Panel';
 import { confirmModal, alertModal } from '../../utils/confirmModal';
+import { parseExcelFile, downloadCatalogExcelTemplate, exportCatalogModelsToExcel } from '../../utils/excelHelper';
 
 export default function AdminCatalog() {
   const [activeTab, setActiveTab] = useState('categories');
@@ -46,6 +47,10 @@ export default function AdminCatalog() {
   // Modal / Edit States
   const [editModal, setEditModal] = useState({ open: false, type: null, data: null });
   const [modalSaving, setModalSaving] = useState(false);
+
+  // Excel Bulk Import State (Brend və Modellər üçün)
+  const [excelUploading, setExcelUploading] = useState(false);
+  const excelInputRef = useRef(null);
 
   useEffect(() => {
     loadAllCatalogData();
@@ -339,6 +344,50 @@ export default function AdminCatalog() {
       loadAllCatalogData();
     } catch (err) {
       notify(err.message || 'Silinmə zamanı xəta baş verdi.', 'danger');
+    }
+  }
+
+  async function handleCatalogExcelUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setExcelUploading(true);
+    try {
+      const rows = await parseExcelFile(file);
+      if (!rows || rows.length === 0) {
+        alertModal('Excel faylı boşdur və ya sətir tapılmadı.', 'Diqqət', 'warning');
+        return;
+      }
+
+      const items = rows.map(r => ({
+        category: String(r['Category'] || r['Kateqoriya'] || r['category'] || '').trim(),
+        brand: String(r['Brand'] || r['Brend'] || r['Marka'] || r['brand'] || '').trim(),
+        model: String(r['Model'] || r['Model Adı'] || r['model'] || '').trim(),
+        modelNumbers: String(r['Model Numbers'] || r['Model Kodu'] || r['ModelCode'] || r['Kod'] || '').trim()
+      })).filter(x => x.category && x.brand && x.model);
+
+      if (items.length === 0) {
+        alertModal('Faylda düzgün sütun başlıqları (Category, Brand, Model, Model Numbers) tapılmadı.', 'Xəta', 'error');
+        return;
+      }
+
+      const res = await apiFetch('/api/Admin/BulkImportCatalog', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(items)
+      });
+
+      notify(res.message || 'Kataloq uğurla yeniləndi!');
+      alertModal(
+        `Excel faylı uğurla emal edildi!\n• Əlavə edilən yeni model: ${res.addedModels || 0}\n• Yenilənən model: ${res.updatedModels || 0}\n• Yeni brend: ${res.addedBrands || 0}`,
+        'Uğurlu Yükləmə',
+        'success'
+      );
+      await loadAllCatalogData();
+    } catch (err) {
+      alertModal('Excel yüklənərkən xəta baş verdi: ' + err.message, 'Xəta', 'error');
+    } finally {
+      setExcelUploading(false);
+      if (excelInputRef.current) excelInputRef.current.value = '';
     }
   }
 
@@ -700,6 +749,49 @@ export default function AdminCatalog() {
            ============================================ */}
         {activeTab === 'models' && (
           <div>
+            {/* Excel ilə Kütləvi Brend / Model Artırılması */}
+            <div className="card p-3 mb-4" style={{ background: 'var(--surface-color)', border: '1px dashed var(--accent)' }}>
+              <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                  <h6 className="mb-1 font-semibold d-flex align-items-center gap-2">
+                    <i className="bi bi-file-earmark-excel text-success"></i>
+                    Excel ilə Kütləvi Brend və Model Artırılması (Bütün Kateqoriyalar)
+                  </h6>
+                  <p className="text-muted small m-0">
+                    Sütun başlıqları: <strong>Category</strong> (Kateqoriya), <strong>Brand</strong> (Brend), <strong>Model</strong>, <strong>Model Numbers</strong> (Model Kodu)
+                  </p>
+                </div>
+                <div className="d-flex gap-2 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={downloadCatalogExcelTemplate}
+                    className="btn btn-sm btn-outline-secondary"
+                  >
+                    <i className="bi bi-download me-1"></i> Nümunə Şablon
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => exportCatalogModelsToExcel(filteredModels)}
+                    className="btn btn-sm btn-outline-primary"
+                  >
+                    <i className="bi bi-file-earmark-arrow-down me-1"></i> Mövcud Modelləri Endir
+                  </button>
+                  <label className={`btn btn-sm btn-success m-0 ${excelUploading ? 'disabled' : ''}`} style={{ cursor: 'pointer' }}>
+                    <i className="bi bi-upload me-1"></i>
+                    {excelUploading ? 'Yüklənir...' : 'Excel Faylı Seç və Yüklə'}
+                    <input
+                      ref={excelInputRef}
+                      type="file"
+                      accept=".xlsx,.xls,.csv"
+                      onChange={handleCatalogExcelUpload}
+                      style={{ display: 'none' }}
+                      disabled={excelUploading}
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
+
             <div className="card p-3 mb-4" style={{ background: 'var(--surface-color)', border: '1px solid var(--border-color)' }}>
               <h6 className="mb-3 font-semibold">Brendə Model Artırılması</h6>
               <form onSubmit={handleCreateModel} className="row g-2">

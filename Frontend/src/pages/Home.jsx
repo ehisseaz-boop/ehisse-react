@@ -618,7 +618,7 @@ function Home() {
             >
               <option value="">{filterBrandId ? 'Bütün modellər' : 'Əvvəlcə brend seçin'}</option>
               {models.map(m => (
-                <option key={m.id} value={m.id}>{m.name}</option>
+                <option key={m.id} value={m.id}>{m.name}{m.modelCode && m.modelCode !== 'OTHER' ? ` (${m.modelCode})` : ''}</option>
               ))}
             </select>
           </div>

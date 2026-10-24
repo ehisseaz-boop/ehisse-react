@@ -42,7 +42,9 @@ namespace EHisse.WebApi.Controllers
         {
             var models = await _context.DeviceModels
                 .Where(m => m.CategoryId == categoryId && m.BrandId == brandId)
-                .Select(m => new { id = m.Id, name = m.Name })
+                .Where(m => m.CategoryId == categoryId && m.BrandId == brandId && m.IsActive)
+                .OrderBy(m => m.Name)
+                .Select(m => new { id = m.Id, name = m.Name, modelCode = m.ModelCode })
                 .ToListAsync();
 
             return Ok(models);

@@ -310,6 +310,400 @@ public static class DatabaseSeeder
             context.SaveChanges();
         }
 
+        // Seed full Apple catalog models across all categories (Telefon, Planşet, Masaüstü kompüter, Qulaqlıq, Saat)
+        try
+        {
+            var appleBrand = context.DeviceBrands.FirstOrDefault(b => b.Name == "Apple");
+            if (appleBrand != null)
+            {
+                var allCategories = context.Categories.ToList();
+                var allCategoryBrands = context.CategoryBrands.ToList();
+                var allModels = context.DeviceModels.Where(m => m.BrandId == appleBrand.Id).ToList();
+
+                Category ResolveCategory(string catKey)
+                {
+                    if (catKey == "Telefon")
+                        return allCategories.FirstOrDefault(c => c.Name.Contains("Telefon", StringComparison.OrdinalIgnoreCase))!;
+                    if (catKey == "Planşet")
+                        return allCategories.FirstOrDefault(c => c.Name.Contains("Planşet", StringComparison.OrdinalIgnoreCase) || c.Name.Contains("Planset", StringComparison.OrdinalIgnoreCase))!;
+                    if (catKey == "Notebook" || catKey == "Noutbuk")
+                        return allCategories.FirstOrDefault(c => c.Name.Contains("Noutbuk", StringComparison.OrdinalIgnoreCase) || c.Name.Contains("Notebook", StringComparison.OrdinalIgnoreCase))!;
+                    if (catKey == "Masaüstü kompüter")
+                        return allCategories.FirstOrDefault(c => c.Name.Contains("Kompüter", StringComparison.OrdinalIgnoreCase) || c.Name.Contains("Masaüstü", StringComparison.OrdinalIgnoreCase))!;
+                    if (catKey == "Qulaqlıq")
+                        return allCategories.FirstOrDefault(c => c.Name.Contains("Qulaqlıq", StringComparison.OrdinalIgnoreCase) || c.Name.Contains("Qulaq", StringComparison.OrdinalIgnoreCase))!;
+                    if (catKey == "Saat")
+                        return allCategories.FirstOrDefault(c => c.Name.Contains("Saat", StringComparison.OrdinalIgnoreCase))!;
+                    return allCategories.FirstOrDefault(c => c.Name.Equals(catKey, StringComparison.OrdinalIgnoreCase))!;
+                }
+
+                var fullAppleCatalog = new (string Category, string Name, string ModelCode)[]
+                {
+                    // TELEFON (iPhone)
+                    ("Telefon", "iPhone 2G", "A1203"),
+                    ("Telefon", "iPhone 3G", "A1241 / A1324"),
+                    ("Telefon", "iPhone 3GS", "A1303 / A1325"),
+                    ("Telefon", "iPhone 4", "A1332 / A1349"),
+                    ("Telefon", "iPhone 4s", "A1387 / A1431"),
+                    ("Telefon", "iPhone 5", "A1428 / A1429 / A1442"),
+                    ("Telefon", "iPhone 5c", "A1456 / A1507 / A1516 / A1529 / A1532"),
+                    ("Telefon", "iPhone 5s", "A1453 / A1457 / A1518 / A1528 / A1530 / A1533"),
+                    ("Telefon", "iPhone 6", "A1549 / A1586 / A1589"),
+                    ("Telefon", "iPhone 6 Plus", "A1522 / A1524 / A1593"),
+                    ("Telefon", "iPhone 6s", "A1633 / A1688 / A1691 / A1700"),
+                    ("Telefon", "iPhone 6s Plus", "A1634 / A1687 / A1690 / A1699"),
+                    ("Telefon", "iPhone SE (1st generation)", "A1662 / A1723 / A1724"),
+                    ("Telefon", "iPhone 7", "A1660 / A1778 / A1779 / A1780"),
+                    ("Telefon", "iPhone 7 Plus", "A1661 / A1784 / A1785 / A1786"),
+                    ("Telefon", "iPhone 8", "A1863 / A1905 / A1906"),
+                    ("Telefon", "iPhone 8 Plus", "A1864 / A1897 / A1898"),
+                    ("Telefon", "iPhone X", "A1865 / A1901 / A1902"),
+                    ("Telefon", "iPhone XR", "A1984 / A2105 / A2106 / A2107 / A2108"),
+                    ("Telefon", "iPhone XS", "A1920 / A2097 / A2098 / A2099 / A2100"),
+                    ("Telefon", "iPhone XS Max", "A1921 / A2101 / A2102 / A2103 / A2104"),
+                    ("Telefon", "iPhone 11", "A2111 / A2221 / A2223"),
+                    ("Telefon", "iPhone 11 Pro", "A2160 / A2215 / A2217"),
+                    ("Telefon", "iPhone 11 Pro Max", "A2161 / A2218 / A2220"),
+                    ("Telefon", "iPhone SE (2nd generation)", "A2275 / A2296 / A2298"),
+                    ("Telefon", "iPhone 12", "A2172 / A2402 / A2403 / A2404"),
+                    ("Telefon", "iPhone 12 mini", "A2176 / A2398 / A2399 / A2400"),
+                    ("Telefon", "iPhone 12 Pro", "A2341 / A2406 / A2407 / A2408"),
+                    ("Telefon", "iPhone 12 Pro Max", "A2342 / A2410 / A2411 / A2412"),
+                    ("Telefon", "iPhone 13", "A2482 / A2631 / A2633 / A2634 / A2635"),
+                    ("Telefon", "iPhone 13 mini", "A2481 / A2626 / A2628 / A2629 / A2630"),
+                    ("Telefon", "iPhone 13 Pro", "A2483 / A2636 / A2638 / A2639 / A2640"),
+                    ("Telefon", "iPhone 13 Pro Max", "A2484 / A2641 / A2643 / A2644 / A2645"),
+                    ("Telefon", "iPhone SE (3rd generation)", "A2595 / A2782 / A2783 / A2784 / A2785"),
+                    ("Telefon", "iPhone 14", "A2649 / A2881 / A2882 / A2883 / A2884"),
+                    ("Telefon", "iPhone 14 Plus", "A2632 / A2885 / A2886 / A2887 / A2888"),
+                    ("Telefon", "iPhone 14 Pro", "A2650 / A2889 / A2890 / A2891 / A2892"),
+                    ("Telefon", "iPhone 14 Pro Max", "A2651 / A2893 / A2894 / A2895 / A2896"),
+                    ("Telefon", "iPhone 15", "A2846 / A3089 / A3090 / A3092"),
+                    ("Telefon", "iPhone 15 Plus", "A2847 / A3093 / A3094 / A3096"),
+                    ("Telefon", "iPhone 15 Pro", "A2848 / A3101 / A3102 / A3104"),
+                    ("Telefon", "iPhone 15 Pro Max", "A2849 / A3105 / A3106 / A3108"),
+                    ("Telefon", "iPhone 16", "A3081 / A3286 / A3287 / A3288"),
+                    ("Telefon", "iPhone 16 Plus", "A3082 / A3289 / A3290 / A3291"),
+                    ("Telefon", "iPhone 16 Pro", "A3083 / A3292 / A3293 / A3294"),
+                    ("Telefon", "iPhone 16 Pro Max", "A3084 / A3295 / A3296 / A3297"),
+                    ("Telefon", "iPhone 16e", "A3212 / A3408 / A3409 / A3410"),
+                    ("Telefon", "iPhone 17", "A3258 / A3519 / A3520 / A3521"),
+                    ("Telefon", "iPhone 17 Pro", "A3256 / A3522 / A3523 / A3524"),
+                    ("Telefon", "iPhone 17 Pro Max", "A3257 / A3525 / A3526 / A3527"),
+                    ("Telefon", "iPhone 17e", "A3575 / A3634 / A3635"),
+                    ("Telefon", "iPhone Air", "A3260 / A3516 / A3517 / A3518"),
+                    ("Telefon", "iPhone 18 Pro", "A3472 / A3713 / A3714 / A3715"),
+                    ("Telefon", "iPhone 18 Pro Max", "A3473 / A3716 / A3717 / A3718"),
+
+                    // PLANŞET (iPad)
+                    ("Planşet", "iPad (1st generation)", "A1219 / A1337"),
+                    ("Planşet", "iPad 2", "A1395 / A1396 / A1397"),
+                    ("Planşet", "iPad (3rd generation)", "A1416 / A1430 / A1403"),
+                    ("Planşet", "iPad (4th generation)", "A1458 / A1459 / A1460"),
+                    ("Planşet", "iPad (5th generation)", "A1822 / A1823"),
+                    ("Planşet", "iPad (6th generation)", "A1893 / A1954"),
+                    ("Planşet", "iPad (7th generation)", "A2197 / A2200 / A2198"),
+                    ("Planşet", "iPad (8th generation)", "A2270 / A2428 / A2429 / A2430"),
+                    ("Planşet", "iPad (9th generation)", "A2602 / A2603 / A2604 / A2605"),
+                    ("Planşet", "iPad (10th generation)", "A2696 / A2757 / A2777 / A3162"),
+                    ("Planşet", "iPad (A16)", "A3354 / A3355 / A3356 / A3357"),
+                    ("Planşet", "iPad Air (1st generation)", "A1474 / A1475 / A1476"),
+                    ("Planşet", "iPad Air (2nd generation)", "A1566 / A1567"),
+                    ("Planşet", "iPad Air (3rd generation)", "A2152 / A2123 / A2153 / A2154"),
+                    ("Planşet", "iPad Air (4th generation)", "A2316 / A2324 / A2325 / A2072"),
+                    ("Planşet", "iPad Air (5th generation)", "A2588 / A2589 / A2591"),
+                    ("Planşet", "iPad Air 11-inch (M2)", "A2902 / A2903 / A2904"),
+                    ("Planşet", "iPad Air 11-inch (M3)", "A3266 / A3267 / A3270"),
+                    ("Planşet", "iPad Air 11-inch (M4)", "A3459 / A3460 / A3463"),
+                    ("Planşet", "iPad Air 13-inch (M2)", "A2898 / A2899 / A2900"),
+                    ("Planşet", "iPad Air 13-inch (M3)", "A3268 / A3269 / A3271"),
+                    ("Planşet", "iPad Air 13-inch (M4)", "A3461 / A3462 / A3464"),
+                    ("Planşet", "iPad mini (1st generation)", "A1432 / A1454 / A1455"),
+                    ("Planşet", "iPad mini (2nd generation)", "A1489 / A1490 / A1491"),
+                    ("Planşet", "iPad mini (3rd generation)", "A1599 / A1600"),
+                    ("Planşet", "iPad mini (4th generation)", "A1538 / A1550"),
+                    ("Planşet", "iPad mini (5th generation)", "A2133 / A2124 / A2126 / A2125"),
+                    ("Planşet", "iPad mini (6th generation)", "A2567 / A2568 / A2569"),
+                    ("Planşet", "iPad mini (A17 Pro)", "A2993 / A2995 / A2996"),
+                    ("Planşet", "iPad Pro 9.7-inch (2016)", "A1673 / A1674 / A1675"),
+                    ("Planşet", "iPad Pro 10.5-inch (2017)", "A1701 / A1709 / A1852"),
+                    ("Planşet", "iPad Pro 11-inch (1 generation)", "A1980 / A2013 / A1934 / A1979"),
+                    ("Planşet", "iPad Pro 11-inch (2 generation)", "A2228 / A2068 / A2230 / A2231"),
+                    ("Planşet", "iPad Pro 11-inch (3 generation)", "A2377 / A2459 / A2301 / A2460"),
+                    ("Planşet", "iPad Pro 11-inch (4 generation)", "A2759 / A2435 / A2761 / A2762"),
+                    ("Planşet", "iPad Pro 11-inch (M4)", "A2836 / A2837 / A3006"),
+                    ("Planşet", "iPad Pro 11-inch (M5)", "A3357 / A3358 / A3359"),
+                    ("Planşet", "iPad Pro 12.9-inch (1 generation)", "A1584 / A1652"),
+                    ("Planşet", "iPad Pro 12.9-inch (2 generation)", "A1670 / A1671 / A1821"),
+                    ("Planşet", "iPad Pro 12.9-inch (3 generation)", "A1876 / A2014 / A1895 / A1983"),
+                    ("Planşet", "iPad Pro 12.9-inch (4 generation)", "A2229 / A2069 / A2232 / A2233"),
+                    ("Planşet", "iPad Pro 12.9-inch (5 generation)", "A2378 / A2461 / A2379 / A2462"),
+                    ("Planşet", "iPad Pro 12.9-inch (6 generation)", "A2436 / A2764 / A2437 / A2766"),
+                    ("Planşet", "iPad Pro 13-inch (M4)", "A2925 / A2926 / A3007"),
+                    ("Planşet", "iPad Pro 13-inch (M5)", "A3360 / A3361 / A3362"),
+
+                    // MASAÜSTÜ KOMPÜTER (iMac / iMac Pro)
+                    ("Masaüstü kompüter", "iMac (20-inch, Mid 2007)", "A1224"),
+                    ("Masaüstü kompüter", "iMac (24-inch, Mid 2007)", "A1225"),
+                    ("Masaüstü kompüter", "iMac (20-inch, Early 2008)", "A1224"),
+                    ("Masaüstü kompüter", "iMac (24-inch, Early 2008)", "A1225"),
+                    ("Masaüstü kompüter", "iMac (20-inch, Early 2009)", "A1224"),
+                    ("Masaüstü kompüter", "iMac (24-inch, Early 2009)", "A1225"),
+                    ("Masaüstü kompüter", "iMac (20-inch, Mid 2009, Education)", "A1224"),
+                    ("Masaüstü kompüter", "iMac (21.5-inch, Late 2009)", "A1311"),
+                    ("Masaüstü kompüter", "iMac (27-inch, Late 2009)", "A1312"),
+                    ("Masaüstü kompüter", "iMac (21.5-inch, Mid 2010)", "A1311"),
+                    ("Masaüstü kompüter", "iMac (27-inch, Mid 2010)", "A1312"),
+                    ("Masaüstü kompüter", "iMac (21.5-inch, Mid 2011)", "A1311"),
+                    ("Masaüstü kompüter", "iMac (27-inch, Mid 2011)", "A1312"),
+                    ("Masaüstü kompüter", "iMac (21.5-inch, Late 2011, Education)", "A1311"),
+                    ("Masaüstü kompüter", "iMac (21.5-inch, Late 2012)", "A1418"),
+                    ("Masaüstü kompüter", "iMac (27-inch, Late 2012)", "A1419"),
+                    ("Masaüstü kompüter", "iMac (21.5-inch, Early 2013, Education)", "A1418"),
+                    ("Masaüstü kompüter", "iMac (21.5-inch, Late 2013)", "A1418"),
+                    ("Masaüstü kompüter", "iMac (27-inch, Late 2013)", "A1419"),
+                    ("Masaüstü kompüter", "iMac (21.5-inch, Mid 2014)", "A1418"),
+                    ("Masaüstü kompüter", "iMac (Retina 5K, 27-inch, Late 2014)", "A1419"),
+                    ("Masaüstü kompüter", "iMac (Retina 5K, 27-inch, Mid 2015)", "A1419"),
+                    ("Masaüstü kompüter", "iMac (21.5-inch, Late 2015)", "A1418"),
+                    ("Masaüstü kompüter", "iMac (Retina 4K, 21.5-inch, Late 2015)", "A1418"),
+                    ("Masaüstü kompüter", "iMac (Retina 5K, 27-inch, Late 2015)", "A1419"),
+                    ("Masaüstü kompüter", "iMac (21.5-inch, 2017)", "A1418"),
+                    ("Masaüstü kompüter", "iMac (Retina 4K, 21.5-inch, 2017)", "A1418"),
+                    ("Masaüstü kompüter", "iMac (Retina 5K, 27-inch, 2017)", "A1419"),
+                    ("Masaüstü kompüter", "iMac Pro (27-inch, 2017)", "A1862"),
+                    ("Masaüstü kompüter", "iMac (Retina 4K, 21.5-inch, 2019)", "A2116"),
+                    ("Masaüstü kompüter", "iMac (Retina 5K, 27-inch, 2019)", "A2115"),
+                    ("Masaüstü kompüter", "iMac (Retina 5K, 27-inch, 2020)", "A2115"),
+                    ("Masaüstü kompüter", "iMac (24-inch, M1, 2021, Two ports)", "A2439"),
+                    ("Masaüstü kompüter", "iMac (24-inch, M1, 2021, Four ports)", "A2438"),
+                    ("Masaüstü kompüter", "iMac (24-inch, M3, 2023, Two ports)", "A2874"),
+                    ("Masaüstü kompüter", "iMac (24-inch, M3, 2023, Four ports)", "A2873"),
+                    ("Masaüstü kompüter", "iMac (24-inch, M4, 2024, Two ports)", "A3247"),
+                    ("Masaüstü kompüter", "iMac (24-inch, M4, 2024, Four ports)", "A3137"),
+
+                    // QULAQLIQ (AirPods & Charging Cases)
+                    ("Qulaqlıq", "AirPods 1 (2016)", "A1523 / A1722"),
+                    ("Qulaqlıq", "AirPods 2 (2019)", "A2032 / A2031"),
+                    ("Qulaqlıq", "AirPods 3 (2021)", "A2565 / A2564"),
+                    ("Qulaqlıq", "AirPods 4 (2024)", "A3053 / A3050 / A3054"),
+                    ("Qulaqlıq", "AirPods 4 ANC (2024)", "A3056 / A3055 / A3057"),
+                    ("Qulaqlıq", "AirPods 5 (2026)", "A3531 / A3532 / A3533"),
+                    ("Qulaqlıq", "AirPods 5 Wireless Charging Case (2026)", "A3439 / A3440 / A3441"),
+                    ("Qulaqlıq", "AirPods Pro 1 (2019)", "A2084 / A2083"),
+                    ("Qulaqlıq", "AirPods Pro 2 Lightning (2022)", "A2931 / A2699 / A2698"),
+                    ("Qulaqlıq", "AirPods Pro 2 USB-C (2023)", "A3047 / A3048 / A3049"),
+                    ("Qulaqlıq", "AirPods Pro 3 (2025)", "A3063 / A3064 / A3065"),
+                    ("Qulaqlıq", "AirPods Max 1 Lightning (2020)", "A2096"),
+                    ("Qulaqlıq", "AirPods Max 1 USB-C (2024)", "A3184"),
+                    ("Qulaqlıq", "AirPods Max 2 (2026)", "A3454"),
+                    ("Qulaqlıq", "Lightning Charging Case (AirPods 1 / AirPods 2)", "A1602"),
+                    ("Qulaqlıq", "Wireless Charging Case (AirPods 1 / AirPods 2)", "A1938"),
+                    ("Qulaqlıq", "AirPods Pro 1 Charging Case (2019)", "A2190"),
+                    ("Qulaqlıq", "AirPods Pro 1 MagSafe Case (2021)", "A2190"),
+                    ("Qulaqlıq", "AirPods 3 MagSafe Case (2021)", "A2566"),
+                    ("Qulaqlıq", "AirPods 3 Lightning Case (2022)", "A2897"),
+                    ("Qulaqlıq", "AirPods Pro 2 Lightning Case", "A2700"),
+                    ("Qulaqlıq", "AirPods Pro 2 USB-C Case", "A2968"),
+                    ("Qulaqlıq", "AirPods 4 Charging Case", "A3058"),
+                    ("Qulaqlıq", "AirPods 4 ANC Wireless Case", "A3059"),
+                    ("Qulaqlıq", "AirPods Pro 3 MagSafe Case", "A3122"),
+                    ("Qulaqlıq", "AirPods 5 Charging Case", "A3530"),
+                    ("Qulaqlıq", "AirPods 5 Wireless Charging Case", "A3529"),
+
+                    // SAAT (Apple Watch)
+                    ("Saat", "Apple Watch (1st generation)", "A1553 / A1554"),
+                    ("Saat", "Apple Watch SE (1st generation)", "A2351 / A2352 / A2353 / A2354 / A2355 / A2356"),
+                    ("Saat", "Apple Watch SE (2nd generation)", "A2722 / A2723 / A2724 / A2725 / A2726 / A2727"),
+                    ("Saat", "Apple Watch SE (3rd generation)", "A3324 / A3325 / A3326 / A3327"),
+                    ("Saat", "Apple Watch Series 1", "A1802 / A1803"),
+                    ("Saat", "Apple Watch Series 2", "A1757 / A1758 / A1816 / A1817"),
+                    ("Saat", "Apple Watch Series 3", "A1858 / A1859 / A1860 / A1861 / A1889 / A1890"),
+                    ("Saat", "Apple Watch Series 4", "A1977 / A1978 / A1975 / A1976 / A2007 / A2008"),
+                    ("Saat", "Apple Watch Series 5", "A2092 / A2093 / A2094 / A2095 / A2156 / A2157"),
+                    ("Saat", "Apple Watch Series 6", "A2291 / A2292 / A2293 / A2294 / A2375 / A2376"),
+                    ("Saat", "Apple Watch Series 7", "A2473 / A2474 / A2475 / A2476 / A2477 / A2478"),
+                    ("Saat", "Apple Watch Series 8", "A2770 / A2771 / A2772 / A2773 / A2857 / A2858"),
+                    ("Saat", "Apple Watch Series 9", "A2978 / A2980 / A2982 / A2984"),
+                    ("Saat", "Apple Watch Series 10", "A2997 / A2998 / A2999 / A3000 / A3001 / A3002 / A3003 / A3206"),
+                    ("Saat", "Apple Watch Series 11", "A3331 / A3332 / A3333 / A3334 / A3335 / A3336 / A3337 / A3338"),
+                    ("Saat", "Apple Watch Ultra", "A2622 / A2684 / A2859"),
+                    ("Saat", "Apple Watch Ultra 2", "A2986 / A2987"),
+                    ("Saat", "Apple Watch Ultra 3", "A3281 / A3282"),
+
+                    // NOUTBUK / NOTEBOOK (MacBook, MacBook Air, MacBook Pro)
+                    ("Notebook", "MacBook 12-inch (2015)", "A1534"),
+                    ("Notebook", "MacBook 12-inch (2016)", "A1534"),
+                    ("Notebook", "MacBook 12-inch (2017)", "A1534"),
+                    ("Notebook", "MacBook 13-inch (2006)", "A1181"),
+                    ("Notebook", "MacBook 13-inch (2007)", "A1181"),
+                    ("Notebook", "MacBook 13-inch (2010)", "A1342"),
+                    ("Notebook", "MacBook 13-inch (2011)", "A1342"),
+                    ("Notebook", "MacBook Air 11-inch (2010)", "A1370"),
+                    ("Notebook", "MacBook Air 11-inch (2011)", "A1370"),
+                    ("Notebook", "MacBook Air 11-inch (2012)", "A1465"),
+                    ("Notebook", "MacBook Air 11-inch (2013)", "A1465"),
+                    ("Notebook", "MacBook Air 11-inch (2014)", "A1465"),
+                    ("Notebook", "MacBook Air 11-inch (2015)", "A1465"),
+                    ("Notebook", "MacBook Air 13-inch (2008)", "A1237 / A1304"),
+                    ("Notebook", "MacBook Air 13-inch (2009)", "A1304"),
+                    ("Notebook", "MacBook Air 13-inch (2010)", "A1369"),
+                    ("Notebook", "MacBook Air 13-inch (2011)", "A1369"),
+                    ("Notebook", "MacBook Air 13-inch (2012)", "A1466"),
+                    ("Notebook", "MacBook Air 13-inch (2013)", "A1466"),
+                    ("Notebook", "MacBook Air 13-inch (2014)", "A1466"),
+                    ("Notebook", "MacBook Air 13-inch (2015)", "A1466"),
+                    ("Notebook", "MacBook Air 13-inch (2017)", "A1466"),
+                    ("Notebook", "MacBook Air 13-inch (2018)", "A1932"),
+                    ("Notebook", "MacBook Air 13-inch (2019)", "A1932"),
+                    ("Notebook", "MacBook Air 13-inch (2020)", "A2179 / A2337"),
+                    ("Notebook", "MacBook Air 13-inch (2020, Intel)", "A2179"),
+                    ("Notebook", "MacBook Air 13-inch (M1, 2020)", "A2337"),
+                    ("Notebook", "MacBook Air 13-inch (M2, 2022)", "A2681"),
+                    ("Notebook", "MacBook Air 13-inch (M3, 2024)", "A3113"),
+                    ("Notebook", "MacBook Air 13-inch (M4, 2025)", "A3240"),
+                    ("Notebook", "MacBook Air 13-inch (M5, 2026)", "A3449"),
+                    ("Notebook", "MacBook Air 15-inch (M2, 2023)", "A2941"),
+                    ("Notebook", "MacBook Air 15-inch (M3, 2024)", "A3114"),
+                    ("Notebook", "MacBook Air 15-inch (M4, 2025)", "A3241"),
+                    ("Notebook", "MacBook Air 15-inch (M5, 2026)", "A3450"),
+                    ("Notebook", "MacBook Pro 13-inch (2009)", "A1278"),
+                    ("Notebook", "MacBook Pro 13-inch (2010)", "A1278"),
+                    ("Notebook", "MacBook Pro 13-inch (2011)", "A1278"),
+                    ("Notebook", "MacBook Pro 13-inch (2012)", "A1278 / A1425"),
+                    ("Notebook", "MacBook Pro 13-inch (2013)", "A1425 / A1502"),
+                    ("Notebook", "MacBook Pro 13-inch (2014)", "A1502"),
+                    ("Notebook", "MacBook Pro 13-inch (2015)", "A1502"),
+                    ("Notebook", "MacBook Pro 13-inch (2016)", "A1706 / A1708"),
+                    ("Notebook", "MacBook Pro 13-inch (2017)", "A1706 / A1708"),
+                    ("Notebook", "MacBook Pro 13-inch (2018)", "A1989"),
+                    ("Notebook", "MacBook Pro 13-inch (2019)", "A1989 / A2159"),
+                    ("Notebook", "MacBook Pro 13-inch (2020)", "A2251 / A2289 / A2338"),
+                    ("Notebook", "MacBook Pro 13-inch (2020, Intel)", "A2251 / A2289"),
+                    ("Notebook", "MacBook Pro 13-inch (M1, 2020)", "A2338"),
+                    ("Notebook", "MacBook Pro 13-inch (M2, 2022)", "A2338"),
+                    ("Notebook", "MacBook Pro 14-inch (M1 Max, 2021)", "A2442"),
+                    ("Notebook", "MacBook Pro 14-inch (M1 Pro, 2021)", "A2442"),
+                    ("Notebook", "MacBook Pro 14-inch (M2 Max, 2023)", "A2779"),
+                    ("Notebook", "MacBook Pro 14-inch (M2 Pro, 2023)", "A2779"),
+                    ("Notebook", "MacBook Pro 14-inch (M3 Max, 2023)", "A2992"),
+                    ("Notebook", "MacBook Pro 14-inch (M3 Pro, 2023)", "A2992"),
+                    ("Notebook", "MacBook Pro 14-inch (M3, 2023)", "A2918"),
+                    ("Notebook", "MacBook Pro 14-inch (M4 Max, 2024)", "A3185"),
+                    ("Notebook", "MacBook Pro 14-inch (M4 Pro, 2024)", "A3185"),
+                    ("Notebook", "MacBook Pro 14-inch (M4, 2024)", "A3112"),
+                    ("Notebook", "MacBook Pro 14-inch (M5 Max, 2026)", "A3434"),
+                    ("Notebook", "MacBook Pro 14-inch (M5 Pro, 2026)", "A3434"),
+                    ("Notebook", "MacBook Pro 14-inch (M5, 2025)", "A3434"),
+                    ("Notebook", "MacBook Pro 15-inch (2006)", "A1150 / A1211"),
+                    ("Notebook", "MacBook Pro 15-inch (2007)", "A1211 / A1226"),
+                    ("Notebook", "MacBook Pro 15-inch (2008)", "A1260 / A1286"),
+                    ("Notebook", "MacBook Pro 15-inch (2009)", "A1286"),
+                    ("Notebook", "MacBook Pro 15-inch (2010)", "A1286"),
+                    ("Notebook", "MacBook Pro 15-inch (2011)", "A1286"),
+                    ("Notebook", "MacBook Pro 15-inch (2012)", "A1286 / A1398"),
+                    ("Notebook", "MacBook Pro 15-inch (2013)", "A1398"),
+                    ("Notebook", "MacBook Pro 15-inch (2014)", "A1398"),
+                    ("Notebook", "MacBook Pro 15-inch (2015)", "A1398"),
+                    ("Notebook", "MacBook Pro 15-inch (2016)", "A1707"),
+                    ("Notebook", "MacBook Pro 15-inch (2017)", "A1707"),
+                    ("Notebook", "MacBook Pro 15-inch (2018)", "A1990"),
+                    ("Notebook", "MacBook Pro 15-inch (2019)", "A1990"),
+                    ("Notebook", "MacBook Pro 16-inch (2019)", "A2141"),
+                    ("Notebook", "MacBook Pro 16-inch (2021)", "A2485"),
+                    ("Notebook", "MacBook Pro 16-inch (M1 Max, 2021)", "A2485"),
+                    ("Notebook", "MacBook Pro 16-inch (M1 Pro, 2021)", "A2485"),
+                    ("Notebook", "MacBook Pro 16-inch (M2 Max, 2023)", "A2780"),
+                    ("Notebook", "MacBook Pro 16-inch (M2 Pro, 2023)", "A2780"),
+                    ("Notebook", "MacBook Pro 16-inch (M3 Max, 2023)", "A2991"),
+                    ("Notebook", "MacBook Pro 16-inch (M3 Pro, 2023)", "A2991"),
+                    ("Notebook", "MacBook Pro 16-inch (M4 Max, 2024)", "A3186"),
+                    ("Notebook", "MacBook Pro 16-inch (M4 Pro, 2024)", "A3186"),
+                    ("Notebook", "MacBook Pro 17-inch (2006)", "A1151 / A1212"),
+                    ("Notebook", "MacBook Pro 17-inch (2007)", "A1212 / A1229"),
+                    ("Notebook", "MacBook Pro 17-inch (2008)", "A1261"),
+                    ("Notebook", "MacBook Pro 17-inch (2009)", "A1297"),
+                    ("Notebook", "MacBook Pro 17-inch (2010)", "A1297"),
+                    ("Notebook", "MacBook Pro 17-inch (2011)", "A1297")
+                };
+
+                bool changed = false;
+
+                foreach (var (catKey, name, code) in fullAppleCatalog)
+                {
+                    var cat = ResolveCategory(catKey);
+                    if (cat == null) continue;
+
+                    if (!allCategoryBrands.Any(cb => cb.CategoryId == cat.Id && cb.BrandId == appleBrand.Id))
+                    {
+                        var newCb = new CategoryBrand { CategoryId = cat.Id, BrandId = appleBrand.Id };
+                        context.CategoryBrands.Add(newCb);
+                        allCategoryBrands.Add(newCb);
+                        changed = true;
+                    }
+
+                    var existing = allModels.FirstOrDefault(m => m.CategoryId == cat.Id && m.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                    if (existing == null)
+                    {
+                        var newModel = new DeviceModel
+                        {
+                            CategoryId = cat.Id,
+                            BrandId = appleBrand.Id,
+                            Name = name,
+                            ModelCode = code,
+                            ReleaseYear = 2024,
+                            IsActive = true
+                        };
+                        context.DeviceModels.Add(newModel);
+                        allModels.Add(newModel);
+                        changed = true;
+                    }
+                    else if (existing.ModelCode != code)
+                    {
+                        existing.ModelCode = code;
+                        changed = true;
+                    }
+                }
+
+                if (changed)
+                {
+                    context.SaveChanges();
+                }
+
+                // Ensure Smartwatch, Headphone and Desktop PC categories also have standard part types mapped
+                var allPartTypes = context.SparePartTypes.ToList();
+                var allCatPartTypes = context.CategoryPartTypes.ToList();
+                bool ptChanged = false;
+
+                void MapPartTypes(string catKey, string[] ptKeys)
+                {
+                    var cat = ResolveCategory(catKey);
+                    if (cat == null) return;
+                    foreach (var key in ptKeys)
+                    {
+                        var pt = allPartTypes.FirstOrDefault(p => p.Key.Equals(key, StringComparison.OrdinalIgnoreCase));
+                        if (pt != null && !allCatPartTypes.Any(cpt => cpt.CategoryId == cat.Id && cpt.PartTypeId == pt.Id))
+                        {
+                            var newCpt = new CategoryPartType { CategoryId = cat.Id, PartTypeId = pt.Id };
+                            context.CategoryPartTypes.Add(newCpt);
+                            allCatPartTypes.Add(newCpt);
+                            ptChanged = true;
+                        }
+                    }
+                }
+
+                MapPartTypes("Saat", new[] { "SCREEN", "BATTERY", "SENSOR_GLASS", "BACK_COVER", "MB", "CHARGING_PORT", "BODY", "SPEAKER", "MIC", "BUTTONS" });
+                MapPartTypes("Qulaqlıq", new[] { "BATTERY", "SPEAKER", "MIC", "CHARGING_PORT", "BODY", "BODY_PARTS", "MB" });
+                MapPartTypes("Masaüstü kompüter", new[] { "SCREEN", "MB", "RAM", "STORAGE", "ADAPTER", "KEYBOARD", "TOUCHPAD", "SPEAKER", "CAM_FRONT", "BODY" });
+
+                if (ptChanged)
+                {
+                    context.SaveChanges();
+                }
+            }
+        }
+        catch { }
+
         // Seed sample products if needed
         if (context.SpareParts.Count() < 17)
         {

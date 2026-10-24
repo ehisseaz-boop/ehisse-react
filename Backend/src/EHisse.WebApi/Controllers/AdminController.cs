@@ -19,6 +19,7 @@ namespace EHisse.WebApi.Controllers
     public record BrandInput(string Name, bool IsActive = true);
     public record AssignBrandInput(int CategoryId, int BrandId);
     public record ModelInput(string Name, string? ModelCode, int ReleaseYear, int CategoryId, int BrandId, bool IsActive = true);
+    public record BulkModelItemInput(string Category, string Brand, string Model, string? ModelNumbers, int? ReleaseYear);
     public record PartTypeInput(string Name, string? Key, bool IsAccessory = false, bool IsPortable = false);
     public record AssignPartTypeInput(int CategoryId, int PartTypeId);
 
@@ -364,6 +365,115 @@ namespace EHisse.WebApi.Controllers
                 return BadRequest(new { message = error });
             }
             return Ok(new { success = true, message = "Model uğurla silindi." });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> BulkImportCatalog([FromServices] AppDbContext context, [FromBody] List<BulkModelItemInput> items)
+        {
+            if (items == null || items.Count == 0)
+                return BadRequest(new { message = "Yüklənəcək məlumat siyahısı boşdur." });
+
+            var categories = await context.Categories.ToListAsync();
+            var brands = await context.DeviceBrands.ToListAsync();
+            var categoryBrands = await context.CategoryBrands.ToListAsync();
+            var existingModels = await context.DeviceModels.ToListAsync();
+
+            int addedCategories = 0;
+            int addedBrands = 0;
+            int addedModels = 0;
+            int updatedModels = 0;
+
+            foreach (var item in items)
+            {
+                var catName = item.Category?.Trim();
+                var brandName = item.Brand?.Trim();
+                var modelName = item.Model?.Trim();
+                var modelCode = item.ModelNumbers?.Trim() ?? string.Empty;
+                var releaseYear = item.ReleaseYear ?? DateTime.Now.Year;
+
+                if (string.IsNullOrWhiteSpace(catName) || string.IsNullOrWhiteSpace(brandName) || string.IsNullOrWhiteSpace(modelName))
+                    continue;
+
+                var cat = categories.FirstOrDefault(c =>
+                    c.Name.Equals(catName, StringComparison.OrdinalIgnoreCase) ||
+                    c.Name.StartsWith(catName, StringComparison.OrdinalIgnoreCase) ||
+                    (catName.Contains("Saat", StringComparison.OrdinalIgnoreCase) && c.Name.Contains("Saat", StringComparison.OrdinalIgnoreCase)) ||
+                    (catName.Contains("Qulaq", StringComparison.OrdinalIgnoreCase) && c.Name.Contains("Qulaq", StringComparison.OrdinalIgnoreCase)) ||
+                    ((catName.Equals("Notebook", StringComparison.OrdinalIgnoreCase) || catName.Contains("Noutbuk", StringComparison.OrdinalIgnoreCase)) && c.Name.Contains("Noutbuk", StringComparison.OrdinalIgnoreCase)) ||
+                    ((catName.Contains("Masaüstü", StringComparison.OrdinalIgnoreCase) || catName.Contains("Kompüter", StringComparison.OrdinalIgnoreCase)) && c.Name.Contains("Kompüter", StringComparison.OrdinalIgnoreCase)));
+                if (cat == null)
+                {
+                    cat = new Category { Name = catName, DisplayOrder = categories.Count + 1, IsActive = true };
+                    context.Categories.Add(cat);
+                    await context.SaveChangesAsync();
+                    categories.Add(cat);
+                    addedCategories++;
+                }
+
+                var brand = brands.FirstOrDefault(b => b.Name.Equals(brandName, StringComparison.OrdinalIgnoreCase));
+                if (brand == null)
+                {
+                    brand = new DeviceBrand { Name = brandName, IsActive = true };
+                    context.DeviceBrands.Add(brand);
+                    await context.SaveChangesAsync();
+                    brands.Add(brand);
+                    addedBrands++;
+                }
+
+                if (!categoryBrands.Any(cb => cb.CategoryId == cat.Id && cb.BrandId == brand.Id))
+                {
+                    var cb = new CategoryBrand { CategoryId = cat.Id, BrandId = brand.Id };
+                    context.CategoryBrands.Add(cb);
+                    await context.SaveChangesAsync();
+                    categoryBrands.Add(cb);
+                }
+
+                var existingModel = existingModels.FirstOrDefault(m =>
+                    m.CategoryId == cat.Id &&
+                    m.BrandId == brand.Id &&
+                    m.Name.Equals(modelName, StringComparison.OrdinalIgnoreCase));
+
+                if (existingModel == null)
+                {
+                    var newModel = new DeviceModel
+                    {
+                        CategoryId = cat.Id,
+                        BrandId = brand.Id,
+                        Name = modelName,
+                        ModelCode = modelCode,
+                        ReleaseYear = releaseYear,
+                        IsActive = true
+                    };
+                    context.DeviceModels.Add(newModel);
+                    existingModels.Add(newModel);
+                    addedModels++;
+                }
+                else
+                {
+                    if (!string.IsNullOrWhiteSpace(modelCode) && existingModel.ModelCode != modelCode)
+                    {
+                        existingModel.ModelCode = modelCode;
+                        updatedModels++;
+                    }
+                    if (!existingModel.IsActive)
+                    {
+                        existingModel.IsActive = true;
+                        updatedModels++;
+                    }
+                }
+            }
+
+            await context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                success = true,
+                addedCategories,
+                addedBrands,
+                addedModels,
+                updatedModels,
+                message = $"{addedModels} yeni model əlavə edildi, {updatedModels} model yeniləndi."
+            });
         }
 
         // ============================================
