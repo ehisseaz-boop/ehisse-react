@@ -953,7 +953,7 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 99999;
+    z-index: 1055;
     padding: 1rem;
     backdrop-filter: blur(4px);
     overflow-y: auto;
@@ -1409,7 +1409,7 @@ footer {
    Matches the site's dark/light design system
    ======================================================== */
 .swal2-container {
-    z-index: 10000 !important;
+    z-index: 100000 !important;
     backdrop-filter: blur(6px) !important;
     -webkit-backdrop-filter: blur(6px) !important;
     background: rgba(0, 0, 0, 0.72) !important;

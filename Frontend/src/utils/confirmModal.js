@@ -1,5 +1,12 @@
 import Swal from 'sweetalert2';
 
+const ensureTopZIndex = (popup) => {
+  const container = popup?.closest?.('.swal2-container') || document.querySelector('.swal2-container');
+  if (container) {
+    container.style.setProperty('z-index', '200000', 'important');
+  }
+};
+
 /**
  * Custom confirmation dialog styled to match the site's dark/light design.
  * Replaces native browser window.confirm(...) popups.
@@ -42,7 +49,9 @@ export const confirmModal = async (optionsOrMessage) => {
     cancelButtonText,
     reverseButtons: true,
     buttonsStyling: false,
+    didOpen: ensureTopZIndex,
     customClass: {
+      container: 'site-confirm-container',
       popup: 'site-confirm-popup',
       title: 'site-confirm-title',
       htmlContainer: 'site-confirm-text',
@@ -65,7 +74,9 @@ export const alertModal = async (message, title = 'Məlumat', icon = 'info') => 
     icon,
     confirmButtonText: 'Bağla',
     buttonsStyling: false,
+    didOpen: ensureTopZIndex,
     customClass: {
+      container: 'site-confirm-container',
       popup: 'site-confirm-popup',
       title: 'site-confirm-title',
       htmlContainer: 'site-confirm-text',
@@ -96,7 +107,9 @@ export const promptModal = async ({
     cancelButtonText: cancelText,
     reverseButtons: true,
     buttonsStyling: false,
+    didOpen: ensureTopZIndex,
     customClass: {
+      container: 'site-confirm-container',
       popup: 'site-confirm-popup',
       title: 'site-confirm-title',
       input: 'site-confirm-input form-control',

@@ -83,7 +83,12 @@ export function Modal({ open, title, children, footer, onClose }) {
   useEffect(() => {
     if (!open) return;
     document.body.style.overflow = 'hidden';
-    const onKey = (e) => { if (e.key === 'Escape') onClose?.(); };
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        if (document.querySelector('.swal2-container')) return;
+        onClose?.();
+      }
+    };
     window.addEventListener('keydown', onKey);
     return () => {
       document.body.style.overflow = 'unset';
