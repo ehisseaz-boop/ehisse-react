@@ -30,7 +30,10 @@ public static class SparePartQueryExtensions
                 var term = $"%{raw.ToLower()}%";
                 builder.And(p =>
                     EF.Functions.Like(p.Title.ToLower(), term) ||
+                    (p.SKU != null && EF.Functions.Like(p.SKU.ToLower(), term)) ||
+                    (p.PartType != null && EF.Functions.Like(p.PartType.Name.ToLower(), term)) ||
                     (p.DeviceModel != null && EF.Functions.Like(p.DeviceModel.Name.ToLower(), term)) ||
+                    (p.DeviceModel != null && p.DeviceModel.ModelCode != null && EF.Functions.Like(p.DeviceModel.ModelCode.ToLower(), term)) ||
                     (p.DeviceModel != null && p.DeviceModel.Brand != null && EF.Functions.Like(p.DeviceModel.Brand.Name.ToLower(), term))
                 );
             }
@@ -101,7 +104,10 @@ public static class SparePartQueryExtensions
             var term = $"%{raw.ToLower()}%";
             builder.And(p =>
                 EF.Functions.Like(p.Title.ToLower(), term) ||
+                (p.SKU != null && EF.Functions.Like(p.SKU.ToLower(), term)) ||
+                (p.PartType != null && EF.Functions.Like(p.PartType.Name.ToLower(), term)) ||
                 (p.DeviceModel != null && EF.Functions.Like(p.DeviceModel.Name.ToLower(), term)) ||
+                (p.DeviceModel != null && p.DeviceModel.ModelCode != null && EF.Functions.Like(p.DeviceModel.ModelCode.ToLower(), term)) ||
                 (p.DeviceModel != null && p.DeviceModel.Brand != null && EF.Functions.Like(p.DeviceModel.Brand.Name.ToLower(), term))
             );
         }

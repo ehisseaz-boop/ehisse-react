@@ -1,19 +1,19 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EHisse.Domain", "src\EHisse.Domain\EHisse.Domain.csproj", "{45DC1390-A03D-4462-B680-4DE6658AF2CA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EHisse.Domain", "Backend\src\EHisse.Domain\EHisse.Domain.csproj", "{45DC1390-A03D-4462-B680-4DE6658AF2CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EHisse.Application", "src\EHisse.Application\EHisse.Application.csproj", "{99AAA82D-1559-42EF-B41A-635B6C68F2E4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EHisse.Application", "Backend\src\EHisse.Application\EHisse.Application.csproj", "{99AAA82D-1559-42EF-B41A-635B6C68F2E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EHisse.Persistence", "src\EHisse.Persistence\EHisse.Persistence.csproj", "{499E5E4E-5572-4CD8-9B9E-5BA2DDEC29CF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EHisse.Persistence", "Backend\src\EHisse.Persistence\EHisse.Persistence.csproj", "{499E5E4E-5572-4CD8-9B9E-5BA2DDEC29CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EHisse.Infrastructure", "src\EHisse.Infrastructure\EHisse.Infrastructure.csproj", "{CC139E7D-9D39-4361-9AF4-B1EB7F54CA3F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EHisse.Infrastructure", "Backend\src\EHisse.Infrastructure\EHisse.Infrastructure.csproj", "{CC139E7D-9D39-4361-9AF4-B1EB7F54CA3F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EHisse.WebApi", "src\EHisse.WebApi\EHisse.WebApi.csproj", "{A3488381-5461-4863-B2E9-BE58BF224AEF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EHisse.WebApi", "Backend\src\EHisse.WebApi\EHisse.WebApi.csproj", "{A3488381-5461-4863-B2E9-BE58BF224AEF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

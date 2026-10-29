@@ -101,18 +101,18 @@ namespace EHisse.WebApi.Controllers
         //  POST api/Image/Upload  (multipart/form-data: sparePartId, file, isMain)
         // ─────────────────────────────────────────────────────────────
         [HttpPost]
-        [Authorize(Roles = "Usta,Anbardar")]
+        [Authorize(Roles = "Usta,Anbardar,Admin")]
         [RequestSizeLimit(MaxFileSizeMb * 1024 * 1024 + 64 * 1024)]
         public async Task<IActionResult> Upload([FromForm] int sparePartId, IFormFile? file, [FromForm] bool isMain = false)
         {
             // Məhsulun bu istifadəçiyə aid olduğunu yoxla
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var sellerProfile = await _context.SellerProfiles.FirstOrDefaultAsync(s => s.UserId == userId);
-            if (sellerProfile == null) return StatusCode(403, new { message = "Satıcı profili tapılmadı." });
+            if (sellerProfile == null && !User.IsInRole("Admin")) return StatusCode(403, new { message = "Satıcı profili tapılmadı." });
 
             var part = await _context.SpareParts
                 .Include(p => p.Images)
-                .FirstOrDefaultAsync(p => p.Id == sparePartId && p.SellerId == sellerProfile.Id && !p.IsDeleted);
+                .FirstOrDefaultAsync(p => p.Id == sparePartId && !p.IsDeleted && (User.IsInRole("Admin") || (sellerProfile != null && p.SellerId == sellerProfile.Id)));
 
             if (part == null) return NotFound(new { message = "Elan tapılmadı." });
 
@@ -175,16 +175,16 @@ namespace EHisse.WebApi.Controllers
         //  DELETE api/Image/Delete/5
         // ─────────────────────────────────────────────────────────────
         [HttpDelete("{imageId:int}")]
-        [Authorize(Roles = "Usta,Anbardar")]
+        [Authorize(Roles = "Usta,Anbardar,Admin")]
         public async Task<IActionResult> Delete(int imageId)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var sellerProfile = await _context.SellerProfiles.FirstOrDefaultAsync(s => s.UserId == userId);
-            if (sellerProfile == null) return StatusCode(403, new { message = "Satıcı profili tapılmadı." });
+            if (sellerProfile == null && !User.IsInRole("Admin")) return StatusCode(403, new { message = "Satıcı profili tapılmadı." });
 
             var image = await _context.SparePartImages
                 .Include(i => i.SparePart)
-                .FirstOrDefaultAsync(i => i.Id == imageId && i.SparePart.SellerId == sellerProfile.Id);
+                .FirstOrDefaultAsync(i => i.Id == imageId && (User.IsInRole("Admin") || (sellerProfile != null && i.SparePart.SellerId == sellerProfile.Id)));
 
             if (image == null) return NotFound(new { message = "Şəkil tapılmadı." });
 

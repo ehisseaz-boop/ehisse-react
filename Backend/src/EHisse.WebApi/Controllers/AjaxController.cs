@@ -4,7 +4,6 @@ using EHisse.Domain.Enums;
 using EHisse.Application.DTOs;
 using EHisse.Application.Common;
 using EHisse.Persistence.Context;
-using EHisse.Persistence.Repositories;
 using EHisse.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +29,8 @@ namespace EHisse.WebApi.Controllers
         public async Task<IActionResult> GetBrandsByCategory(int categoryId)
         {
             var realBrands = await _context.DeviceBrands
-                .Where(b => _context.CategoryBrands.Any(cb => cb.BrandId == b.Id && cb.CategoryId == categoryId))
+                .Where(b => b.IsActive && _context.CategoryBrands.Any(cb => cb.BrandId == b.Id && cb.CategoryId == categoryId))
+                .OrderBy(b => b.Name)
                 .Select(b => new { id = b.Id, name = b.Name })
                 .ToListAsync();
 
@@ -41,7 +41,6 @@ namespace EHisse.WebApi.Controllers
         public async Task<IActionResult> GetModelsByBrand(int categoryId, int brandId)
         {
             var models = await _context.DeviceModels
-                .Where(m => m.CategoryId == categoryId && m.BrandId == brandId)
                 .Where(m => m.CategoryId == categoryId && m.BrandId == brandId && m.IsActive)
                 .OrderBy(m => m.Name)
                 .Select(m => new { id = m.Id, name = m.Name, modelCode = m.ModelCode })
@@ -55,6 +54,7 @@ namespace EHisse.WebApi.Controllers
         {
             var partTypes = await _context.SparePartTypes
                 .Where(pt => _context.CategoryPartTypes.Any(cpt => cpt.PartTypeId == pt.Id && cpt.CategoryId == categoryId))
+                .OrderBy(pt => pt.Name)
                 .Select(pt => new { id = pt.Id, name = pt.Name })
                 .ToListAsync();
 
@@ -65,7 +65,8 @@ namespace EHisse.WebApi.Controllers
         public async Task<IActionResult> GetQualityTypes()
         {
             var qualities = await _context.QualityTypes
-                .OrderBy(q => q.Name)
+                .OrderBy(q => q.DisplayOrder)
+                .ThenBy(q => q.Name)
                 .Select(q => new { id = q.Id, name = q.Name })
                 .ToListAsync();
 
@@ -76,7 +77,9 @@ namespace EHisse.WebApi.Controllers
         public async Task<IActionResult> GetCategories()
         {
             var categories = await _context.Categories
-                .OrderBy(c => c.Name)
+                .Where(c => c.IsActive)
+                .OrderBy(c => c.DisplayOrder)
+                .ThenBy(c => c.Name)
                 .Select(c => new { id = c.Id, name = c.Name })
                 .ToListAsync();
 
@@ -136,4 +139,3 @@ namespace EHisse.WebApi.Controllers
         }
     }
 }
-

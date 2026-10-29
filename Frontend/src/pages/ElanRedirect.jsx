@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Api } from '../api';
 
@@ -19,12 +19,12 @@ function ElanRedirect({ user }) {
         const seller = res?.seller;
         
         // Elanın cari istifadəçiyə aid olmasını yoxla
-        if (user && (seller?.userId === user.id || part?.sellerId === user.sellerId || part?.sellerUserId === user.id)) {
+        if (user && (res?.isOwner || seller?.userId === user.id || part?.sellerId === user.sellerId || part?.sellerUserId === user.id)) {
           navigate(`/warehouse/part/${id}`, { replace: true });
         } else {
           navigate(`/details/${id}`, { replace: true });
         }
-      } catch (err) {
+      } catch {
         navigate(`/details/${id}`, { replace: true });
       }
     };

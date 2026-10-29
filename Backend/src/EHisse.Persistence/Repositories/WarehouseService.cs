@@ -38,12 +38,19 @@ namespace EHisse.Persistence.Repositories
 
         public async Task<List<Category>> GetCategoriesAsync()
         {
-            return await _context.Categories.ToListAsync();
+            return await _context.Categories
+                .Where(c => c.IsActive)
+                .OrderBy(c => c.DisplayOrder)
+                .ThenBy(c => c.Name)
+                .ToListAsync();
         }
 
         public async Task<List<QualityType>> GetQualityTypesAsync()
         {
-            return await _context.QualityTypes.ToListAsync();
+            return await _context.QualityTypes
+                .OrderBy(q => q.DisplayOrder)
+                .ThenBy(q => q.Name)
+                .ToListAsync();
         }
 
         public async Task<bool> SkuExistsAsync(string sku, int sellerId)
@@ -59,10 +66,10 @@ namespace EHisse.Persistence.Repositories
             }
             
             part.SellerId = sellerId;
-            part.CreatedDate = DateTime.Now;
-            part.LastModifiedDate = DateTime.Now;
+            part.CreatedDate = DateTime.UtcNow;
+            part.LastModifiedDate = DateTime.UtcNow;
             part.ModerationStatus = ApprovalStatus.Pending;
-            part.IsActive = true;
+            part.IsActive = false;
             part.IsDeleted = false;
             
             _context.Add(part);
@@ -73,7 +80,7 @@ namespace EHisse.Persistence.Repositories
                 Action = "CreateAd",
                 EntityName = "SparePart",
                 Details = "Yeni elan yaradıldı",
-                Date = DateTime.Now
+                Date = DateTime.UtcNow
             };
             _context.ActivityLogs.Add(log);
 
@@ -129,7 +136,7 @@ namespace EHisse.Persistence.Repositories
             part.Latitude = updatedPart.Latitude;
             part.Longitude = updatedPart.Longitude;
             part.LocationAddress = updatedPart.LocationAddress;
-            part.LastModifiedDate = DateTime.Now;
+            part.LastModifiedDate = DateTime.UtcNow;
 
             if (requiresApproval)
             {
@@ -151,11 +158,11 @@ namespace EHisse.Persistence.Repositories
                 var log = new ActivityLog
                 {
                     UserId = userId,
-                    Action = "UpdateAd",
+                    Action = isRestocking ? "RestockAd" : "UpdateAd",
                     EntityName = "SparePart",
                     EntityId = part.Id,
-                    Details = "Elan yeniləndi",
-                    Date = DateTime.Now
+                    Details = isRestocking ? "Stok bərpası sorğusu göndərildi" : "Elan yeniləndi",
+                    Date = DateTime.UtcNow
                 };
                 _context.ActivityLogs.Add(log);
 
@@ -174,7 +181,7 @@ namespace EHisse.Persistence.Repositories
             if (part == null) return false;
 
             part.Price = newPrice;
-            part.LastModifiedDate = DateTime.Now;
+            part.LastModifiedDate = DateTime.UtcNow;
 
             _context.Update(part);
             await _context.SaveChangesAsync();
@@ -190,7 +197,7 @@ namespace EHisse.Persistence.Repositories
             {
                 part.IsActive = false;
                 part.ModerationStatus = ApprovalStatus.Approved;
-                part.LastModifiedDate = DateTime.Now;
+                part.LastModifiedDate = DateTime.UtcNow;
 
                 _context.Update(part);
                 await _context.SaveChangesAsync();
@@ -209,7 +216,7 @@ namespace EHisse.Persistence.Repositories
 
             part.IsDeleted = true;
             part.IsActive = false;
-            part.LastModifiedDate = DateTime.Now;
+            part.LastModifiedDate = DateTime.UtcNow;
 
             _context.Update(part);
             await _context.SaveChangesAsync();
@@ -238,11 +245,11 @@ namespace EHisse.Persistence.Repositories
 
                 var sale = new SparePartSaleAudit {
                     SparePartId = part.Id,
-                    SellerId = userId,
+                    SellerId = sellerId,
                     Quantity = 1,
                     PreviousStock = previousStock,
                     NewStock = part.StockQuantity,
-                    Timestamp = DateTime.Now
+                    Timestamp = DateTime.UtcNow
                 };
 
                 _context.SparePartSaleAudits.Add(sale);

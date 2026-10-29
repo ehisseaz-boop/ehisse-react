@@ -19,7 +19,21 @@ public static class PersistenceServiceRegistration
                 ?? Environment.GetEnvironmentVariable("DATABASE_URL") 
                 ?? "Host=aws-0-eu-west-1.pooler.supabase.com;Port=5432;Database=postgres;Username=postgres.xtlimzohxsvcnuclzbxt;Password=EHisseler2026!Secured#Db;SSL Mode=Require;Trust Server Certificate=true";
 
-            options.UseNpgsql(connStr);
+            var isPreprod = (configuration["PreprodMode"] ?? Environment.GetEnvironmentVariable("PREPROD_MODE") ?? "false")
+                .Equals("true", StringComparison.OrdinalIgnoreCase);
+
+            if (isPreprod && !connStr.Contains("Search Path=", StringComparison.OrdinalIgnoreCase))
+            {
+                connStr = connStr.TrimEnd(';') + ";Search Path=preprod";
+            }
+
+            options.UseNpgsql(connStr, npgsqlOptions =>
+            {
+                if (isPreprod)
+                {
+                    npgsqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", "preprod");
+                }
+            });
             options.ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
         });
 

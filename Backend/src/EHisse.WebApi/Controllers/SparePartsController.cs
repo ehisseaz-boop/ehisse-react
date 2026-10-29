@@ -16,7 +16,7 @@ namespace EHisse.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Usta,Anbardar")]
+    [Authorize(Roles = "Usta,Anbardar,Admin")]
     public class SparePartsController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -61,7 +61,7 @@ namespace EHisse.WebApi.Controllers
                     Quantity = 1,
                     PreviousStock = previousStock,
                     NewStock = part.StockQuantity,
-                    Timestamp = DateTime.Now
+                    Timestamp = DateTime.UtcNow
                 };
 
                 _context.SparePartSaleAudits.Add(audit);
@@ -121,7 +121,7 @@ namespace EHisse.WebApi.Controllers
                 part.SKU = updatedPart.SKU;
             }
             part.DiscountPrice = updatedPart.DiscountPrice;
-            part.LastModifiedDate = DateTime.Now;
+            part.LastModifiedDate = DateTime.UtcNow;
 
             if (requiresApproval)
             {

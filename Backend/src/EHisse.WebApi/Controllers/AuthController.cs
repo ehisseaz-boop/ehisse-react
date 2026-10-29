@@ -86,7 +86,7 @@ namespace EHisse.WebApi.Controllers
         public async Task<IActionResult> Login([FromBody] LoginRequest req)
         {
             var username = req.Username?.Trim() ?? string.Empty;
-            var password = req.Password ?? string.Empty;
+            var password = req.Password?.Trim() ?? string.Empty;
 
             // Allow login by Username, Email, or Phone
             string normalizedPhone = username;

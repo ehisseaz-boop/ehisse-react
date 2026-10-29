@@ -248,6 +248,7 @@ function Home() {
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [totalSellers, setTotalSellers] = useState(10);
 
   const categoryScrollRef = useRef(null);
 
@@ -302,6 +303,7 @@ function Home() {
           setProducts(items);
           setTotalPages(data.totalPages || 1);
           setTotalItems(data.totalItems || 0);
+          if (data.totalSellers) setTotalSellers(data.totalSellers);
 
           // Əsas səhifənin ilk 1-ci səhifəsini növbəti ziyarətlər üçün kəşlə
           if (!search && !categoryId && !sellerId && !bId && !mId && !ptId && !qtId && !mnP && !mxP && p === 1) {
@@ -309,7 +311,8 @@ function Home() {
               sessionStorage.setItem('ehisse_cached_home_products', JSON.stringify({
                 items,
                 totalPages: data.totalPages || 1,
-                totalItems: data.totalItems || 0
+                totalItems: data.totalItems || 0,
+                totalSellers: data.totalSellers || 10
               }));
             } catch {}
           }
@@ -351,6 +354,7 @@ function Home() {
             setProducts(parsed.items);
             setTotalPages(parsed.totalPages || 1);
             setTotalItems(parsed.totalItems || 0);
+            if (parsed.totalSellers) setTotalSellers(parsed.totalSellers);
             setLoading(false);
           }
         } catch {}
@@ -472,7 +476,7 @@ function Home() {
           <div className="hero-stats justify-content-center w-100 mt-2 mb-3">
             <span>{totalItems || products.length}+</span> aktiv hissə
             <span className="dot">•</span>
-            <span>10+</span> təsdiqli satıcı
+            <span>{totalSellers}+</span> təsdiqli satıcı
             <span className="dot">•</span>
             <span>Bu gün</span> yenilənib
           </div>
@@ -509,11 +513,16 @@ function Home() {
                       key={cat.id}
                       className={`home-cat-item ${isActive ? 'active' : ''}`}
                       onClick={() => {
+                        const newParams = new URLSearchParams(searchParams);
                         if (isActive) {
                           setActiveCategoryId(null);
+                          newParams.delete('categoryId');
+                          setSearchParams(newParams);
                           fetchProducts(searchTerm, null, activeSellerId, 1, pageSize);
                         } else {
                           setActiveCategoryId(cat.id);
+                          newParams.set('categoryId', cat.id);
+                          setSearchParams(newParams);
                           fetchProducts(searchTerm, cat.id, activeSellerId, 1, pageSize);
                           const section = document.getElementById('catalog-section');
                           if (section) section.scrollIntoView({ behavior: 'smooth' });
@@ -699,10 +708,6 @@ function Home() {
               <div className="section-label">Axtarış nəticələri</div>
               <h2 className="section-title">Tapılan hissələr</h2>
             </div>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button className="btn-outline" style={{ padding: '0.5rem', borderColor: 'var(--text-muted)' }}><i className="bi bi-grid-fill text-accent"></i></button>
-              <button className="btn-outline" style={{ padding: '0.5rem' }}><i className="bi bi-list"></i></button>
-            </div>
           </div>
         )}
 
@@ -711,7 +716,17 @@ function Home() {
             <span className="small fw-bold" style={{ color: 'var(--accent)' }}>
               <i className="bi bi-shop me-2"></i>Seçilmiş satıcı/anbarın elanları (Satıcı #{activeSellerId})
             </span>
-            <button className="btn btn-sm btn-outline" style={{ borderRadius: '20px', fontSize: '0.8rem', padding: '0.2rem 0.8rem' }} onClick={() => { setActiveSellerId(null); setSearchParams({}); fetchProducts(searchTerm, activeCategoryId, null); }}>
+            <button
+              className="btn btn-sm btn-outline"
+              style={{ borderRadius: '20px', fontSize: '0.8rem', padding: '0.2rem 0.8rem' }}
+              onClick={() => {
+                setActiveSellerId(null);
+                const newParams = new URLSearchParams(searchParams);
+                newParams.delete('sellerId');
+                setSearchParams(newParams);
+                fetchProducts(searchTerm, activeCategoryId, null);
+              }}
+            >
               <i className="bi bi-x-circle me-1"></i> Filtri sıfırla
             </button>
           </div>
@@ -737,7 +752,7 @@ function Home() {
                 <i className="bi bi-x-circle me-1"></i> Filtrləri təmizlə
               </button>
             )}
-            <a href="#" onClick={(e) => { e.preventDefault(); setSearchTerm(''); setPage(1); fetchProducts('', activeCategoryId, activeSellerId, 1, pageSize); }} className={`btn-outline ${!searchTerm ? 'bg-accent text-dark fw-bold' : 'text-main'} text-decoration-none`} style={{ borderRadius: '20px', fontSize: '0.85rem', padding: '0.5rem 1.5rem' }}>Hamisi</a>
+            <a href="#" onClick={(e) => { e.preventDefault(); setSearchTerm(''); setPage(1); fetchProducts('', activeCategoryId, activeSellerId, 1, pageSize); }} className={`btn-outline ${!searchTerm ? 'bg-accent text-dark fw-bold' : 'text-main'} text-decoration-none`} style={{ borderRadius: '20px', fontSize: '0.85rem', padding: '0.5rem 1.5rem' }}>Hamısı</a>
             <a href="#" onClick={(e) => { e.preventDefault(); setSearchTerm('Ekran'); setPage(1); fetchProducts('Ekran', activeCategoryId, activeSellerId, 1, pageSize); }} className={`btn-outline ${searchTerm === 'Ekran' ? 'bg-accent text-dark fw-bold' : 'text-main'} text-decoration-none`} style={{ borderRadius: '20px', fontSize: '0.85rem' }}>Ekran</a>
             <a href="#" onClick={(e) => { e.preventDefault(); setSearchTerm('Batareya'); setPage(1); fetchProducts('Batareya', activeCategoryId, activeSellerId, 1, pageSize); }} className={`btn-outline ${searchTerm === 'Batareya' ? 'bg-accent text-dark fw-bold' : 'text-main'} text-decoration-none`} style={{ borderRadius: '20px', fontSize: '0.85rem' }}>Batareya</a>
           </div>
@@ -779,7 +794,6 @@ function Home() {
                 </div>
             ) : products.length > 0 ? (
                 products.map(part => {
-                    const mainImage = (part.images || []).find(img => img.isMain) || (part.images || [])[0];
                     const isNew = isToday(part.createdDate);
                     return (
                         <div key={part.id} className="product-card">
@@ -819,7 +833,7 @@ function Home() {
                             
                             <div className="product-bottom">
                                 <div>
-                                    <div className="product-price">{Math.floor(part.price)} <span>AZN</span></div>
+                                    <div className="product-price">{Number(part.price)} <span>AZN</span></div>
                                     <div className="product-seller">
                                         <i className="bi bi-shop"></i> {part.sellerName}
                                     </div>

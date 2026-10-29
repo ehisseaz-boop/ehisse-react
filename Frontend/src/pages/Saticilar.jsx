@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Api } from '../api';
+import { Api, imageSrc } from '../api';
 import { Loading, ErrorBox } from './Categories';
 import { Modal } from '../components/Panel';
 import { usePageSeo } from '../utils/seo';
@@ -293,8 +293,8 @@ function Saticilar({ user }) {
         ) : (
           <div className="products-grid">
             {sellers.map(s => {
-              const isUsta = s.roleName === 'Usta';
-              const isAnbardar = s.roleName === 'Anbardar';
+              const isUsta = s.roleName === 'Usta' || s.userRole === 'Usta';
+              const isAnbardar = s.roleName === 'Anbardar' || s.roleName === 'Satıcı' || s.userRole === 'Anbardar';
 
               const roleBadgeClass = isUsta
                 ? 'badge bg-warning bg-opacity-10 text-warning border border-warning'
@@ -347,7 +347,7 @@ function Saticilar({ user }) {
                     >
                       {s.shopPhotoUrl ? (
                         <img
-                          src={s.shopPhotoUrl}
+                          src={imageSrc(s.shopPhotoUrl)}
                           alt={(s.companyName || "").replace(/\(?Anbardar\)?/gi, "(Satıcı)")}
                           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         />

@@ -445,8 +445,8 @@ namespace EHisse.WebApi.Controllers
             if (part == null) return NotFound(new { message = "Silinmiş elan tapılmadı." });
 
             part.IsDeleted = false;
-            part.IsActive = true;
-            part.LastModifiedDate = DateTime.Now;
+            part.IsActive = part.ModerationStatus == ApprovalStatus.Approved && part.StockQuantity > 0;
+            part.LastModifiedDate = DateTime.UtcNow;
             await _context.SaveChangesAsync();
 
             return Ok(new { success = true, message = "Elan uğurla bərpa edildi." });
@@ -477,9 +477,10 @@ namespace EHisse.WebApi.Controllers
             var seller = await GetSellerAsync();
             if (seller == null) return NoSeller();
 
+            var userId = CurrentUserId;
             var sales = await _context.SparePartSaleAudits
                 .Include(s => s.SparePart)
-                .Where(s => s.SellerId == seller.Id)
+                .Where(s => s.SellerId == seller.Id || s.SellerId == userId)
                 .OrderByDescending(s => s.Timestamp)
                 .Take(200)
                 .Select(s => new
@@ -584,8 +585,13 @@ namespace EHisse.WebApi.Controllers
                         {
                             existingPart.Price = item.Price > 0 ? item.Price : existingPart.Price;
                             existingPart.StockQuantity = item.StockQuantity >= 0 ? item.StockQuantity : existingPart.StockQuantity;
+                            if (existingPart.StockQuantity <= 0)
+                            {
+                                existingPart.IsActive = false;
+                            }
                             if (item.WarrantyMonths > 0) existingPart.WarrantyMonths = item.WarrantyMonths;
                             if (!string.IsNullOrWhiteSpace(item.Description)) existingPart.Description = item.Description;
+                            existingPart.LastModifiedDate = DateTime.UtcNow;
                             updatedCount++;
                             continue;
                         }
@@ -599,10 +605,18 @@ namespace EHisse.WebApi.Controllers
                     }
 
                     var entity = ToEntity(item);
+                    if (string.IsNullOrEmpty(entity.SKU))
+                    {
+                        entity.SKU = $"SKU-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
+                    }
                     entity.SellerId = seller.Id;
+                    entity.LocationAddress = string.IsNullOrWhiteSpace(entity.LocationAddress) ? seller.Address : entity.LocationAddress;
+                    entity.Latitude = entity.Latitude ?? seller.Latitude;
+                    entity.Longitude = entity.Longitude ?? seller.Longitude;
                     entity.CreatedDate = DateTime.UtcNow;
+                    entity.LastModifiedDate = DateTime.UtcNow;
                     entity.ModerationStatus = ApprovalStatus.Approved;
-                    entity.IsActive = true;
+                    entity.IsActive = entity.StockQuantity > 0;
 
                     _context.SpareParts.Add(entity);
                     addedCount++;

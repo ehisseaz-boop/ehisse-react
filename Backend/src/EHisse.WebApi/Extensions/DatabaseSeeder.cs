@@ -11,6 +11,27 @@ public static class DatabaseSeeder
     {
         using var scope = app.ApplicationServices.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+        var isPreprod = (config["PreprodMode"] ?? Environment.GetEnvironmentVariable("PREPROD_MODE") ?? "false")
+            .Equals("true", StringComparison.OrdinalIgnoreCase);
+
+        if (isPreprod)
+        {
+            try
+            {
+                var rawConn = context.Database.GetDbConnection();
+                var csb = new Npgsql.NpgsqlConnectionStringBuilder(rawConn.ConnectionString)
+                {
+                    SearchPath = "public"
+                };
+                using var initConn = new Npgsql.NpgsqlConnection(csb.ConnectionString);
+                initConn.Open();
+                using var cmd = initConn.CreateCommand();
+                cmd.CommandText = "CREATE SCHEMA IF NOT EXISTS preprod;";
+                cmd.ExecuteNonQuery();
+            }
+            catch { }
+        }
 
         try
         {
@@ -27,19 +48,19 @@ public static class DatabaseSeeder
             context.Database.ExecuteSqlRaw(@"
                 DO $$ 
                 BEGIN 
-                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Users' AND column_name='Pin') THEN
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name='Users' AND column_name='Pin') THEN
                         ALTER TABLE ""Users"" ADD COLUMN ""Pin"" text NULL;
                     END IF;
-                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='Users' AND column_name='IdCardImageUrl') THEN
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name='Users' AND column_name='IdCardImageUrl') THEN
                         ALTER TABLE ""Users"" ADD COLUMN ""IdCardImageUrl"" text NULL;
                     END IF;
-                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='SellerProfiles' AND column_name='ShopPhotoUrl') THEN
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name='SellerProfiles' AND column_name='ShopPhotoUrl') THEN
                         ALTER TABLE ""SellerProfiles"" ADD COLUMN ""ShopPhotoUrl"" text NULL;
                     END IF;
-                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='SellerProfiles' AND column_name='Latitude') THEN
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name='SellerProfiles' AND column_name='Latitude') THEN
                         ALTER TABLE ""SellerProfiles"" ADD COLUMN ""Latitude"" double precision NULL;
                     END IF;
-                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='SellerProfiles' AND column_name='Longitude') THEN
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = current_schema() AND table_name='SellerProfiles' AND column_name='Longitude') THEN
                         ALTER TABLE ""SellerProfiles"" ADD COLUMN ""Longitude"" double precision NULL;
                     END IF;
                     UPDATE ""SellerProfiles"" SET ""CompanyName"" = REPLACE(REPLACE(""CompanyName"", '(Anbardar)', '(Satıcı)'), 'Anbardar', 'Satıcı') WHERE ""CompanyName"" LIKE '%Anbardar%';
@@ -119,7 +140,7 @@ public static class DatabaseSeeder
                     FOR tbl IN 
                         SELECT table_name 
                         FROM information_schema.tables 
-                        WHERE table_schema = 'public' 
+                        WHERE table_schema = current_schema() 
                           AND table_type = 'BASE TABLE'
                     LOOP
                         BEGIN
@@ -1508,6 +1529,30 @@ public static class DatabaseSeeder
             }
         }
         catch { }
+
+        if (isPreprod)
+        {
+            try
+            {
+                // Preprod mühitində bütün seed/test məhsulları (SKU-1..SKU-105, DUMMY-SKU-*) və test istifadəçiləri (elcin, rashad, nigar və s.) təmizlə
+                context.Database.ExecuteSqlRaw(@"
+                    DELETE FROM ""SparePartImages"" WHERE ""SparePartId"" IN (
+                        SELECT ""Id"" FROM ""SpareParts"" WHERE ""SKU"" LIKE 'SKU-%' OR ""SKU"" LIKE 'DUMMY-SKU-%' OR ""SellerId"" IN (
+                            SELECT s.""Id"" FROM ""SellerProfiles"" s JOIN ""Users"" u ON s.""UserId"" = u.""Id"" WHERE u.""Email"" LIKE '%@example.com'
+                        )
+                    );
+                    DELETE FROM ""SpareParts"" WHERE ""SKU"" LIKE 'SKU-%' OR ""SKU"" LIKE 'DUMMY-SKU-%' OR ""SellerId"" IN (
+                        SELECT s.""Id"" FROM ""SellerProfiles"" s JOIN ""Users"" u ON s.""UserId"" = u.""Id"" WHERE u.""Email"" LIKE '%@example.com'
+                    );
+                    DELETE FROM ""SellerProfiles"" WHERE ""UserId"" IN (
+                        SELECT ""Id"" FROM ""Users"" WHERE ""Email"" LIKE '%@example.com' AND ""Username"" <> 'admin_user'
+                    );
+                    DELETE FROM ""Users"" WHERE ""Email"" LIKE '%@example.com' AND ""Username"" <> 'admin_user' AND ""Role"" <> 2;
+                ");
+            }
+            catch { }
+            return;
+        }
 
         // Seed sample products if needed
         if (context.SpareParts.Count() < 17)
