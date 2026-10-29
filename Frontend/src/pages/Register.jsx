@@ -21,8 +21,11 @@ function Register({ onRegister }) {
     pin: '',
     idCardImageUrl: '',
     password: '', 
+    confirmPassword: '',
     role: 2 
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [idCardFile, setIdCardFile] = useState(null);
   const [idCardPreview, setIdCardPreview] = useState('');
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -143,6 +146,7 @@ function Register({ onRegister }) {
     }
 
     if (!form.password || form.password.length < 6) return 'Şifrə minimum 6 simvoldan ibarət olmalıdır.';
+    if (form.password !== form.confirmPassword) return 'Şifrə və şifrənin təsdiqi üst-üstə düşmür.';
     return null;
   };
 
@@ -311,7 +315,58 @@ function Register({ onRegister }) {
           )}
         </div>
 
-        <input className="form-control mb-2" type="password" placeholder="Şifrə (min 6 simvol)" minLength={6} value={form.password} onChange={set('password')} autoComplete="new-password" required />
+        {/* Şifrə */}
+        <div className="position-relative mb-2">
+          <input 
+            className="form-control pe-5" 
+            type={showPassword ? 'text' : 'password'} 
+            placeholder="Şifrə (min 6 simvol)" 
+            minLength={6} 
+            value={form.password} 
+            onChange={set('password')} 
+            autoComplete="new-password" 
+            required 
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(p => !p)}
+            className="btn btn-link position-absolute text-muted p-0"
+            style={{ right: '12px', top: '50%', transform: 'translateY(-50%)', textDecoration: 'none' }}
+            tabIndex={-1}
+            title={showPassword ? 'Şifrəni gizlət' : 'Şifrəni göstər'}
+          >
+            <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
+          </button>
+        </div>
+
+        {/* Şifrənin təsdiqi */}
+        <div className="position-relative mb-2">
+          <input 
+            className={`form-control pe-5 ${form.confirmPassword && form.password !== form.confirmPassword ? 'border-danger' : ''}`}
+            type={showConfirmPassword ? 'text' : 'password'} 
+            placeholder="Şifrənin təsdiqi" 
+            minLength={6} 
+            value={form.confirmPassword} 
+            onChange={set('confirmPassword')} 
+            autoComplete="new-password" 
+            required 
+          />
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword(p => !p)}
+            className="btn btn-link position-absolute text-muted p-0"
+            style={{ right: '12px', top: '50%', transform: 'translateY(-50%)', textDecoration: 'none' }}
+            tabIndex={-1}
+            title={showConfirmPassword ? 'Şifrəni gizlət' : 'Şifrəni göstər'}
+          >
+            <i className={`bi ${showConfirmPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
+          </button>
+        </div>
+        {form.confirmPassword && form.password !== form.confirmPassword && (
+          <div className="text-danger small text-start mb-2" style={{ fontSize: '11.5px' }}>
+            <i className="bi bi-exclamation-circle me-1"></i>Şifrələr eyni deyil
+          </div>
+        )}
         <select className="form-select mb-3" value={form.role} onChange={set('role')}>
           <option value={2}>Usta</option>
           <option value={3}>Satıcı</option>
