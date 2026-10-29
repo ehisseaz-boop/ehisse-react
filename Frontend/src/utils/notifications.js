@@ -85,31 +85,11 @@ export function clearNotifications(userId) {
  */
 export function initDefaultNotifications(user) {
   if (!user?.id) return;
-  const list = getNotifications(user.id);
-  if (list.length === 0) {
-    if (user.role === 'Anbardar' || user.role === 'Admin') {
-      addNotification(user.id, {
-        title: 'Xoş gəldiniz!',
-        message: 'Artıq Excel faylı ilə 1 kliklə minlərlə elan yükləyə və ya mövcud elanları idarə edə bilərsiniz.',
-        link: '/warehouse',
-        icon: 'bi-file-earmark-excel',
-        type: 'success'
-      });
-      addNotification(user.id, {
-        title: 'Kataloq və Elan İdarəetməsi',
-        message: 'Elanlarınızın statusunu "Elanlarım" bölməsindən canlı izləyə bilərsiniz.',
-        link: '/warehouse',
-        icon: 'bi-speedometer2',
-        type: 'info'
-      });
-    } else {
-      addNotification(user.id, {
-        title: 'Platformaya xoş gəldiniz!',
-        message: 'Doğru ehtiyat hissəsini axtarış və kateqoriya filtri ilə asanlıqla tapa bilərsiniz.',
-        link: '/',
-        icon: 'bi-check-circle',
-        type: 'success'
-      });
+  try {
+    const list = getNotifications(user.id);
+    const filtered = list.filter(n => n.title !== 'Xoş gəldiniz!' && n.title !== 'Kataloq və Elan İdarəetməsi' && n.title !== 'Platformaya xoş gəldiniz!');
+    if (filtered.length !== list.length) {
+      saveNotifications(user.id, filtered);
     }
-  }
+  } catch {}
 }
