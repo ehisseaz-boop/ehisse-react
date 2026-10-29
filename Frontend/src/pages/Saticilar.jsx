@@ -293,8 +293,8 @@ function Saticilar({ user }) {
         ) : (
           <div className="products-grid">
             {sellers.map(s => {
-              const isUsta = s.roleName === 'Usta' || s.userRole === 'Usta';
-              const isAnbardar = s.roleName === 'Anbardar' || s.roleName === 'Satıcı' || s.userRole === 'Anbardar';
+              const isUsta = s.roleName === 'Usta';
+              const isAnbardar = s.roleName === 'Anbardar';
 
               const roleBadgeClass = isUsta
                 ? 'badge bg-warning bg-opacity-10 text-warning border border-warning'

@@ -248,7 +248,7 @@ function Home() {
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
-  const [totalSellers, setTotalSellers] = useState(10);
+  const [totalSellers, setTotalSellers] = useState(0);
 
   const categoryScrollRef = useRef(null);
 
@@ -302,8 +302,8 @@ function Home() {
           }
           setProducts(items);
           setTotalPages(data.totalPages || 1);
-          setTotalItems(data.totalItems || 0);
-          if (data.totalSellers) setTotalSellers(data.totalSellers);
+          setTotalItems(data.totalItems ?? data.totalParts ?? 0);
+          if (data.totalSellers !== undefined && data.totalSellers !== null) setTotalSellers(data.totalSellers);
 
           // Əsas səhifənin ilk 1-ci səhifəsini növbəti ziyarətlər üçün kəşlə
           if (!search && !categoryId && !sellerId && !bId && !mId && !ptId && !qtId && !mnP && !mxP && p === 1) {
@@ -311,8 +311,8 @@ function Home() {
               sessionStorage.setItem('ehisse_cached_home_products', JSON.stringify({
                 items,
                 totalPages: data.totalPages || 1,
-                totalItems: data.totalItems || 0,
-                totalSellers: data.totalSellers || 10
+                totalItems: data.totalItems ?? data.totalParts ?? 0,
+                totalSellers: data.totalSellers ?? 0
               }));
             } catch {}
           }
@@ -354,7 +354,7 @@ function Home() {
             setProducts(parsed.items);
             setTotalPages(parsed.totalPages || 1);
             setTotalItems(parsed.totalItems || 0);
-            if (parsed.totalSellers) setTotalSellers(parsed.totalSellers);
+            if (parsed.totalSellers !== undefined && parsed.totalSellers !== null) setTotalSellers(parsed.totalSellers);
             setLoading(false);
           }
         } catch {}
@@ -474,9 +474,9 @@ function Home() {
           </div>
           
           <div className="hero-stats justify-content-center w-100 mt-2 mb-3">
-            <span>{totalItems || products.length}+</span> aktiv hissə
+            <span>{(totalItems || products.length) > 0 ? `${totalItems || products.length}+` : 0}</span> aktiv hissə
             <span className="dot">•</span>
-            <span>{totalSellers}+</span> təsdiqli satıcı
+            <span>{totalSellers > 0 ? `${totalSellers}+` : 0}</span> təsdiqli satıcı
             <span className="dot">•</span>
             <span>Bu gün</span> yenilənib
           </div>

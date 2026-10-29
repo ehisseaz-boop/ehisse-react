@@ -157,9 +157,18 @@ export default function ExcelImportModal({ isOpen, onClose, onSuccess }) {
       }
 
       // Keyfiyyət tapmaq
-      const matchedQuality = lookups.qualityTypes?.find(q => 
-        q.name.toLowerCase().includes(qualityName.toLowerCase())
-      ) || lookups.qualityTypes?.[0];
+      const qLower = qualityName.toLowerCase();
+      const matchedQuality = lookups.qualityTypes?.find(q => {
+        const qName = q.name.toLowerCase();
+        const qCode = (q.code || '').toLowerCase();
+        if (qName.includes(qLower) || qLower.includes(qName)) return true;
+        if ((qLower.includes('işlənmiş') || qLower.includes('islenmis') || qLower.includes('used') || qLower.includes('üstdən')) && (qCode.includes('used') || qName.includes('işlənmiş'))) return true;
+        if ((qLower.includes('orijinal') || qLower.includes('original') || qLower.includes('zavod') || qLower.includes('yeni')) && !qLower.includes('işlənmiş') && (qCode.includes('new') || qName.includes('yeni'))) return true;
+        if ((qLower.includes('a+') || qLower.includes('a-class') || qLower.includes('a class') || qLower.includes('servis') || qLower.includes('premium')) && (qCode.includes('a_class') || qName.includes('a-class'))) return true;
+        if ((qLower.includes('b-class') || qLower.includes('b class') || qLower.includes('standart') || qLower.includes('dublikat')) && (qCode.includes('b_class') || qName.includes('b-class'))) return true;
+        if ((qLower.includes('c-class') || qLower.includes('c class') || qLower.includes('ekonom')) && (qCode.includes('c_class') || qName.includes('c-class'))) return true;
+        return false;
+      }) || lookups.qualityTypes?.[0];
 
       validItems.push({
         deviceModelId: matchedModel.id,
