@@ -112,7 +112,7 @@ export async function api(path, { method = 'GET', body, params } = {}) {
 
 export function imageSrc(url) {
   if (!url) return null;
-  if (/^https?:\/\//i.test(url)) return url;
+  if (/^(https?:|data:|blob:)/i.test(url)) return url;
   return `${BASE}/Image/GetImage?path=${encodeURIComponent(url)}`;
 }
 

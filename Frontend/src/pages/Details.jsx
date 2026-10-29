@@ -577,7 +577,7 @@ function Details({ user }) {
                   >
                     {seller.shopPhotoUrl ? (
                       <img
-                        src={seller.shopPhotoUrl}
+                        src={imageSrc(seller.shopPhotoUrl)}
                         alt={sellerCompany}
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       />

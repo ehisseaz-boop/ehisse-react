@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { api as apiFetch } from '../../api';
+import { api as apiFetch, imageSrc } from '../../api';
 import { Table, statusBadge, Modal, fmtDate } from '../../components/Panel';
 import { confirmModal, alertModal } from '../../utils/confirmModal';
 
@@ -322,7 +322,7 @@ export default function AdminUsers() {
                   {selectedUser.idCardImageUrl ? (
                     <div className="text-center my-auto">
                       <img 
-                        src={selectedUser.idCardImageUrl} 
+                        src={imageSrc(selectedUser.idCardImageUrl)} 
                         alt="Şəxsiyyət vəsiqəsi" 
                         style={{ maxWidth: '100%', maxHeight: '180px', objectFit: 'contain', borderRadius: '6px', border: '1px solid var(--border-color)', cursor: 'pointer' }}
                         onClick={() => setPreviewIdCard({ url: selectedUser.idCardImageUrl, name: selectedUser.fullName, pin: selectedUser.pin })}
@@ -371,14 +371,14 @@ export default function AdminUsers() {
             </div>
             <div style={{ maxHeight: '75vh', overflow: 'auto' }}>
               <img 
-                src={previewIdCard.url} 
+                src={imageSrc(previewIdCard.url)} 
                 alt="Vəsiqə" 
                 style={{ maxWidth: '100%', maxHeight: '65vh', objectFit: 'contain', borderRadius: '8px', border: '1px solid var(--border-color)' }} 
               />
             </div>
             <div className="mt-3">
               <a 
-                href={previewIdCard.url} 
+                href={imageSrc(previewIdCard.url)} 
                 target="_blank" 
                 rel="noreferrer" 
                 className="btn btn-sm btn-outline-info me-2"

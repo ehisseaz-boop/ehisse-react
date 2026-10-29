@@ -24,7 +24,7 @@ function Login({ onLogin }) {
     e.preventDefault();
     setError(''); setBusy(true);
     try {
-      const res = await Api.login({ username, password });
+      const res = await Api.login({ username: username.trim(), password: password.trim() });
       if (res && res.username) {
         const loggedUser = {
           isAuthenticated: true,

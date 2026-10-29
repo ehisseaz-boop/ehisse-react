@@ -161,7 +161,7 @@ function WarehouseIndex() {
             >
               {seller.shopPhotoUrl ? (
                 <img
-                  src={seller.shopPhotoUrl}
+                  src={imageSrc(seller.shopPhotoUrl)}
                   alt={(seller.companyName || "").replace(/\(?Anbardar\)?/gi, "(Satıcı)")}
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';

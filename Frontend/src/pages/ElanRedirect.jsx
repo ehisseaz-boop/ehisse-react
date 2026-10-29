@@ -19,7 +19,7 @@ function ElanRedirect({ user }) {
         const seller = res?.seller;
         
         // Elanın cari istifadəçiyə aid olmasını yoxla
-        if (user && (seller?.userId === user.id || part?.sellerId === user.sellerId || part?.sellerUserId === user.id)) {
+        if (res?.isOwner || (user && (seller?.userId === user.id || part?.sellerId === user.sellerId || part?.sellerUserId === user.id))) {
           navigate(`/warehouse/part/${id}`, { replace: true });
         } else {
           navigate(`/details/${id}`, { replace: true });

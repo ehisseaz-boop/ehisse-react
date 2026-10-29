@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { api as apiFetch, imageSrc } from '../../api';
-import { Table, statusBadge, Tabs, Modal, fmtDate } from '../../components/Panel';
+import { Table, Tabs, Modal, fmtDate } from '../../components/Panel';
 import { confirmModal, alertModal } from '../../utils/confirmModal';
 
 export default function AdminRequests() {
@@ -180,7 +180,7 @@ export default function AdminRequests() {
         <span className="text-muted small">Yoxdur</span>
       )
     },
-    { key: 'role', label: 'Rol', render: (u) => <span className="badge bg-secondary">{u.role}</span> },
+    { key: 'role', label: 'Rol', render: (u) => <span className="badge bg-secondary">{u.role === 'Anbardar' ? 'Satıcı' : u.role}</span> },
     { key: 'createdDate', label: 'Qeydiyyat Tarixi', render: (u) => fmtDate(u.createdDate) },
     {
       key: 'actions',
@@ -246,9 +246,10 @@ export default function AdminRequests() {
     }
   ];
 
-  // Restock Ads: Items where stock was restocked (stockQuantity > 0 and update submission)
+  // Restock Ads vs Regular Update Ads:
+  // Hər iki tabda gözləyən redaktə və stok bərpa sorğuları aydın şəkildə göstərilir
   const restockAds = updateAds.filter(a => a.stockQuantity > 0 && !a.isActive);
-  const regularUpdateAds = updateAds.filter(a => !(a.stockQuantity > 0 && !a.isActive));
+  const regularUpdateAds = updateAds;
 
   const tabsConfig = [
     { key: 'registration', label: '1. Yeni Qeydiyyat Sorğuları', count: pendingUsers.length },
